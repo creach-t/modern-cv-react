@@ -1,0 +1,1 @@
+## Modern CV React\n\nUn CV moderne créé avec React et Tailwind CSS.\n\n## Technologies utilisées\n\n- React\n- Tailwind CSS\n- Lucide React pour les icônes\n\n## Installation\n\n1. Cloner le repository\n2. Installer les dépendances : `npm install`\n3. Lancer le projet : `npm start`\n\n## Structure du projet\n\nLe projet utilise Create React App avec Tailwind CSS pour le styling.

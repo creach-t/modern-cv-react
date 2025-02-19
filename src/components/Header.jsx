@@ -1,6 +1,6 @@
 import React from 'react';
 import { useColor } from '../contexts/ColorContext';
-import { GitHub, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 
 const Header = () => {
   const { secondaryColor, isDark } = useColor();
@@ -28,7 +28,7 @@ const Header = () => {
               rel="noopener noreferrer"
               className="text-white hover:text-white/80 transition-colors"
             >
-              <GitHub className="w-6 h-6" />
+              <Github className="w-6 h-6" />
             </a>
             <a
               href="https://linkedin.com"

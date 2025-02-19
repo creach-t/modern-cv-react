@@ -12,10 +12,13 @@ export const useColor = () => {
 
 export const ColorProvider = ({ children }) => {
   const [secondaryColor, setSecondaryColor] = useState('#3B82F6'); // Couleur bleue par défaut
+  const [isDark, setIsDark] = useState(true); // État pour la version sombre/claire du texte
 
   const value = {
     secondaryColor,
     setSecondaryColor,
+    isDark,
+    setIsDark,
   };
 
   return (

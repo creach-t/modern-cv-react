@@ -1,15 +1,97 @@
 [
-    {
-      "category": "Frontend",
-      "skills": ["React", "React Native", "HTML/CSS", "JavaScript", "TypeScript", "Tailwind CSS"]
-    },
-    {
-      "category": "Backend",
-      "skills": ["Node.js", "Python", "Java", "SQL", "NoSQL", "RESTful APIs", "GraphQL"]
-    },
-    {
-      "category": "DevOps",
-      "skills": ["Docker", "CI/CD", "Git"]
-    }
-  ]
-  
+  {
+    "category": "Frontend",
+    "skills": [
+      {
+        "name": "React",
+        "level": 90,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+      },
+      {
+        "name": "React Native",
+        "level": 75,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+      },
+      {
+        "name": "HTML/CSS",
+        "level": 95,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
+      },
+      {
+        "name": "JavaScript",
+        "level": 85,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+      },
+      {
+        "name": "TypeScript",
+        "level": 70,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"
+      },
+      {
+        "name": "Tailwind CSS",
+        "level": 80,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg"
+      }
+    ]
+  },
+  {
+    "category": "Backend",
+    "skills": [
+      {
+        "name": "Node.js",
+        "level": 80,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+      },
+      {
+        "name": "Python",
+        "level": 65,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+      },
+      {
+        "name": "Java",
+        "level": 50,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg"
+      },
+      {
+        "name": "SQL",
+        "level": 75,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg"
+      },
+      {
+        "name": "NoSQL",
+        "level": 70,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
+      },
+      {
+        "name": "RESTful APIs",
+        "level": 85,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg"
+      },
+      {
+        "name": "GraphQL",
+        "level": 60,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg"
+      }
+    ]
+  },
+  {
+    "category": "DevOps",
+    "skills": [
+      {
+        "name": "Docker",
+        "level": 70,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg"
+      },
+      {
+        "name": "CI/CD",
+        "level": 65,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg"
+      },
+      {
+        "name": "Git",
+        "level": 85,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
+      }
+    ]
+  }
+]

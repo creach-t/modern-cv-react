@@ -40,59 +40,6 @@ $RECYCLE.BIN/
 # VSCode
 .vscode/
 
-# Build directories
-dist/
-build/
-
-# Coverage directory used by tools like istanbul
-coverage/
-
-# TypeScript
-*.tsbuildinfo
-
-# Parcel-bundler cache
-.cache/
-
-# SvelteKit
-.svelte-kit/
-
-# Storybook
-out/
-storybook-static/
-
-# Next.js
-.next/
-
-# Nuxt.js
-.nuxt/
-
-# Gatsby files
-.cache/
-public/
-
-# Gridsome files
-.cache/
-public/
-
-# VuePress
-.vuepress/dist
-
-# Docusaurus
-.build/
-
-# 11ty
-.eleventy.js
-
-# Hexo
-public/
-.deploy/
-
-# Jekyll
-_site/
-
-# Hugo
-public/
-
 # temporary folders
 tmp/
 temp/

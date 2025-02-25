@@ -1,72 +1,58 @@
-import React from 'react';
-import { useColor } from '../contexts/ColorContext';
-import { GraduationCap, Calendar } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useColor } from "../contexts/ColorContext";
+import { useLanguage } from "../contexts/LanguageContext";
+import { GraduationCap, Calendar } from "lucide-react";
 
 const Education = () => {
   const { secondaryColor, isDark } = useColor();
+  const { language } = useLanguage(); // Utilisation du contexte de langue
+  const [education, setEducation] = useState([]);
 
-  const education = [
-    {
-      degree: "Master en Informatique",
-      school: "École Polytechnique",
-      location: "Paris, France",
-      period: "2016 - 2018",
-      details: [
-        "Spécialisation en Intelligence Artificielle",
-        "Projet de fin d'études sur le Deep Learning",
-        "Mention Très Bien"
-      ]
-    },
-    {
-      degree: "Licence en Informatique",
-      school: "Université Lyon 1",
-      location: "Lyon, France",
-      period: "2013 - 2016",
-      details: [
-        "Spécialisation en Développement Web",
-        "Stage de 6 mois en entreprise",
-        "Mention Bien"
-      ]
-    }
-  ];
+  useEffect(() => {
+    fetch("/data/education.json")
+      .then((response) => response.json())
+      .then((data) => setEducation(data[language]))
+      .catch((error) =>
+        console.error("Erreur lors du chargement des formations :", error)
+      );
+  }, [language]);
 
   return (
     <section className="mb-8">
-      <h2 
+      <h2
         className="text-2xl font-bold mb-6 pb-2 transition-colors duration-200"
-        style={{ 
+        style={{
           borderBottom: `2px solid ${secondaryColor}`,
-          color: isDark ? 'white' : 'black'
+          color: isDark ? "white" : "black",
         }}
       >
-        Formation
+        {language === "fr" ? "Formation" : "Education"}
       </h2>
 
       <div className="space-y-6">
         {education.map((edu, index) => (
-          <div 
+          <div
             key={index}
             className="p-4 rounded-lg transition-colors duration-200"
-            style={{ 
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)'
+            style={{
+              backgroundColor: isDark
+                ? "rgba(255, 255, 255, 0.05)"
+                : "rgba(0, 0, 0, 0.02)",
             }}
           >
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h3 
+                <h3
                   className="text-lg font-semibold transition-colors duration-200"
-                  style={{ color: isDark ? 'white' : 'black' }}
+                  style={{ color: isDark ? "white" : "black" }}
                 >
                   {edu.degree}
                 </h3>
-                <p 
-                  className="font-medium"
-                  style={{ color: secondaryColor }}
-                >
+                <p className="font-medium" style={{ color: secondaryColor }}>
                   {edu.school}
                 </p>
               </div>
-              <GraduationCap 
+              <GraduationCap
                 className="w-6 h-6 transition-colors duration-200"
                 style={{ color: secondaryColor }}
               />
@@ -77,9 +63,9 @@ const Education = () => {
               <span>{edu.period}</span>
             </div>
 
-            <ul 
+            <ul
               className="list-disc list-inside space-y-1 transition-colors duration-200"
-              style={{ color: isDark ? 'rgb(209 213 219)' : 'rgb(55 65 81)' }}
+              style={{ color: isDark ? "rgb(209 213 219)" : "rgb(55 65 81)" }}
             >
               {edu.details.map((detail, i) => (
                 <li key={i}>{detail}</li>

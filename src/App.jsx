@@ -1,12 +1,14 @@
 import React from 'react';
 import { ColorProvider } from './contexts/ColorContext';
-import ColorPicker from './components/ColorPicker';
+import { LanguageProvider } from './contexts/LanguageContext';
+import SettingPanel from './components/SettingsPanel';
 import Header from './components/Header';
 import Skills from './components/Skills';
 import Experience from './components/Experience';
 import Education from './components/Education';
 import Contact from './components/Contact';
 import { useColor } from './contexts/ColorContext';
+import Project from './components/Project';
 
 const AppContent = () => {
   const { isDark } = useColor();
@@ -19,6 +21,7 @@ const AppContent = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <Skills />
+              <Project />
               <Contact />
             </div>
             <div>
@@ -27,7 +30,7 @@ const AppContent = () => {
             </div>
           </div>
         </main>
-        <ColorPicker />
+        <SettingPanel />
       </div>
     </div>
   );
@@ -35,9 +38,11 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <ColorProvider>
-      <AppContent />
-    </ColorProvider>
+    <LanguageProvider>
+      <ColorProvider>
+        <AppContent />
+      </ColorProvider>
+    </LanguageProvider>
   );
 };
 

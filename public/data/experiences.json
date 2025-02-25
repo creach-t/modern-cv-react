@@ -1,0 +1,46 @@
+{
+  "fr": [
+    {
+      "title": "Stage Développeur Web",
+      "company": "Imperiatec",
+      "location": "Paris, France",
+      "period": "sept 2024 - nov 2024",
+      "description": [
+        "Création et refactorisation de composants React Native et ReactJS",
+        "Développement de nouvelles fonctionnalités"
+      ]
+    },
+    {
+      "title": "Stage de Développeur Web",
+      "company": "Association CSF",
+      "location": "Melun, France",
+      "period": "juin 2010 - août 2010",
+      "description": [
+        "Création et déploiement d'un site web pour une école primaire",
+        "Formation des équipes enseignantes à l'utilisation de l'outil"
+      ]
+    }
+  ],
+  "en": [
+    {
+      "title": "Web Developer Internship",
+      "company": "Imperiatec",
+      "location": "Paris, France",
+      "period": "Sept 2024 - Nov 2024",
+      "description": [
+        "Creating and refactoring React Native and ReactJS components",
+        "Developing new features"
+      ]
+    },
+    {
+      "title": "Web Developer Internship",
+      "company": "Association CSF",
+      "location": "Melun, France",
+      "period": "June 2010 - August 2010",
+      "description": [
+        "Creating and deploying a website for a primary school",
+        "Training teaching staff to use the tool"
+      ]
+    }
+  ]
+}

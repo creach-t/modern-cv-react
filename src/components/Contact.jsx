@@ -41,8 +41,8 @@ const Contact = () => {
       {/* Conteneur avec blur */}
       <div className="relative">
         <motion.div
-          initial={{ filter: "blur(10px)", opacity: 0.6 }}
-          animate={{ filter: "blur(10px)", opacity: 0.6 }}
+          initial={{ filter: "blur(5px)", opacity: 0.6 }}
+          animate={{ filter: "blur(5px)", opacity: 0.6 }}
           className="relative"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

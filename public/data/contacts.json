@@ -1,0 +1,27 @@
+[
+    {
+      "icon": "Phone",
+      "label": "Téléphone",
+      "value": "+33 6 84 68 13 01",
+      "link": "tel:+33684681301"
+    },
+    {
+      "icon": "Mail",
+      "label": "Email",
+      "value": "creach.t@gmail.com",
+      "link": "mailto:creach.t@gmail.com"
+    },
+    {
+      "icon": "MapPin",
+      "label": "Adresse",
+      "value": "Saint-Maur-des-Fossés, France",
+      "link": "https://maps.google.com/?q=Saint-Maur-des-Fossés"
+    },
+    {
+      "icon": "Linkedin",
+      "label": "LinkedIn",
+      "value": "creach-t",
+      "link": "https://linkedin.com/in/creachtheo"
+    }
+  ]
+  

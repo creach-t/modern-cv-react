@@ -22,11 +22,11 @@ const AppContent = () => {
             <div>
               <Skills />
               <Project />
-              <Contact />
             </div>
             <div>
               <Experience />
               <Education />
+              <Contact />
             </div>
           </div>
         </main>

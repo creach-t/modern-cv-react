@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  modern-cv-react:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "2585:2585"
+    restart: unless-stopped

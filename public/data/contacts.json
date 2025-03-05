@@ -2,8 +2,8 @@
     {
       "icon": "Phone",
       "label": "Téléphone",
-      "value": "+33 6 84 68 13 01",
-      "link": "tel:+33684681301"
+      "value": "+33 6 01 02 03 04",
+      "link": "tel:+33601020304"
     },
     {
       "icon": "Mail",

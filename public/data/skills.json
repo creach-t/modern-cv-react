@@ -1,15 +1,362 @@
 [
-    {
-      "category": "Frontend",
-      "skills": ["React", "React Native", "HTML/CSS", "JavaScript", "TypeScript", "Tailwind CSS"]
-    },
-    {
-      "category": "Backend",
-      "skills": ["Node.js", "Python", "Java", "SQL", "NoSQL", "RESTful APIs", "GraphQL"]
-    },
-    {
-      "category": "DevOps",
-      "skills": ["Docker", "CI/CD", "Git"]
-    }
-  ]
-  
+  {
+    "category": "Frontend",
+    "skills": [
+      {
+        "name": "React",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+      },
+      {
+        "name": "React Native",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+      },
+      {
+        "name": "HTML/CSS",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
+      },
+      {
+        "name": "JavaScript",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+      },
+      {
+        "name": "TypeScript",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"
+      },
+      {
+        "name": "Tailwind CSS",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg"
+      },
+      {
+        "name": "Vue.js",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg"
+      },
+      {
+        "name": "Angular",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg"
+      },
+      {
+        "name": "Next.js",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg"
+      },
+      {
+        "name": "Redux",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg"
+      },
+      {
+        "name": "Webpack",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/webpack/webpack-original.svg"
+      },
+      {
+        "name": "SASS",
+        "level": 1,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg"
+      },
+      {
+        "name": "Bootstrap",
+        "level": 2,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg"
+      },
+      {
+        "name": "Material UI",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/materialui/materialui-original.svg"
+      },
+      {
+        "name": "Framer Motion",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/framermotion/framermotion-original.svg"
+      }
+    ]
+  },
+  {
+    "category": "Backend",
+    "skills": [
+      {
+        "name": "Node.js",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+      },
+      {
+        "name": "Python",
+        "level": 1,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+      },
+      {
+        "name": "Java",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg"
+      },
+      {
+        "name": "SQL",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg"
+      },
+      {
+        "name": "NoSQL",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
+      },
+      {
+        "name": "GraphQL",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg"
+      },
+      {
+        "name": "Express.js",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg"
+      },
+      {
+        "name": "Django",
+        "level": 2,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg"
+      },
+      {
+        "name": "Flask",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg"
+      },
+      {
+        "name": "Spring",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg"
+      },
+      {
+        "name": "PostgreSQL",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"
+      },
+      {
+        "name": "MongoDB",
+        "level": 1,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
+      },
+      {
+        "name": "Redis",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg"
+      },
+      {
+        "name": "Firebase",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg"
+      },
+      {
+        "name": "Sequelize",
+        "level": 2,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sequelize/sequelize-original.svg"
+      },
+      {
+        "name": "Mongoose",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
+      },
+      {
+        "name": "C#",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg"
+      },
+      {
+        "name": ".NET",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dot-net/dot-net-original.svg"
+      },
+      {
+        "name": "PHP",
+        "level": 1,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg"
+      },
+      {
+        "name": "Laravel",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg"
+      }
+    ]
+  },
+  {
+    "category": "DevOps",
+    "skills": [
+      {
+        "name": "Docker",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg"
+      },
+      {
+        "name": "CI/CD",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg"
+      },
+      {
+        "name": "Git",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
+      },
+      {
+        "name": "GitHub",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+      },
+      {
+        "name": "GitLab",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg"
+      },
+      {
+        "name": "Kubernetes",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg"
+      },
+      {
+        "name": "AWS",
+        "level": 1,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+      },
+      {
+        "name": "Azure",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg"
+      },
+      {
+        "name": "Google Cloud",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg"
+      },
+      {
+        "name": "Netlify",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/netlify/netlify-original.svg"
+      },
+      {
+        "name": "Vercel",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg"
+      },
+      {
+        "name": "Jenkins",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg"
+      },
+      {
+        "name": "Travis CI",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/travis/travis-plain.svg"
+      },
+      {
+        "name": "CircleCI",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/circleci/circleci-plain.svg"
+      },
+      {
+        "name": "Terraform",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/terraform/terraform-original.svg"
+      },
+      {
+        "name": "Ansible",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ansible/ansible-original.svg"
+      },
+      {
+        "name": "NGINX",
+        "level": 2,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg"
+      },
+      {
+        "name": "Linux",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"
+      }
+    ]
+  },
+  {
+    "category": "Tools",
+    "skills": [
+      {
+        "name": "VS Code",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg"
+      },
+      {
+        "name": "Figma",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"
+      },
+      {
+        "name": "Adobe XD",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-line.svg"
+      },
+      {
+        "name": "Photoshop",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-line.svg"
+      },
+      {
+        "name": "Illustrator",
+        "level": 2,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/illustrator/illustrator-line.svg"
+      },
+      {
+        "name": "Jira",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jira/jira-original.svg"
+      },
+      {
+        "name": "Trello",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/trello/trello-plain.svg"
+      },
+      {
+        "name": "Slack",
+        "level": 4,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/slack/slack-original.svg"
+      },
+      {
+        "name": "Notion",
+        "level": 3,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/notion/notion-original.svg"
+      },
+      {
+        "name": "Postman",
+        "level": 2,
+        "logo": "https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg"
+      },
+      {
+        "name": "Jest",
+        "level": 1,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg"
+      },
+      {
+        "name": "Testing Library",
+        "level": 0,
+        "logo": "https://testing-library.com/img/octopus-128x128.png"
+      },
+      {
+        "name": "Cypress",
+        "level": 1,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cypressio/cypressio-original.svg"
+      },
+      {
+        "name": "Mocha",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mocha/mocha-plain.svg"
+      },
+      {
+        "name": "Selenium",
+        "level": 0,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/selenium/selenium-original.svg"
+      }
+    ]
+  }
+]

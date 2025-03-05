@@ -1,42 +1,66 @@
 {
   "fr": [
     {
-      "icon": "FileCode",
+      "icon": "Code",
       "label": "DevJobs",
       "value": "Application web de recherche d'emploi",
-      "link": "http://45.90.121.7:4060"
+      "description": "Plateforme permettant aux développeurs de trouver des offres d'emploi pertinentes dans le secteur tech",
+      "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
+      "image": "/img/projects/devjobs.jpg",
+      "link": "http://45.90.121.7:4060",
+      "github": "https://github.com/creach-t/devjobs"
     },
     {
-      "icon": "FileCode",
+      "icon": "Coffee",
       "label": "O'Coffee",
       "value": "Site E-commerce de vente de café",
-      "link": "http://45.90.121.7:3000"
+      "description": "Boutique en ligne proposant une sélection de cafés de spécialité du monde entier",
+      "technologies": ["Node.js", "Express.Js", "PostgreSQL", "Figma"],
+      "image": "/img/projects/ocoffee.jpg",
+      "link": "https://ocoffee.creachtheo.fr",
+      "github": "https://github.com/creach-t/ocoffee"
     },
     {
-      "icon": "FileCode",
+      "icon": "Skull",
       "label": "ZombieLand",
       "value": "Site E-commerce de présentation et vente de billets pour un parc d'attraction",
-      "link": "http://45.90.121.7:666"
+      "description": "Plateforme immersive pour un parc d'attractions sur le thème des zombies, avec système de billetterie intégré",
+      "technologies": ["React", "Node.js", "Express.Js", "Figma"],
+      "image": "/img/projects/zombieland.jpg",
+      "link": "http://45.90.121.7:666",
+      "github": "https://github.com/creach-t/zombieland"
     }
   ],
   "en": [
     {
-      "icon": "FileCode",
+      "icon": "Code",
       "label": "DevJobs",
       "value": "Job search web application",
-      "link": "http://45.90.121.7:4060"
+      "description": "Platform enabling developers to find relevant job opportunities in the tech sector",
+      "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
+      "image": "/img/projects/devjobs.jpg",
+      "link": "http://45.90.121.7:4060",
+      "github": "https://github.com/creach-t/devjobs"
     },
     {
-      "icon": "FileCode",
+      "icon": "Coffee",
       "label": "O'Coffee",
       "value": "E-commerce site for selling coffee",
-      "link": "http://45.90.121.7:3000"
+      "description": "Online store offering a selection of specialty coffees from around the world",
+      "technologies": ["Express.Js", "PostgreSQL", "Figma"],
+      "image": "/img/projects/ocoffee.jpg",
+      "link": "https://ocoffee.creachtheo.fr",
+      "github": "https://github.com/creach-t/ocoffee"
     },
     {
-      "icon": "FileCode",
+      "icon": "Skull",
       "label": "ZombieLand",
       "value": "E-commerce site for showcasing and selling tickets for an amusement park",
-      "link": "http://45.90.121.7:666"
+      "description": "Immersive platform for a zombie-themed amusement park, with integrated ticketing system",
+      "technologies": ["React", "Node.js", "Express.Js", "Figma"],
+      "image": "/img/projects/zombieland.jpg",
+      "link": "http://45.90.121.7:666",
+      "github": "https://github.com/creach-t/zombieland"
     }
   ]
 }

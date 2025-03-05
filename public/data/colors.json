@@ -1,0 +1,124 @@
+{
+    "colors": [
+      {
+        "name": "Pantone 17-3938 Very Peri",
+        "hex": "#6667AB",
+        "year": 2022,
+        "description": "Couleur de l'année 2022, un bleu pervenche avec une touche de violet"
+      },
+      {
+        "name": "Pantone 13-0647 Illuminating",
+        "hex": "#F5DF4D",
+        "year": 2021,
+        "description": "Un jaune vif et lumineux évoquant l'optimisme"
+      },
+      {
+        "name": "Pantone 17-5104 Ultimate Gray",
+        "hex": "#939597",
+        "year": 2021,
+        "description": "Un gris solide et fiable évoquant la stabilité"
+      },
+      {
+        "name": "Pantone 19-4052 Classic Blue",
+        "hex": "#0F4C81",
+        "year": 2020,
+        "description": "Un bleu intemporel évoquant le crépuscule"
+      },
+      {
+        "name": "Pantone 16-1546 Living Coral",
+        "hex": "#FF6F61",
+        "year": 2019,
+        "description": "Un corail vibrant avec une touche dorée"
+      },
+      {
+        "name": "Pantone 18-3838 Ultra Violet",
+        "hex": "#5F4B8B",
+        "year": 2018,
+        "description": "Un violet profond évoquant la créativité"
+      },
+      {
+        "name": "Pantone 15-0343 Greenery",
+        "hex": "#88B04B",
+        "year": 2017,
+        "description": "Un vert frais et zesté symbolisant les nouveaux départs"
+      },
+      {
+        "name": "Pantone 18-1662 Fiesta",
+        "hex": "#DD4132",
+        "year": 2016,
+        "description": "Un rouge audacieux qui stimule les sens"
+      },
+      {
+        "name": "Pantone 18-3224 Radiant Orchid",
+        "hex": "#B163A3",
+        "year": 2014,
+        "description": "Une teinte de pourpre captivante mêlant rose et violet"
+      },
+      {
+        "name": "Pantone 16-1543 Persimmon",
+        "hex": "#EC5B31",
+        "year": 0,
+        "description": "Un orange vif et brûlant rappelant le fruit du kaki"
+      },
+      {
+        "name": "Pantone 18-2043 Raspberry Sorbet",
+        "hex": "#D2386C",
+        "year": 0,
+        "description": "Un rose framboise vibrant et succulent"
+      },
+      {
+        "name": "Pantone 19-4340 Turkish Sea",
+        "hex": "#195190",
+        "year": 0,
+        "description": "Un bleu profond comme les eaux de la mer Égée"
+      },
+      {
+        "name": "Pantone 17-6153 Emerald",
+        "hex": "#009B77",
+        "year": 2013,
+        "description": "Un vert précieux symbolisant la croissance et l'harmonie"
+      },
+      {
+        "name": "Pantone 19-1664 True Red",
+        "hex": "#BF1932",
+        "year": 0,
+        "description": "Un rouge chaleureux et authentique"
+      },
+      {
+        "name": "Pantone 19-3952 Clematis Blue",
+        "hex": "#3A4B94",
+        "year": 0,
+        "description": "Un bleu profond inspiré par la fleur de clématite"
+      },
+      {
+        "name": "Pantone 14-0754 Ceylon Yellow",
+        "hex": "#D5AE41",
+        "year": 0,
+        "description": "Un jaune doré exotique inspiré par les épices"
+      },
+      {
+        "name": "Pantone 16-5803 Aquatic Green",
+        "hex": "#6AADA4",
+        "year": 0,
+        "description": "Un vert-bleu apaisant évoquant les eaux calmes"
+      },
+      {
+        "name": "Pantone 18-1438 Marsala",
+        "hex": "#955251",
+        "year": 2015,
+        "description": "Un rouge-brun terreux rappelant le vin sicilien"
+      },
+      {
+        "name": "Pantone 13-0752 Meadowlark",
+        "hex": "#ECDB54",
+        "year": 0,
+        "description": "Un jaune vif et encourageant comme le chant du printemps"
+      },
+      {
+        "name": "Pantone 18-1550 Cayenne",
+        "hex": "#E04E39",
+        "year": 0,
+        "description": "Un rouge-orangé épicé et stimulant"
+      }
+    ]
+  }

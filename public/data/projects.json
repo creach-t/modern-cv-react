@@ -3,7 +3,7 @@
     {
       "id": "devjobs",
       "icon": "Code",
-      "image": "/img/projects/devjobs.jpg",
+      "image": "/img/projects/devjobs.JPG",
       "link": "http://devjobs.creachtheo.fr",
       "github": "https://github.com/creach-t/job-search-france-travail-api",
       "technologies": ["React", "Node.js", "Express.Js"],
@@ -32,7 +32,7 @@
     {
       "id": "ocoffee",
       "icon": "Coffee",
-      "image": "/img/projects/ocoffee.jpg",
+      "image": "/img/projects/ocoffee.JPG",
       "link": "https://ocoffee.creachtheo.fr",
       "github": "https://github.com/creach-t/ocoffee",
       "technologies": ["Node.js", "Express.Js", "PostgreSQL", "Sequelize", "EJS"],
@@ -63,7 +63,7 @@
     {
       "id": "zombieland",
       "icon": "Skull",
-      "image": "/img/projects/zombieland.jpg",
+      "image": "/img/projects/zombieland.JPG",
       "link": "http://45.90.121.7:666",
       "github": "https://github.com/creach-t/zombieland",
       "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],

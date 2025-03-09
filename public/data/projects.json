@@ -1,66 +1,93 @@
 {
-  "fr": [
+  "projects": [
     {
+      "id": "devjobs",
       "icon": "Code",
+      "image": "/img/projects/devjobs.jpg",
+      "link": "https://devjobs.creachtheo.fr",
+      "github": "https://github.com/creach-t/job-search-france-travail-api",
+      "technologies": ["React", "Node.js", "Express.Js"],
+      "tools": ["Figma", "Tailwind CSS", "Git"],
+      "fr": {
       "label": "DevJobs",
       "value": "Application web de recherche d'emploi",
       "description": "Plateforme permettant aux développeurs de trouver des offres d'emploi pertinentes dans le secteur tech",
-      "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
-      "image": "/img/projects/devjobs.jpg",
-      "link": "http://45.90.121.7:4060",
-      "github": "https://github.com/creach-t/devjobs"
-    },
-    {
-      "icon": "Coffee",
-      "label": "O'Coffee",
-      "value": "Site E-commerce de vente de café",
-      "description": "Boutique en ligne proposant une sélection de cafés de spécialité du monde entier",
-      "technologies": ["Node.js", "Express.Js", "PostgreSQL", "Figma"],
-      "image": "/img/projects/ocoffee.jpg",
-      "link": "https://ocoffee.creachtheo.fr",
-      "github": "https://github.com/creach-t/ocoffee"
-    },
-    {
-      "icon": "Skull",
-      "label": "ZombieLand",
-      "value": "Site E-commerce de présentation et vente de billets pour un parc d'attraction",
-      "description": "Plateforme immersive pour un parc d'attractions sur le thème des zombies, avec système de billetterie intégré",
-      "technologies": ["React", "Node.js", "Express.Js", "Figma"],
-      "image": "/img/projects/zombieland.jpg",
-      "link": "http://45.90.121.7:666",
-      "github": "https://github.com/creach-t/zombieland"
-    }
-  ],
-  "en": [
-    {
-      "icon": "Code",
+      "explanation": "Cette application a été conçue pour simplifier la recherche d'emploi des développeurs, en centralisant les offres selon les technologies maîtrisées et la localisation. L'interface utilisateur intuitive permet de filtrer les résultats selon plusieurs critères, d'enregistrer des offres favorites et de postuler directement depuis la plateforme. Elle utilise l'API France Travail pour récupérer les offres d'emploi et une connexion AuthO2.0 pour sécuriser l'accès des utilisateurs.",
+      "improvements": [
+        "Meilleure gestions des recherches sauvegardées",
+        "Espace candidat pour suivre ses candidatures"
+      ]
+      },
+      "en": {
       "label": "DevJobs",
       "value": "Job search web application",
       "description": "Platform enabling developers to find relevant job opportunities in the tech sector",
-      "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
-      "image": "/img/projects/devjobs.jpg",
-      "link": "http://45.90.121.7:4060",
-      "github": "https://github.com/creach-t/devjobs"
+      "explanation": "This application was designed to simplify job searching for developers by centralizing offers based on mastered technologies and location. The intuitive user interface allows filtering results according to several criteria, saving favorite offers, and applying directly from the platform. It uses the France Travail API to fetch job offers and an AuthO2.0 connection to secure user access.",
+      "improvements": [
+        "Improved management of saved searches",
+        "Candidate space to track applications"
+      ]
+      }
     },
     {
+      "id": "ocoffee",
       "icon": "Coffee",
-      "label": "O'Coffee",
-      "value": "E-commerce site for selling coffee",
-      "description": "Online store offering a selection of specialty coffees from around the world",
-      "technologies": ["Express.Js", "PostgreSQL", "Figma"],
       "image": "/img/projects/ocoffee.jpg",
       "link": "https://ocoffee.creachtheo.fr",
-      "github": "https://github.com/creach-t/ocoffee"
+      "github": "https://github.com/creach-t/O-Coffee",
+      "technologies": ["Node.js", "Express.Js", "PostgreSQL", "Sequelize", "EJS"],
+      "tools": ["Figma", "VS Code", "Git"],
+      "fr": {
+        "label": "O'Coffee",
+        "value": "Site E-commerce de vente de café",
+        "description": "Boutique en ligne proposant une sélection de cafés de spécialité du monde entier",
+        "explanation": "O'Coffee est une plateforme e-commerce conçue pour les amateurs de café. Elle propose une expérience d'achat immersive avec des descriptions détaillées des origines, profils de torréfaction et notes de dégustation. Le système de paiement sécurisé et la gestion des stocks en temps réel assurent une expérience utilisateur fluide et fiable.",
+        "improvements": [
+          "Integration API Stripe pour paiements sécurisés",
+          "Système de notation et d'avis clients",
+          "RGPD et gestion des cookies"
+        ]
+      },
+      "en": {
+        "label": "O'Coffee",
+        "value": "E-commerce site for selling coffee",
+        "description": "Online store offering a selection of specialty coffees from around the world",
+        "explanation": "O'Coffee is an e-commerce platform designed for coffee lovers. It offers an immersive shopping experience with detailed descriptions of origins, roasting profiles, and tasting notes. The secure payment system and real-time inventory management ensure a smooth and reliable user experience.",
+        "improvements": [
+          "Integration of Stripe API for secure payments",
+          "Customer rating and review system",
+          "GDPR and cookie management"
+        ]
+      }
     },
     {
+      "id": "zombieland",
       "icon": "Skull",
-      "label": "ZombieLand",
-      "value": "E-commerce site for showcasing and selling tickets for an amusement park",
-      "description": "Immersive platform for a zombie-themed amusement park, with integrated ticketing system",
-      "technologies": ["React", "Node.js", "Express.Js", "Figma"],
       "image": "/img/projects/zombieland.jpg",
       "link": "http://45.90.121.7:666",
-      "github": "https://github.com/creach-t/zombieland"
+      "github": "https://github.com/creach-t/zombieland",
+      "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
+      "tools": ["Figma", "Git", "Eslint"],
+      "fr": {
+        "label": "ZombieLand",
+        "value": "Site E-commerce de présentation et vente de billets pour un parc d'attraction",
+        "description": "Plateforme immersive pour un parc d'attractions sur le thème des zombies, avec système de billetterie intégré",
+        "explanation": "ZombieLand est un projet complet développé pour promouvoir un parc d'attractions thématique. La plateforme offre un aperçu immersif des différentes attractions à travers des galeries photos, vidéos et descriptions narratives. Le système de billetterie intégré permet aux visiteurs de réserver leurs billets, choisir des options spéciales et générer des billets électroniques avec QR code.",
+        "improvements": [
+          "Application mobile avec carte interactive du parc",
+          "Server side rendering pour améliorer le SEO"
+        ]
+      },
+      "en": {
+        "label": "ZombieLand",
+        "value": "E-commerce site for showcasing and selling tickets for an amusement park",
+        "description": "Immersive platform for a zombie-themed amusement park, with integrated ticketing system",
+        "explanation": "ZombieLand is a comprehensive project developed to promote a themed amusement park. The platform offers an immersive preview of various attractions through photo galleries, videos, and narrative descriptions. The integrated ticketing system allows visitors to book tickets, choose special options, and generate electronic tickets with QR codes.",
+        "improvements": [
+          "Mobile app with interactive park map",
+          "Server-side rendering to improve SEO"
+        ]
+      }
     }
   ]
 }

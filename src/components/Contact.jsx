@@ -26,16 +26,19 @@ const Contact = () => {
       );
   }, []);
 
+  const textColor = isDark ? "white" : "black";
+
   return (
     <section className="mb-8 relative">
-      <h2
-        className="text-2xl font-bold mb-6 pb-2 transition-colors duration-200"
-        style={{
-          borderBottom: `2px solid ${secondaryColor}`,
-          color: isDark ? "white" : "black",
-        }}
+      <h2 
+        className="text-2xl font-bold mb-6 pb-2 relative"
+        style={{ color: textColor }}
       >
         Contact
+        <div 
+          className="absolute bottom-0 left-0 h-1 rounded-full w-14" 
+          style={{ backgroundColor: secondaryColor }}
+        />
       </h2>
 
       {/* Conteneur avec blur */}

@@ -76,6 +76,11 @@
         "name": "Framer Motion",
         "level": 0,
         "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/framermotion/framermotion-original.svg"
+      },      
+      {
+        "name": "EJS",
+        "level": 1,
+        "logo": "https://www.svgrepo.com/show/373574/ejs.svg"
       }
     ]
   },
@@ -139,7 +144,7 @@
       },
       {
         "name": "MongoDB",
-        "level": 1,
+        "level": 0,
         "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
       },
       {
@@ -293,9 +298,9 @@
         "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"
       },
       {
-        "name": "Adobe XD",
-        "level": 0,
-        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-line.svg"
+        "name": "Eslint",
+        "level": 2,
+        "logo": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/eslint/eslint-original.svg"
       },
       {
         "name": "Photoshop",

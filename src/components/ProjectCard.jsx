@@ -20,8 +20,7 @@ const ProjectCard = ({
   iconMap
 }) => {
   const IconComponent = iconMap[project.icon] || iconMap.FileCode;
-  // Obtenir le chemin de l'image de prévisualisation basé sur l'ID du projet
-  const previewImagePath = `/img/${project.id}-preview.jpg`;
+  // Utilisation directe de l'URL de l'image du projet sans générer de chemin personnalisé
 
   return (
     <div
@@ -80,7 +79,7 @@ const ProjectCard = ({
             >
               {/* Image de prévisualisation du projet */}
               <img 
-                src={project.image || previewImagePath}
+                src={project.image}
                 alt={project.label}
                 className="absolute inset-0 w-full h-full object-cover"
               />

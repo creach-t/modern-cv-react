@@ -55,7 +55,7 @@ const ContactModal = ({ isOpen, onClose }) => {
     
     try {
       // Utilisez l'URL de votre serveur de mailing ici
-      const response = await fetch('http://45.90.121.7:4058/api/contact', {
+      const response = await fetch('https://mail.creachtheo.fr/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

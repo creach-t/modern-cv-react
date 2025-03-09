@@ -4,7 +4,7 @@
       "id": "devjobs",
       "icon": "Code",
       "image": "/img/projects/devjobs.jpg",
-      "link": "https://devjobs.creachtheo.fr",
+      "link": "http://devjobs.creachtheo.fr",
       "github": "https://github.com/creach-t/job-search-france-travail-api",
       "technologies": ["React", "Node.js", "Express.Js"],
       "tools": ["Figma", "Tailwind CSS", "Git"],
@@ -34,7 +34,7 @@
       "icon": "Coffee",
       "image": "/img/projects/ocoffee.jpg",
       "link": "https://ocoffee.creachtheo.fr",
-      "github": "https://github.com/creach-t/O-Coffee",
+      "github": "https://github.com/creach-t/ocoffee",
       "technologies": ["Node.js", "Express.Js", "PostgreSQL", "Sequelize", "EJS"],
       "tools": ["Figma", "VS Code", "Git"],
       "fr": {
@@ -75,7 +75,9 @@
         "explanation": "ZombieLand est un projet complet développé pour promouvoir un parc d'attractions thématique. La plateforme offre un aperçu immersif des différentes attractions à travers des galeries photos, vidéos et descriptions narratives. Le système de billetterie intégré permet aux visiteurs de réserver leurs billets, choisir des options spéciales et générer des billets électroniques avec QR code.",
         "improvements": [
           "Application mobile avec carte interactive du parc",
-          "Server side rendering pour améliorer le SEO"
+          "Système de file d'attente virtuelle",
+          "Programme de fidélité avec points et récompenses",
+          "Réservation anticipée des créneaux pour attractions populaires"
         ]
       },
       "en": {
@@ -85,7 +87,9 @@
         "explanation": "ZombieLand is a comprehensive project developed to promote a themed amusement park. The platform offers an immersive preview of various attractions through photo galleries, videos, and narrative descriptions. The integrated ticketing system allows visitors to book tickets, choose special options, and generate electronic tickets with QR codes.",
         "improvements": [
           "Mobile app with interactive park map",
-          "Server-side rendering to improve SEO"
+          "Virtual queue system",
+          "Loyalty program with points and rewards",
+          "Advanced booking of slots for popular attractions"
         ]
       }
     }

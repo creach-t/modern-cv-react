@@ -8,7 +8,9 @@ import {
   X, 
   Facebook, 
   Twitter, 
-  Link2 
+  Link2,
+  MessageCircle,
+  Phone
 } from "lucide-react";
 import { getTextColor } from "../utils/color";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,13 +33,28 @@ const Header = () => {
   const [index, setIndex] = useState(0);
   const [animation, setAnimation] = useState(animations[0]);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Vérifier si l'appareil est mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % titles.length);
       setAnimation(animations[Math.floor(Math.random() * animations.length)]);
     }, 3000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -56,6 +73,12 @@ const Header = () => {
         break;
       case 'linkedin':
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + url)}`;
+        break;
+      case 'sms':
+        shareUrl = `sms:?body=${encodeURIComponent(title + ' ' + url)}`;
         break;
       case 'copy':
         navigator.clipboard.writeText(url);
@@ -111,7 +134,6 @@ const Header = () => {
               </h2>
             </div>
           </div>
-
           <div className="flex gap-4 mt-4 md:mt-0 items-center">
             <a href="https://github.com/creach-t" target="_blank" rel="noopener noreferrer" 
                className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
@@ -143,7 +165,7 @@ const Header = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg overflow-hidden z-10"
+                    className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg overflow-hidden z-50"
                     style={{ color: "black" }}
                   >
                     <div className="py-1">
@@ -170,6 +192,22 @@ const Header = () => {
                       </button>
                       <button 
                         className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                        onClick={() => handleShare('whatsapp')}
+                      >
+                        <MessageCircle className="w-5 h-5 text-green-500" />
+                        <span>WhatsApp</span>
+                      </button>
+                      {isMobile && (
+                        <button 
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                          onClick={() => handleShare('sms')}
+                        >
+                          <Phone className="w-5 h-5 text-gray-600" />
+                          <span>SMS</span>
+                        </button>
+                      )}
+                      <button 
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
                         onClick={() => handleShare('copy')}
                       >
                         <Link2 className="w-5 h-5 text-gray-600" />
@@ -184,7 +222,7 @@ const Header = () => {
             {/* Bouton de fermeture du menu de partage qui apparaît en dehors du menu */}
             {showShareMenu && (
               <div 
-                className="fixed inset-0 z-0"
+                className="fixed inset-0 z-40"
                 onClick={() => setShowShareMenu(false)}
               ></div>
             )}

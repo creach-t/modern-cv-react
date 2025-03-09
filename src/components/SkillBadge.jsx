@@ -36,7 +36,7 @@ const SkillBadge = ({
     // Démarrer le timer de survol pour l'ouverture
     hoverTimeoutRef.current = setTimeout(() => {
       handleOpen();
-    }, 1000); // Ouverture après 1 seconde de survol
+    }, 300); // Ouverture après 1 seconde de survol
   };
 
   const handleMouseLeave = () => {
@@ -64,7 +64,7 @@ const SkillBadge = ({
       setTimeout(() => {
         setIsInteractionDisabled(false);
       }, 300); // Petit délai après animation de fermeture
-    }, 2000);
+    }, 1000);
   };
 
   // Animation shake pour expanded=true

@@ -2,48 +2,56 @@
   "education": [
     {
       "id": "oclock",
+      "icon": "GraduationCap",
       "period": "2024-2025",
       "school": {
         "name": "École O'Clock",
         "location": "Paris, France"
       },
-      "specialization": "JavaScript",
-      "project": "amusement-park-website",
-      "internship": null,
-      "translations": {
-        "fr": {
-          "degree": "Titre Professionnel Développeur Web (Niveau V)",
-          "specialization": "Spécialisation Javascript",
-          "project": "Réalisation d'un site professionnel pour un parc d'attractions"
-        },
-        "en": {
-          "degree": "Professional Web Developer Degree (Level V)",
-          "specialization": "JavaScript specialization",
-          "project": "Creation of a professional website for an amusement park"
-        }
+      "technologies": ["JavaScript", "React", "Node.js", "Express.js"],
+      "tools": ["Git", "VS Code", "Figma"],
+      "fr": {
+        "label": "Titre Professionnel Développeur Web",
+        "value": "Niveau V - École O'Clock",
+        "description": "Formation intensive en développement web full-stack avec spécialisation JavaScript",
+        "specialization": "Spécialisation Javascript",
+        "project": "Réalisation d'un site professionnel pour un parc d'attractions",
+        "explanation": "Cette formation intensive m'a permis d'acquérir des compétences solides en développement web moderne, en me concentrant particulièrement sur l'écosystème JavaScript. J'ai travaillé sur divers projets individuels et collaboratifs, utilisant des méthodologies agiles."
+      },
+      "en": {
+        "label": "Professional Web Developer Degree",
+        "value": "Level V - O'Clock School",
+        "description": "Intensive training in full-stack web development with JavaScript specialization",
+        "specialization": "JavaScript specialization",
+        "project": "Creation of a professional website for an amusement park",
+        "explanation": "This intensive training allowed me to acquire solid skills in modern web development, focusing particularly on the JavaScript ecosystem. I worked on various individual and collaborative projects, using agile methodologies."
       }
     },
     {
       "id": "vinci",
+      "icon": "Book",
       "period": "2008-2010",
       "school": {
         "name": "Lycée Léonard de Vinci",
         "location": "Melun, France"
       },
-      "specialization": "Application Development",
-      "project": null,
-      "internship": "3-month",
-      "translations": {
-        "fr": {
-          "degree": "BTS Informatique de Gestion",
-          "specialization": "Spécialisation en Développement d'applications",
-          "internship": "Stage de 3 mois en entreprise"
-        },
-        "en": {
-          "degree": "Higher National Diploma in IT Management",
-          "specialization": "Specialization in Application Development",
-          "internship": "3-month internship in a company"
-        }
+      "technologies": ["HTML/CSS", "SQL", "PHP", "Java"],
+      "tools": ["Oracle", "Apache"],
+      "fr": {
+        "label": "BTS Informatique de Gestion",
+        "value": "Spécialisation en Développement d'applications",
+        "description": "Formation en développement logiciel et gestion de bases de données",
+        "specialization": "Spécialisation en Développement d'applications",
+        "internship": "Stage de 3 mois en entreprise",
+        "explanation": "Cette formation m'a fourni les fondamentaux du développement logiciel, avec un accent sur la conception d'applications de gestion. J'ai appris à concevoir et implémenter des applications complètes, incluant la modélisation de données et l'interface utilisateur."
+      },
+      "en": {
+        "label": "Higher National Diploma in IT Management",
+        "value": "Specialization in Application Development",
+        "description": "Training in software development and database management",
+        "specialization": "Specialization in Application Development",
+        "internship": "3-month internship in a company",
+        "explanation": "This program provided me with the fundamentals of software development, with a focus on business application design. I learned to design and implement complete applications, including data modeling and user interface."
       }
     }
   ]

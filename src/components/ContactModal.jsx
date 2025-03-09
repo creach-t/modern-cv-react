@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Send, Check, AlertCircle } from "lucide-react";
+import { X, Mail, Send } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { getTextColor } from "../utils/color";
 
@@ -15,14 +15,6 @@ const ContactModal = ({ isOpen, onClose }) => {
     message: ""
   });
   
-  // État pour la gestion du statut d'envoi
-  const [status, setStatus] = useState({
-    submitting: false,
-    success: false,
-    error: false,
-    message: ""
-  });
-  
   // Gestion des changements dans les champs du formulaire
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,58 +24,24 @@ const ContactModal = ({ isOpen, onClose }) => {
     }));
   };
   
-  // Réinitialiser le formulaire
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: ""
-    });
+  // Génération du lien mailto avec les données du formulaire
+  const generateMailtoLink = () => {
+    const recipientEmail = "votre.email@example.com"; // Votre adresse email
+    const subject = encodeURIComponent(formData.subject || "Message depuis le portfolio");
+    
+    // Construction du corps du message avec les informations du formulaire
+    const body = encodeURIComponent(
+      `De: ${formData.name} (${formData.email})\n\n${formData.message}`
+    );
+    
+    return `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
   };
   
   // Gestion de la soumission du formulaire
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    setStatus({
-      submitting: true,
-      success: false,
-      error: false,
-      message: ""
-    });
-    
-    try {
-      // Utilisez l'URL de votre serveur de mailing ici
-      const response = await fetch('https://mail.creachtheo.fr/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setStatus({
-          submitting: false,
-          success: true,
-          error: false,
-          message: "Votre message a été envoyé avec succès. Un email de confirmation vous a été adressé."
-        });
-        resetForm();
-      } else {
-        throw new Error(data.message || "Une erreur s'est produite");
-      }
-    } catch (error) {
-      setStatus({
-        submitting: false,
-        success: false,
-        error: true,
-        message: error.message || "Une erreur s'est produite lors de l'envoi du message"
-      });
-    }
+    // Ici on ne soumet pas réellement le formulaire, on ouvre simplement le lien mailto
+    window.location.href = generateMailtoLink();
   };
   
   return (
@@ -123,21 +81,6 @@ const ContactModal = ({ isOpen, onClose }) => {
 
             {/* Formulaire */}
             <div className="p-6">
-              {/* Messages de statut */}
-              {status.success && (
-                <div className="mb-4 p-3 bg-green-100 border border-green-200 text-green-700 rounded-md flex items-center gap-2">
-                  <Check size={18} />
-                  <span>{status.message}</span>
-                </div>
-              )}
-              
-              {status.error && (
-                <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md flex items-center gap-2">
-                  <AlertCircle size={18} />
-                  <span>{status.message}</span>
-                </div>
-              )}
-              
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   {/* Nom */}
@@ -227,31 +170,21 @@ const ContactModal = ({ isOpen, onClose }) => {
                   <div className="flex justify-center mt-6">
                     <button
                       type="submit"
-                      disabled={status.submitting}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-70 disabled:hover:scale-100"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg"
                       style={{
                         backgroundColor: secondaryColor,
                         color: getTextColor(secondaryColor),
                       }}
                     >
-                      {status.submitting ? (
-                        <>
-                          <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                          Envoi en cours...
-                        </>
-                      ) : (
-                        <>
-                          <Send size={20} />
-                          Envoyer le message
-                        </>
-                      )}
+                      <Mail size={20} />
+                      Envoyer via ma messagerie
                     </button>
                   </div>
                 </div>
               </form>
               
               <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400 text-center">
-                Vos données personnelles sont utilisées uniquement pour traiter votre demande.
+                En cliquant sur "Envoyer", votre client de messagerie s'ouvrira avec votre message.
               </div>
             </div>
           </motion.div>

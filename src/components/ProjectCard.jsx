@@ -11,8 +11,6 @@ const ProjectCard = ({
   index, 
   isExpanded, 
   toggleExpansion, 
-  isCached, 
-  updatePreviewCache,
   secondaryColor,
   textColor,
   isDark,
@@ -22,6 +20,8 @@ const ProjectCard = ({
   iconMap
 }) => {
   const IconComponent = iconMap[project.icon] || iconMap.FileCode;
+  // Obtenir le chemin de l'image de prévisualisation basé sur l'ID du projet
+  const previewImagePath = `/img/${project.id}-preview.jpg`;
 
   return (
     <div
@@ -67,10 +67,10 @@ const ProjectCard = ({
         </div>
         
         {/* Aperçu du projet (visible seulement quand le projet n'est pas développé) */}
-        {!isExpanded && project.link && (
+        {!isExpanded && (
           <div className="px-5 pb-5 w-full">
             <div 
-              className="relative rounded-md overflow-hidden w-full bg-gray-100 dark:bg-gray-800 cursor-pointer"
+              className="relative rounded-md overflow-hidden w-full cursor-pointer"
               style={{ 
                 maxWidth: "100%", 
                 height: "0", 
@@ -78,51 +78,20 @@ const ProjectCard = ({
               }}
               onClick={() => toggleExpansion(index)}
             >
-              {/* Conteneur de l'iframe avec un overlay transparent pour bloquer les interactions */}
-              <div className="absolute inset-0">
-                {/* N'affiche l'iframe que si le projet est dans la vue ou est déjà en cache */}
-                {isCached || !project.link ? (
-                  <>
-                    <iframe
-                      src={project.link}
-                      title={project.value}
-                      style={{ 
-                        border: "none",
-                        width: "300%", 
-                        height: "300%",
-                        transform: "scale(0.33)",
-                        transformOrigin: "0 0",
-                        position: "absolute",
-                        top: "0",
-                        left: "0",
-                        pointerEvents: "none" // Désactive toute interaction avec l'iframe
-                      }}
-                      loading="lazy"
-                      scrolling="no"
-                      sandbox="allow-scripts allow-same-origin"
-                      onLoad={() => updatePreviewCache(project.link)}
-                      tabIndex="-1" // Empêche la sélection avec la touche Tab
-                    />
-                    {/* Overlay transparent pour bloquer les interactions */}
-                    <div 
-                      className="absolute inset-0 z-10"
-                      style={{ cursor: "pointer" }}
-                    ></div>
-                  </>
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="animate-pulse h-full w-full bg-gray-200 dark:bg-gray-700"></div>
-                  </div>
-                )}
-                
-                {/* Overlay discret avec dégradé pour une transition douce */}
-                <div 
-                  className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-20"
-                  style={{ 
-                    background: `linear-gradient(to bottom, rgba(0,0,0,0), ${isDark ? 'rgba(30,30,30,0.9)' : 'rgba(255,255,255,0.9)'})` 
-                  }}
-                ></div>
-              </div>
+              {/* Image de prévisualisation du projet */}
+              <img 
+                src={project.image || previewImagePath}
+                alt={project.label}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              
+              {/* Overlay discret avec dégradé pour une transition douce */}
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+                style={{ 
+                  background: `linear-gradient(to bottom, rgba(0,0,0,0), ${isDark ? 'rgba(30,30,30,0.9)' : 'rgba(255,255,255,0.9)'})` 
+                }}
+              ></div>
             </div>
           </div>
         )}
@@ -130,6 +99,8 @@ const ProjectCard = ({
         {/* Contenu détaillé (visible uniquement si développé) */}
         {isExpanded && (
           <div className="p-5 pt-0 border-t border-gray-200 dark:border-gray-700">
+            {/* Pas d'image en haut quand le projet est déployé */}
+            
             {/* Description courte */}
             <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
               {project.description}

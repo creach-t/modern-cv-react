@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import { getTextColor } from "../utils/color";
 import { Code, Coffee, Skull, FileCode } from "lucide-react";
 import ProjectSlider from "./ProjectSlider";
-import { loadPreviewCache, updatePreviewCache as updateCache } from "../utils/previewCacheUtils";
 
 // Nombre de projets visibles par slide
 const PROJECTS_PER_SLIDE = 3;
@@ -17,7 +15,6 @@ const Project = () => {
   const [skills, setSkills] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [previewCache, setPreviewCache] = useState({});
   const sliderRef = useRef(null);
 
   // Mapping des icônes avec les composants Lucide
@@ -27,16 +24,6 @@ const Project = () => {
     Coffee,
     Skull
   };
-
-  // Chargement du cache des prévisualisations
-  useEffect(() => {
-    setPreviewCache(loadPreviewCache());
-  }, []);
-
-  // Mise à jour du cache des prévisualisations
-  const updatePreviewCache = useCallback((url, loaded = true) => {
-    setPreviewCache(currentCache => updateCache(currentCache, url, loaded));
-  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -165,8 +152,6 @@ const Project = () => {
             setCurrentSlide={setCurrentSlide}
             expandedProject={expandedProject}
             toggleProjectExpansion={toggleProjectExpansion}
-            previewCache={previewCache}
-            updatePreviewCache={updatePreviewCache}
             PROJECTS_PER_SLIDE={PROJECTS_PER_SLIDE}
             secondaryColor={secondaryColor}
             textColor={textColor}

@@ -8,8 +8,6 @@ const ProjectSlider = ({
   setCurrentSlide,
   expandedProject,
   toggleProjectExpansion,
-  previewCache,
-  updatePreviewCache,
   PROJECTS_PER_SLIDE,
   secondaryColor,
   textColor,
@@ -82,7 +80,6 @@ const ProjectSlider = ({
         {visibleProjects.map((project, index) => {
           const absoluteIndex = currentSlide + index;
           const isExpanded = expandedProject === absoluteIndex;
-          const isCached = project.link && previewCache[project.link]?.loaded;
           
           return (
             <ProjectCard
@@ -91,8 +88,6 @@ const ProjectSlider = ({
               index={absoluteIndex}
               isExpanded={isExpanded}
               toggleExpansion={toggleProjectExpansion}
-              isCached={isCached}
-              updatePreviewCache={updatePreviewCache}
               secondaryColor={secondaryColor}
               textColor={textColor}
               isDark={isDark}

@@ -2,7 +2,7 @@
 export const PREVIEW_CACHE_KEY = 'project-previews-cache';
 
 // Durée de validité du cache en ms (24h)
-export const CACHE_VALIDITY = 24 * 60 * 60 * 1000;
+export const CACHE_VALIDITY = 60 * 1000;
 
 /**
  * Charge le cache des prévisualisations depuis le localStorage

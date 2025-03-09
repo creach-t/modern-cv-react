@@ -1,6 +1,3 @@
-# Supprimer la ligne version si vous le souhaitez
-# version: '3.8'
-
 services:
   modern-cv-react:
     build:

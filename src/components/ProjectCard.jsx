@@ -5,6 +5,7 @@ import {
   Rocket, Wrench
 } from "lucide-react";
 import SkillBadge from "./SkillBadge";
+import { getTextColor } from "../utils/color";
 
 const ProjectCard = ({ 
   project, 
@@ -44,7 +45,7 @@ const ProjectCard = ({
               className="rounded-full p-3 transition-colors duration-200 flex-shrink-0"
               style={{ backgroundColor: secondaryColor }}
             >
-              <IconComponent color={textColor} size={22} />
+              <IconComponent color={getTextColor(secondaryColor)} size={22} />
             </div>
             <div className="min-w-0">
               <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -226,7 +227,7 @@ const ProjectCard = ({
                   className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors duration-200"
                   style={{ 
                     backgroundColor: secondaryColor,
-                    color: textColor
+                    color: getTextColor(secondaryColor)
                   }}
                 >
                   <ExternalLink size={18} />

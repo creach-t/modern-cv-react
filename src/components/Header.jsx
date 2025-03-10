@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useColor } from "../contexts/ColorContext";
 import { 
   Github, 
@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { getTextColor } from "../utils/color";
 import { motion, AnimatePresence } from "framer-motion";
+import ShareMenu from "./ShareMenu";
+import ContactModal from "./ContactModal";
 
 const titles = [
   { prefix: "Full", suffix: "Stack" },
@@ -33,7 +35,11 @@ const Header = () => {
   const [index, setIndex] = useState(0);
   const [animation, setAnimation] = useState(animations[0]);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
   
   // Vérifier si l'appareil est mobile
   useEffect(() => {
@@ -49,7 +55,43 @@ const Header = () => {
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
-
+  
+  // Effet pour surveiller le scroll et mettre à jour l'état
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+  // Mesurer la hauteur du header pour le spacer
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+      
+      const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+          setHeaderHeight(entry.target.offsetHeight);
+        }
+      });
+      
+      resizeObserver.observe(headerRef.current);
+      
+      return () => {
+        if (headerRef.current) {
+          resizeObserver.unobserve(headerRef.current);
+        }
+      };
+    }
+  }, []);
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % titles.length);
@@ -57,7 +99,7 @@ const Header = () => {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
+  
   const handleShare = (platform) => {
     const url = window.location.href;
     const title = "Portfolio de Théo Créac'h - Développeur Full Stack";
@@ -92,144 +134,147 @@ const Header = () => {
     window.open(shareUrl, '_blank', 'width=600,height=400');
     setShowShareMenu(false);
   };
-
+  
+  // Fonction pour remonter en haut de la page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+  
   return (
-    <header
-      className="py-8 transition-colors duration-200 relative"
-      style={{ backgroundColor: secondaryColor, color: textColor }}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="relative group">
-              <img
-                src="/img/profil_picture.png"
-                alt="Théo Créac'h"
-                className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                <span className="opacity-0 group-hover:opacity-100 text-white font-medium transition-opacity duration-300">Hello!</span>
-              </div>
-            </div>
-            <div className="text-center md:text-left">
-              <h1 className="text-3xl md:text-4xl font-bold mb-1" style={{ color: textColor }}>
-                Théo Créac'h
-              </h1>
-              <h2 className="text-lg md:text-xl font-medium opacity-80 flex gap-2" style={{ color: textColor }}>
-                <span>Développeur</span>
-                <span className="flex gap-1">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={index}
-                      initial={animation.initial}
-                      animate={animation.animate}
-                      exit={animation.exit}
-                      transition={{ duration: 0.6, ease: "easeInOut" }}
-                    >
-                      {titles[index].prefix}
-                    </motion.span>
-                  </AnimatePresence>
-                  <span>{titles[index].suffix}</span>
-                </span>
-              </h2>
-            </div>
-          </div>
-          <div className="flex gap-4 mt-4 md:mt-0 items-center">
-            <a href="https://github.com/creach-t" target="_blank" rel="noopener noreferrer" 
-               className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
-              <Github className="w-6 h-6" style={{ color: textColor }} />
-            </a>
-            <a href="https://linkedin.com/in/creachtheo" target="_blank" rel="noopener noreferrer" 
-               className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
-              <Linkedin className="w-6 h-6" style={{ color: textColor }} />
-            </a>
-            <a href="mailto:creach.t@gmail.com" 
-               className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
-              <Mail className="w-6 h-6" style={{ color: textColor }} />
-            </a>
-            
-            {/* Bouton de partage avec menu déroulant */}
-            <div className="relative">
-              <button 
-                onClick={() => setShowShareMenu(!showShareMenu)}
-                className="flex items-center justify-center p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors duration-200"
-                aria-label="Partager"
-              >
-                <Share2 className="w-6 h-6" style={{ color: textColor }} />
-              </button>
-              
-              {/* Menu déroulant de partage */}
-              <AnimatePresence>
-                {showShareMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg overflow-hidden z-50"
-                    style={{ color: "black" }}
-                  >
-                    <div className="py-1">
-                      <button 
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                        onClick={() => handleShare('facebook')}
-                      >
-                        <Facebook className="w-5 h-5 text-blue-600" />
-                        <span>Facebook</span>
-                      </button>
-                      <button 
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                        onClick={() => handleShare('twitter')}
-                      >
-                        <Twitter className="w-5 h-5 text-blue-400" />
-                        <span>Twitter</span>
-                      </button>
-                      <button 
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                        onClick={() => handleShare('linkedin')}
-                      >
-                        <Linkedin className="w-5 h-5 text-blue-700" />
-                        <span>LinkedIn</span>
-                      </button>
-                      <button 
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                        onClick={() => handleShare('whatsapp')}
-                      >
-                        <MessageCircle className="w-5 h-5 text-green-500" />
-                        <span>WhatsApp</span>
-                      </button>
-                      {isMobile && (
-                        <button 
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                          onClick={() => handleShare('sms')}
-                        >
-                          <Phone className="w-5 h-5 text-gray-600" />
-                          <span>SMS</span>
-                        </button>
-                      )}
-                      <button 
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                        onClick={() => handleShare('copy')}
-                      >
-                        <Link2 className="w-5 h-5 text-gray-600" />
-                        <span>Copier le lien</span>
-                      </button>
+    <>
+      {/* Spacer div qui prend la même hauteur que le header */}
+      <div style={{ height: headerHeight }}></div>
+      
+      <motion.header
+        ref={headerRef}
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style={{ 
+          backgroundColor: secondaryColor, 
+          color: textColor,
+          boxShadow: scrolled ? '0 2px 10px rgba(0, 0, 0, 0.1)' : 'none'
+        }}
+      >
+        <div className="container mx-auto px-4">
+          <div 
+            className={`flex ${scrolled ? 'flex-row' : 'flex-col md:flex-row'} justify-between items-center transition-all duration-300 ease-in-out`}
+            style={{
+              paddingTop: scrolled ? '0.75rem' : '2rem',
+              paddingBottom: scrolled ? '0.75rem' : '2rem',
+            }}
+          >
+            {/* Version non scrollée */}
+            {!scrolled && (
+              <>
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                  <div className="relative group">
+                    <img
+                      src="/img/profil_picture.png"
+                      alt="Théo Créac'h"
+                      className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                      <span className="opacity-0 group-hover:opacity-100 text-white font-medium transition-opacity duration-300">Hello!</span>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                  </div>
+                  
+                  <div className="text-center md:text-left">
+                    <h1 className="text-3xl md:text-4xl font-bold mb-1" style={{ color: textColor }}>
+                      Théo Créac'h
+                    </h1>
+                    <h2 className="text-lg md:text-xl font-medium opacity-80 flex gap-2" style={{ color: textColor }}>
+                      <span>Développeur</span>
+                      <span className="flex gap-1">
+                        <AnimatePresence mode="wait">
+                          <motion.span
+                            key={index}
+                            initial={animation.initial}
+                            animate={animation.animate}
+                            exit={animation.exit}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                          >
+                            {titles[index].prefix}
+                          </motion.span>
+                        </AnimatePresence>
+                        <span>{titles[index].suffix}</span>
+                      </span>
+                    </h2>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4 mt-4 md:mt-0 items-center">
+                  <a href="https://github.com/creach-t" target="_blank" rel="noopener noreferrer" 
+                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
+                    <Github className="w-6 h-6" style={{ color: textColor }} />
+                  </a>
+                  <a href="https://linkedin.com/in/creachtheo" target="_blank" rel="noopener noreferrer" 
+                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
+                    <Linkedin className="w-6 h-6" style={{ color: textColor }} />
+                  </a>
+                  <button
+                    onClick={() => setShowContactModal(true)}
+                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
+                  >
+                    <Mail className="w-6 h-6" style={{ color: textColor }} />
+                  </button>
+                  
+                  <div className="relative">
+                    <button 
+                      onClick={() => setShowShareMenu(!showShareMenu)}
+                      className="flex items-center justify-center p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors duration-200"
+                      aria-label="Partager"
+                    >
+                      <Share2 className="w-6 h-6" style={{ color: textColor }} />
+                    </button>
+                    
+                    {showShareMenu && <ShareMenu handleShare={handleShare} isMobile={isMobile} setShowShareMenu={setShowShareMenu} />}
+                  </div>
+                </div>
+              </>
+            )}
             
-            {/* Bouton de fermeture du menu de partage qui apparaît en dehors du menu */}
-            {showShareMenu && (
-              <div 
-                className="fixed inset-0 z-40"
-                onClick={() => setShowShareMenu(false)}
-              ></div>
+            {/* Version scrollée - nom, bouton contact et bouton de partage */}
+            {scrolled && (
+              <>
+                <h1 
+                  className="text-xl font-bold cursor-pointer hover:opacity-80 transition-opacity"
+                  style={{ color: textColor }}
+                  onClick={scrollToTop}
+                >
+                  Théo Créac'h
+                </h1>
+                
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowContactModal(true)}
+                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
+                  >
+                    <Mail className="w-5 h-5" style={{ color: textColor }} />
+                  </button>
+                  
+                  <div className="relative">
+                    <button 
+                      onClick={() => setShowShareMenu(!showShareMenu)}
+                      className="flex items-center justify-center p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors duration-200"
+                      aria-label="Partager"
+                    >
+                      <Share2 className="w-5 h-5" style={{ color: textColor }} />
+                    </button>
+                    
+                    {showShareMenu && <ShareMenu handleShare={handleShare} isMobile={isMobile} setShowShareMenu={setShowShareMenu} />}
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
-      </div>
-    </header>
+      </motion.header>
+      
+      {/* Modal de contact */}
+      {showContactModal && <ContactModal isOpen={setShowContactModal}  onClose={() => setShowContactModal(false)}/>}
+    </>
   );
 };
 

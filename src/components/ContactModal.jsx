@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Send, Check, AlertCircle } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
@@ -23,6 +23,9 @@ const ContactModal = ({ isOpen, onClose }) => {
     message: ""
   });
   
+  // État pour le message de remerciement
+  const [showThankYou, setShowThankYou] = useState(false);
+  
   // Gestion des changements dans les champs du formulaire
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +44,18 @@ const ContactModal = ({ isOpen, onClose }) => {
       message: ""
     });
   };
+  
+  // Fermer le message de remerciement et la modale
+  useEffect(() => {
+    let timer;
+    if (showThankYou) {
+      timer = setTimeout(() => {
+        setShowThankYou(false);
+        onClose();
+      }, 3000); // Ferme après 3 secondes
+    }
+    return () => clearTimeout(timer);
+  }, [showThankYou, onClose]);
   
   // Gestion de la soumission du formulaire
   const handleSubmit = async (e) => {
@@ -73,6 +88,9 @@ const ContactModal = ({ isOpen, onClose }) => {
           message: "Votre message a été envoyé avec succès. Un email de confirmation vous a été adressé."
         });
         resetForm();
+        
+        // Afficher le message de remerciement
+        setShowThankYou(true);
       } else {
         throw new Error(data.message || "Une erreur s'est produite");
       }
@@ -88,7 +106,32 @@ const ContactModal = ({ isOpen, onClose }) => {
   
   return (
     <AnimatePresence>
-      {isOpen && (
+      {showThankYou ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6 max-w-md w-full"
+        >
+          <div className="flex flex-col items-center text-center gap-4">
+            <div 
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: secondaryColor }}
+            >
+              <Check size={32} color={getTextColor(secondaryColor)} />
+            </div>
+            <h3 
+              className="text-xl font-bold"
+              style={{ color: isDark ? "white" : "black" }}
+            >
+              Merci pour votre message !
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Nous avons bien reçu votre demande et reviendrons vers vous dans les plus brefs délais.
+            </p>
+          </div>
+        </motion.div>
+      ) : isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -120,11 +163,10 @@ const ContactModal = ({ isOpen, onClose }) => {
                 <X size={20} color={isDark ? "white" : "black"} />
               </button>
             </div>
-
             {/* Formulaire */}
             <div className="p-6">
               {/* Messages de statut */}
-              {status.success && (
+              {status.success && !showThankYou && (
                 <div className="mb-4 p-3 bg-green-100 border border-green-200 text-green-700 rounded-md flex items-center gap-2">
                   <Check size={18} />
                   <span>{status.message}</span>

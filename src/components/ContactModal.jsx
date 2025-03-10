@@ -2,10 +2,45 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Send, Check, AlertCircle } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { getTextColor } from "../utils/color";
+
+// Contenu multilingue
+const translations = {
+  fr: {
+    title: "Me contacter",
+    name: "Nom",
+    email: "Email",
+    subject: "Objet",
+    message: "Message",
+    sendButton: "Envoyer le message",
+    sending: "Envoi en cours...",
+    thankYouTitle: "Merci pour votre message !",
+    thankYouMessage: "Nous avons bien reçu votre demande et reviendrons vers vous dans les plus brefs délais.",
+    dataPolicy: "Vos données personnelles sont utilisées uniquement pour traiter votre demande.",
+    successMessage: "Votre message a été envoyé avec succès. Un email de confirmation vous a été adressé.",
+    defaultError: "Une erreur s'est produite lors de l'envoi du message"
+  },
+  en: {
+    title: "Contact me",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sendButton: "Send message",
+    sending: "Sending...",
+    thankYouTitle: "Thank you for your message!",
+    thankYouMessage: "We have received your request and will get back to you as soon as possible.",
+    dataPolicy: "Your personal data is used only to process your request.",
+    successMessage: "Your message has been sent successfully. A confirmation email has been sent to you.",
+    defaultError: "An error occurred while sending the message"
+  }
+};
 
 const ContactModal = ({ isOpen, onClose }) => {
   const { secondaryColor, isDark } = useColor();
+  const { language } = useLanguage();
+  const t = translations[language]; // Récupérer les traductions selon la langue
   
   // État pour les champs du formulaire
   const [formData, setFormData] = useState({
@@ -75,7 +110,10 @@ const ContactModal = ({ isOpen, onClose }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          language // Envoyer la langue au serveur
+        })
       });
       
       const data = await response.json();
@@ -85,21 +123,21 @@ const ContactModal = ({ isOpen, onClose }) => {
           submitting: false,
           success: true,
           error: false,
-          message: "Votre message a été envoyé avec succès. Un email de confirmation vous a été adressé."
+          message: t.successMessage
         });
         resetForm();
         
         // Afficher le message de remerciement
         setShowThankYou(true);
       } else {
-        throw new Error(data.message || "Une erreur s'est produite");
+        throw new Error(data.message || t.defaultError);
       }
     } catch (error) {
       setStatus({
         submitting: false,
         success: false,
         error: true,
-        message: error.message || "Une erreur s'est produite lors de l'envoi du message"
+        message: error.message || t.defaultError
       });
     }
   };
@@ -124,10 +162,10 @@ const ContactModal = ({ isOpen, onClose }) => {
               className="text-xl font-bold"
               style={{ color: isDark ? "white" : "black" }}
             >
-              Merci pour votre message !
+              {t.thankYouTitle}
             </h3>
             <p className="text-gray-600 dark:text-gray-300">
-              Nous avons bien reçu votre demande et reviendrons vers vous dans les plus brefs délais.
+              {t.thankYouMessage}
             </p>
           </div>
         </motion.div>
@@ -154,7 +192,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                 className="text-lg font-bold"
                 style={{ color: isDark ? "white" : "black" }}
               >
-                Me contacter
+                {t.title}
               </h3>
               <button
                 onClick={onClose}
@@ -189,7 +227,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                       className="block text-sm font-medium mb-1"
                       style={{ color: isDark ? "white" : "black" }}
                     >
-                      Nom
+                      {t.name}
                     </label>
                     <input
                       type="text"
@@ -210,7 +248,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                       className="block text-sm font-medium mb-1"
                       style={{ color: isDark ? "white" : "black" }}
                     >
-                      Email
+                      {t.email}
                     </label>
                     <input
                       type="email"
@@ -231,7 +269,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                       className="block text-sm font-medium mb-1"
                       style={{ color: isDark ? "white" : "black" }}
                     >
-                      Objet
+                      {t.subject}
                     </label>
                     <input
                       type="text"
@@ -251,7 +289,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                       className="block text-sm font-medium mb-1"
                       style={{ color: isDark ? "white" : "black" }}
                     >
-                      Message
+                      {t.message}
                     </label>
                     <textarea
                       id="message"
@@ -279,12 +317,12 @@ const ContactModal = ({ isOpen, onClose }) => {
                       {status.submitting ? (
                         <>
                           <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                          Envoi en cours...
+                          {t.sending}
                         </>
                       ) : (
                         <>
                           <Send size={20} />
-                          Envoyer le message
+                          {t.sendButton}
                         </>
                       )}
                     </button>
@@ -293,7 +331,7 @@ const ContactModal = ({ isOpen, onClose }) => {
               </form>
               
               <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400 text-center">
-                Vos données personnelles sont utilisées uniquement pour traiter votre demande.
+                {t.dataPolicy}
               </div>
             </div>
           </motion.div>

@@ -29,6 +29,17 @@ const animations = [
   { initial: { opacity: 0, rotateX: 90 }, animate: { opacity: 1, rotateX: 0 }, exit: { opacity: 0, rotateX: -90 } }
 ];
 
+// Animation wiggle pour les boutons
+const wiggleAnimation = {
+  hover: {
+    rotate: [0, -5, 5, -3, 3, 0],
+    transition: {
+      duration: 0.5,
+      ease: "easeInOut"
+    }
+  }
+};
+
 const Header = () => {
   const { secondaryColor } = useColor();
   const textColor = getTextColor(secondaryColor);
@@ -169,7 +180,11 @@ const Header = () => {
             {!scrolled && (
               <>
                 <div className="flex flex-col md:flex-row items-center gap-4">
-                  <div className="relative group">
+                  <motion.div 
+                    className="relative group"
+                    whileHover="hover"
+                    variants={wiggleAnimation}
+                  >
                     <img
                       src="/img/profil_picture.png"
                       alt="Théo Créac'h"
@@ -178,7 +193,7 @@ const Header = () => {
                     <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
                       <span className="opacity-0 group-hover:opacity-100 text-white font-medium transition-opacity duration-300">Hello!</span>
                     </div>
-                  </div>
+                  </motion.div>
                   
                   <div className="text-center md:text-left">
                     <h1 className="text-3xl md:text-4xl font-bold mb-1" style={{ color: textColor }}>
@@ -205,29 +220,47 @@ const Header = () => {
                 </div>
                 
                 <div className="flex gap-4 mt-4 md:mt-0 items-center">
-                  <a href="https://github.com/creach-t" target="_blank" rel="noopener noreferrer" 
-                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
+                  <motion.a 
+                    href="https://github.com/creach-t" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
+                    whileHover="hover"
+                    variants={wiggleAnimation}
+                  >
                     <Github className="w-6 h-6" style={{ color: textColor }} />
-                  </a>
-                  <a href="https://linkedin.com/in/creachtheo" target="_blank" rel="noopener noreferrer" 
-                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full">
+                  </motion.a>
+                  
+                  <motion.a 
+                    href="https://linkedin.com/in/creachtheo" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
+                    whileHover="hover"
+                    variants={wiggleAnimation}
+                  >
                     <Linkedin className="w-6 h-6" style={{ color: textColor }} />
-                  </a>
-                  <button
+                  </motion.a>
+                  
+                  <motion.button
                     onClick={() => setShowContactModal(true)}
                     className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
+                    whileHover="hover"
+                    variants={wiggleAnimation}
                   >
                     <Mail className="w-6 h-6" style={{ color: textColor }} />
-                  </button>
+                  </motion.button>
                   
                   <div className="relative">
-                    <button 
+                    <motion.button 
                       onClick={() => setShowShareMenu(!showShareMenu)}
                       className="flex items-center justify-center p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors duration-200"
                       aria-label="Partager"
+                      whileHover="hover"
+                      variants={wiggleAnimation}
                     >
                       <Share2 className="w-6 h-6" style={{ color: textColor }} />
-                    </button>
+                    </motion.button>
                     
                     {showShareMenu && <ShareMenu handleShare={handleShare} isMobile={isMobile} setShowShareMenu={setShowShareMenu} />}
                   </div>
@@ -238,30 +271,36 @@ const Header = () => {
             {/* Version scrollée - nom, bouton contact et bouton de partage */}
             {scrolled && (
               <>
-                <h1 
+                <motion.h1 
                   className="text-xl font-bold cursor-pointer hover:opacity-80 transition-opacity"
                   style={{ color: textColor }}
                   onClick={scrollToTop}
+                  whileHover="hover"
+                  variants={wiggleAnimation}
                 >
                   Théo Créac'h
-                </h1>
+                </motion.h1>
                 
                 <div className="flex items-center gap-3">
-                  <button
+                  <motion.button
                     onClick={() => setShowContactModal(true)}
                     className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
+                    whileHover="hover"
+                    variants={wiggleAnimation}
                   >
                     <Mail className="w-5 h-5" style={{ color: textColor }} />
-                  </button>
+                  </motion.button>
                   
                   <div className="relative">
-                    <button 
+                    <motion.button 
                       onClick={() => setShowShareMenu(!showShareMenu)}
                       className="flex items-center justify-center p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors duration-200"
                       aria-label="Partager"
+                      whileHover="hover"
+                      variants={wiggleAnimation}
                     >
                       <Share2 className="w-5 h-5" style={{ color: textColor }} />
-                    </button>
+                    </motion.button>
                     
                     {showShareMenu && <ShareMenu handleShare={handleShare} isMobile={isMobile} setShowShareMenu={setShowShareMenu} />}
                   </div>

@@ -64,7 +64,7 @@
       "id": "zombieland",
       "icon": "Skull",
       "image": "/img/projects/zombieland.JPG",
-      "link": "http://45.90.121.7:666",
+      "link": "https://zombieland.creachtheo.fr",
       "github": "https://github.com/creach-t/zombieland",
       "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
       "tools": ["Figma", "Git", "Eslint"],

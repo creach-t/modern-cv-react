@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { ColorProvider } from './contexts/ColorContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ContactModalProvider } from './contexts/ContactModalContext';
@@ -12,10 +13,19 @@ import { useColor } from './contexts/ColorContext';
 import Project from './components/Project';
 
 const AppContent = () => {
-  const { isDark } = useColor();
+  const { isDark, secondaryColor } = useColor();
 
   return (
     <div className={`min-h-screen ${isDark ? 'dark' : ''}`}>
+      <Helmet>
+        <title>Théo Créac'h - CV | Développeur Full Stack JavaScript</title>
+        <meta name="description" content="CV moderne et interactif de Théo Créac'h, développeur Full Stack JavaScript spécialisé en React et Node.js." />
+        <meta name="keywords" content="développeur, javascript, react, node.js, full stack, CV, portfolio" />
+        <meta property="og:title" content="Théo Créac'h - CV | Développeur Full Stack JavaScript" />
+        <meta property="og:description" content="CV moderne et interactif de Théo Créac'h, développeur Full Stack JavaScript spécialisé en React et Node.js." />
+        <meta property="og:type" content="website" />
+        <meta name="theme-color" content={secondaryColor} />
+      </Helmet>
       <div className="bg-white dark:bg-gray-900 transition-colors duration-200">
         <Header />
         <main className="container mx-auto px-4 py-8">
@@ -37,10 +47,15 @@ const AppContent = () => {
   );
 };
 
-const App = () => {
+const App = ({ initialState }) => {
+  // Préparer les valeurs initiales à partir des props ou utiliser les valeurs par défaut
+  const initialLanguage = initialState?.language || 'fr';
+  const initialDarkMode = initialState?.theme?.isDark ?? true;
+  const initialColor = initialState?.theme?.secondaryColor || '#6667AB';
+
   return (
-    <LanguageProvider>
-      <ColorProvider>
+    <LanguageProvider initialLanguage={initialLanguage}>
+      <ColorProvider initialDarkMode={initialDarkMode} initialColor={initialColor}>
         <ContactModalProvider>
           <AppContent />
         </ContactModalProvider>

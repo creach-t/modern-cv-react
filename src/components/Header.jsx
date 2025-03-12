@@ -16,6 +16,7 @@ import { getTextColor } from "../utils/color";
 import { motion, AnimatePresence } from "framer-motion";
 import ShareMenu from "./ShareMenu";
 import ContactModal from "./ContactModal";
+import { useContactModal } from "../contexts/ContactModalContext";
 
 const titles = [
   { prefix: "Full", suffix: "Stack" },
@@ -46,12 +47,11 @@ const Header = () => {
   const [index, setIndex] = useState(0);
   const [animation, setAnimation] = useState(animations[0]);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-  
+  const { openModal } = useContactModal();
   // Vérifier si l'appareil est mobile
   useEffect(() => {
     const checkMobile = () => {
@@ -243,7 +243,7 @@ const Header = () => {
                   </motion.a>
                   
                   <motion.button
-                    onClick={() => setShowContactModal(true)}
+                    onClick={openModal}
                     className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
                     whileHover="hover"
                     variants={wiggleAnimation}
@@ -283,7 +283,7 @@ const Header = () => {
                 
                 <div className="flex items-center gap-3">
                   <motion.button
-                    onClick={() => setShowContactModal(true)}
+                    onClick={openModal}
                     className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
                     whileHover="hover"
                     variants={wiggleAnimation}
@@ -312,7 +312,7 @@ const Header = () => {
       </motion.header>
       
       {/* Modal de contact */}
-      {showContactModal && <ContactModal isOpen={setShowContactModal}  onClose={() => setShowContactModal(false)}/>}
+     <ContactModal/>
     </>
   );
 };

@@ -97,8 +97,8 @@
       "image": "/img/projects/oldportfolio.JPG",
       "link": "https://creach-t.github.io/",
       "github": "https://github.com/creach-t/creach-t.github.io",
-      "technologies": ["HTML", "CSS", "JavaScript"],
-      "tools": ["Git", "VS Code", "Formspree"],
+      "technologies": ["HTML/CSS", "JavaScript"],
+      "tools": ["Git", "VS Code"],
       "fr": {
         "label": "Premier Portfolio",
         "value": "Site web personnel statique",

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColorProvider } from './contexts/ColorContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ContactModalProvider } from './contexts/ContactModalContext';
 import SettingPanel from './components/SettingsPanel';
 import Header from './components/Header';
 import Skills from './components/Skills';
@@ -40,7 +41,9 @@ const App = () => {
   return (
     <LanguageProvider>
       <ColorProvider>
-        <AppContent />
+        <ContactModalProvider>
+          <AppContent />
+        </ContactModalProvider>
       </ColorProvider>
     </LanguageProvider>
   );

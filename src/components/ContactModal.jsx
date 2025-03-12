@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Send, Check, AlertCircle } from "lucide-react";
+import { X, Mail, Send, Check, AlertCircle, User, AtSign, FileText, MessageSquare } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getTextColor } from "../utils/color";
@@ -8,39 +8,60 @@ import { getTextColor } from "../utils/color";
 // Contenu multilingue
 const translations = {
   fr: {
-    title: "Me contacter",
+    title: "Nouveau message",
     name: "Nom",
     email: "Email",
     subject: "Objet",
     message: "Message",
-    sendButton: "Envoyer le message",
+    sendButton: "Envoyer",
     sending: "Envoi en cours...",
-    thankYouTitle: "Merci pour votre message !",
-    thankYouMessage: "Nous avons bien reçu votre demande et reviendrons vers vous dans les plus brefs délais.",
+    thankYouTitle: "Message envoyé !",
+    thankYouMessage: "Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.",
     dataPolicy: "Vos données personnelles sont utilisées uniquement pour traiter votre demande.",
-    successMessage: "Votre message a été envoyé avec succès. Un email de confirmation vous a été adressé.",
-    defaultError: "Une erreur s'est produite lors de l'envoi du message"
+    successMessage: "Votre message a été envoyé avec succès.",
+    defaultError: "Une erreur s'est produite lors de l'envoi du message",
+    to: "À",
+    from: "De",
+    confirmTitle: "Confirmer l'envoi",
+    confirmMessage: "Êtes-vous sûr de vouloir envoyer ce message ?",
+    confirmYes: "Oui, envoyer",
+    confirmNo: "Non, annuler"
   },
   en: {
-    title: "Contact me",
+    title: "New message",
     name: "Name",
     email: "Email",
     subject: "Subject",
     message: "Message",
-    sendButton: "Send message",
+    sendButton: "Send",
     sending: "Sending...",
-    thankYouTitle: "Thank you for your message!",
-    thankYouMessage: "We have received your request and will get back to you as soon as possible.",
+    thankYouTitle: "Message sent!",
+    thankYouMessage: "Your message has been sent. We will get back to you as soon as possible.",
     dataPolicy: "Your personal data is used only to process your request.",
-    successMessage: "Your message has been sent successfully. A confirmation email has been sent to you.",
-    defaultError: "An error occurred while sending the message"
+    successMessage: "Your message has been sent successfully.",
+    defaultError: "An error occurred while sending the message",
+    to: "To",
+    from: "From",
+    confirmTitle: "Confirm sending",
+    confirmMessage: "Are you sure you want to send this message?",
+    confirmYes: "Yes, send",
+    confirmNo: "No, cancel"
   }
 };
 
 const ContactModal = ({ isOpen, onClose }) => {
   const { secondaryColor, isDark } = useColor();
   const { language } = useLanguage();
-  const t = translations[language]; // Récupérer les traductions selon la langue
+  const t = translations[language];
+  
+  // Définition des couleurs en fonction du thème
+  const textColor = isDark ? "white" : "black";
+  const bgColor = isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.95)";
+  const inputBgColor = isDark ? "rgba(255, 255, 255, 0.05)" : "white";
+  const placeholderColor = isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)";
+  const borderColor = isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
+  const modalBgColor = isDark ? "#1f2937" : "white"; // dark:bg-gray-800 équivalent
+  const detailsColor = isDark ? "rgb(209 213 219)" : "rgb(55 65 81)";
   
   // État pour les champs du formulaire
   const [formData, setFormData] = useState({
@@ -58,7 +79,8 @@ const ContactModal = ({ isOpen, onClose }) => {
     message: ""
   });
   
-  // État pour le message de remerciement
+  // État pour les différentes étapes modales
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   
   // Gestion des changements dans les champs du formulaire
@@ -80,21 +102,27 @@ const ContactModal = ({ isOpen, onClose }) => {
     });
   };
   
-  // Fermer le message de remerciement et la modale
+  // Fermer le message de remerciement et la modale après 5 secondes
   useEffect(() => {
     let timer;
     if (showThankYou) {
       timer = setTimeout(() => {
         setShowThankYou(false);
         onClose();
-      }, 3000); // Ferme après 3 secondes
+      }, 5000); // Ferme après 5 secondes
     }
     return () => clearTimeout(timer);
   }, [showThankYou, onClose]);
   
-  // Gestion de la soumission du formulaire
-  const handleSubmit = async (e) => {
+  // Afficher le modal de confirmation
+  const handleSubmitRequest = (e) => {
     e.preventDefault();
+    setShowConfirmation(true);
+  };
+  
+  // Gestion de la soumission du formulaire
+  const handleConfirmedSubmit = async () => {
+    setShowConfirmation(false);
     
     setStatus({
       submitting: true,
@@ -104,7 +132,6 @@ const ContactModal = ({ isOpen, onClose }) => {
     });
     
     try {
-      // Utilisez l'URL de votre serveur de mailing ici
       const response = await fetch('https://mail.creachtheo.fr/api/contact', {
         method: 'POST',
         headers: {
@@ -112,7 +139,7 @@ const ContactModal = ({ isOpen, onClose }) => {
         },
         body: JSON.stringify({
           ...formData,
-          language // Envoyer la langue au serveur
+          language
         })
       });
       
@@ -126,8 +153,6 @@ const ContactModal = ({ isOpen, onClose }) => {
           message: t.successMessage
         });
         resetForm();
-        
-        // Afficher le message de remerciement
         setShowThankYou(true);
       } else {
         throw new Error(data.message || t.defaultError);
@@ -142,34 +167,103 @@ const ContactModal = ({ isOpen, onClose }) => {
     }
   };
   
+  // Annuler la confirmation
+  const handleCancelSubmit = () => {
+    setShowConfirmation(false);
+  };
+  
+  // Rendu de la modal de confirmation
+  const renderConfirmation = () => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        style={{ backgroundColor: modalBgColor }}
+        className="rounded-lg shadow-xl max-w-sm w-full p-6 text-center"
+      >
+        <h3 
+          className="text-xl font-bold mb-3"
+          style={{ color: textColor }}
+        >
+          {t.confirmTitle}
+        </h3>
+        <p style={{ color: detailsColor }} className="mb-6">
+          {t.confirmMessage}
+        </p>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={handleCancelSubmit}
+            className="px-4 py-2 rounded-md font-medium transition-colors"
+            style={{ 
+              backgroundColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
+              color: textColor
+            }}
+          >
+            {t.confirmNo}
+          </button>
+          <button
+            onClick={handleConfirmedSubmit}
+            className="px-4 py-2 rounded-md font-medium transition-colors"
+            style={{
+              backgroundColor: secondaryColor,
+              color: getTextColor(secondaryColor),
+            }}
+          >
+            {t.confirmYes}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+  
+  // Rendu du message de remerciement
+  const renderThankYou = () => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        style={{ backgroundColor: modalBgColor }}
+        className="rounded-lg shadow-xl max-w-sm w-full p-6 text-center"
+      >
+        <div className="flex flex-col items-center gap-4">
+          <div 
+            className="w-16 h-16 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: secondaryColor }}
+          >
+            <Check size={32} color={getTextColor(secondaryColor)} />
+          </div>
+          <h3 
+            className="text-xl font-bold"
+            style={{ color: textColor }}
+          >
+            {t.thankYouTitle}
+          </h3>
+          <p style={{ color: detailsColor }}>
+            {t.thankYouMessage}
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+  
   return (
     <AnimatePresence>
-      {showThankYou ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6 max-w-md w-full"
-        >
-          <div className="flex flex-col items-center text-center gap-4">
-            <div 
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: secondaryColor }}
-            >
-              <Check size={32} color={getTextColor(secondaryColor)} />
-            </div>
-            <h3 
-              className="text-xl font-bold"
-              style={{ color: isDark ? "white" : "black" }}
-            >
-              {t.thankYouTitle}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t.thankYouMessage}
-            </p>
-          </div>
-        </motion.div>
-      ) : isOpen && (
+      {showConfirmation && renderConfirmation()}
+      {showThankYou && renderThankYou()}
+      
+      {isOpen && !showConfirmation && !showThankYou && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -183,132 +277,188 @@ const ContactModal = ({ isOpen, onClose }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full overflow-hidden"
+            style={{ backgroundColor: modalBgColor }}
+            className="rounded-lg shadow-xl max-w-md w-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3
-                className="text-lg font-bold"
-                style={{ color: isDark ? "white" : "black" }}
-              >
-                {t.title}
-              </h3>
+            {/* Email-like Header */}
+            <div 
+              className="p-4 border-b flex items-center justify-between"
+              style={{ 
+                backgroundColor: secondaryColor,
+                borderColor: borderColor
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <Mail size={20} color={getTextColor(secondaryColor)} />
+                <h3
+                  className="text-lg font-bold"
+                  style={{ color: getTextColor(secondaryColor) }}
+                >
+                  {t.title}
+                </h3>
+              </div>
               <button
                 onClick={onClose}
-                className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="p-1 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
               >
-                <X size={20} color={isDark ? "white" : "black"} />
+                <X size={20} color={getTextColor(secondaryColor)} />
               </button>
             </div>
-            {/* Formulaire */}
+            
+            {/* Formulaire style email */}
             <div className="p-6">
-              {/* Messages de statut */}
-              {status.success && !showThankYou && (
-                <div className="mb-4 p-3 bg-green-100 border border-green-200 text-green-700 rounded-md flex items-center gap-2">
-                  <Check size={18} />
-                  <span>{status.message}</span>
-                </div>
-              )}
-              
+              {/* Messages d'erreur - pas d'infobulles de succès */}
               {status.error && (
-                <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md flex items-center gap-2">
+                <div 
+                  className="mb-4 p-3 rounded-md flex items-center gap-2"
+                  style={{ 
+                    backgroundColor: isDark ? "rgba(220, 38, 38, 0.2)" : "rgba(254, 226, 226, 1)",
+                    color: isDark ? "rgba(252, 165, 165, 1)" : "rgba(185, 28, 28, 1)" 
+                  }}
+                >
                   <AlertCircle size={18} />
                   <span>{status.message}</span>
                 </div>
               )}
               
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmitRequest}>
                 <div className="space-y-4">
-                  {/* Nom */}
-                  <div>
-                    <label 
-                      htmlFor="name"
-                      className="block text-sm font-medium mb-1"
-                      style={{ color: isDark ? "white" : "black" }}
+                  {/* À: (destinataire) */}
+                  <div 
+                    className="flex items-center pb-3"
+                    style={{ borderBottom: `1px solid ${borderColor}` }}
+                  >
+                    <span 
+                      className="text-sm font-medium mr-2 w-16"
+                      style={{ color: textColor }}
                     >
-                      {t.name}
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-black dark:text-white"
-                      style={{ focusRingColor: secondaryColor }}
-                    />
+                      {t.to}:
+                    </span>
+                    <div 
+                      className="px-3 py-1 rounded-md text-sm flex-1"
+                      style={{ 
+                        backgroundColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+                        color: detailsColor
+                      }}
+                    >
+                      creach.t@gmail.com
+                    </div>
                   </div>
                   
-                  {/* Email */}
-                  <div>
-                    <label 
-                      htmlFor="email"
-                      className="block text-sm font-medium mb-1"
-                      style={{ color: isDark ? "white" : "black" }}
+                  {/* De: (expéditeur) */}
+                  <div className="flex items-center">
+                    <span 
+                      className="text-sm font-medium mr-2 w-16"
+                      style={{ color: textColor }}
                     >
-                      {t.email}
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-black dark:text-white"
-                      style={{ focusRingColor: secondaryColor }}
-                    />
+                      {t.from}:
+                    </span>
+                    
+                    <div className="flex flex-col flex-1 gap-2">
+                      {/* Nom */}
+                      <div className="flex items-center gap-2 w-full">
+                        <User size={16} style={{ color: detailsColor }} />
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          placeholder={t.name}
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 text-sm"
+                          style={{ 
+                            backgroundColor: inputBgColor,
+                            color: textColor,
+                            borderColor: borderColor,
+                            border: `1px solid ${borderColor}`,
+                            "::placeholder": { color: placeholderColor }
+                          }}
+                        />
+                      </div>
+                      
+                      {/* Email */}
+                      <div className="flex items-center gap-2 w-full">
+                        <AtSign size={16} style={{ color: detailsColor }} />
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          placeholder={t.email}
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 text-sm"
+                          style={{ 
+                            backgroundColor: inputBgColor,
+                            color: textColor,
+                            borderColor: borderColor,
+                            border: `1px solid ${borderColor}`,
+                            "::placeholder": { color: placeholderColor }
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
                   
                   {/* Objet */}
-                  <div>
-                    <label 
-                      htmlFor="subject"
-                      className="block text-sm font-medium mb-1"
-                      style={{ color: isDark ? "white" : "black" }}
-                    >
-                      {t.subject}
-                    </label>
-                    <input
-                      type="text"
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-black dark:text-white"
-                      style={{ focusRingColor: secondaryColor }}
-                    />
+                  <div 
+                    className="py-3"
+                    style={{ 
+                      borderTop: `1px solid ${borderColor}`,
+                      borderBottom: `1px solid ${borderColor}` 
+                    }}
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <FileText size={16} style={{ color: detailsColor }} />
+                      <input
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        placeholder={t.subject}
+                        value={formData.subject}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 text-sm"
+                        style={{ 
+                          backgroundColor: inputBgColor,
+                          color: textColor,
+                          borderColor: borderColor,
+                          border: `1px solid ${borderColor}`,
+                          "::placeholder": { color: placeholderColor }
+                        }}
+                      />
+                    </div>
                   </div>
                   
                   {/* Message */}
-                  <div>
-                    <label 
-                      htmlFor="message"
-                      className="block text-sm font-medium mb-1"
-                      style={{ color: isDark ? "white" : "black" }}
-                    >
-                      {t.message}
-                    </label>
+                  <div className="flex items-start gap-2 w-full">
+                    <MessageSquare size={16} style={{ color: detailsColor }} className="mt-3" />
                     <textarea
                       id="message"
                       name="message"
-                      rows="4"
+                      rows="6"
+                      placeholder={t.message}
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-black dark:text-white"
-                      style={{ focusRingColor: secondaryColor }}
+                      className="w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 text-sm"
+                      style={{ 
+                        backgroundColor: inputBgColor,
+                        color: textColor,
+                        borderColor: borderColor,
+                        border: `1px solid ${borderColor}`,
+                        "::placeholder": { color: placeholderColor }
+                      }}
                     ></textarea>
                   </div>
                   
                   {/* Bouton d'envoi */}
-                  <div className="flex justify-center mt-6">
+                  <div className="flex justify-end items-center pt-2">
                     <button
                       type="submit"
                       disabled={status.submitting}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-70 disabled:hover:scale-100"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 text-sm"
                       style={{
                         backgroundColor: secondaryColor,
                         color: getTextColor(secondaryColor),
@@ -316,12 +466,12 @@ const ContactModal = ({ isOpen, onClose }) => {
                     >
                       {status.submitting ? (
                         <>
-                          <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
                           {t.sending}
                         </>
                       ) : (
                         <>
-                          <Send size={20} />
+                          <Send size={16} />
                           {t.sendButton}
                         </>
                       )}
@@ -330,7 +480,13 @@ const ContactModal = ({ isOpen, onClose }) => {
                 </div>
               </form>
               
-              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400 text-center">
+              <div 
+                className="mt-6 pt-4 text-xs text-center"
+                style={{ 
+                  borderTop: `1px solid ${borderColor}`,
+                  color: detailsColor
+                }}
+              >
                 {t.dataPolicy}
               </div>
             </div>

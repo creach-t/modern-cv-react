@@ -5,7 +5,7 @@ import { Code, Coffee, Skull, FileCode } from "lucide-react";
 import ProjectSlider from "./ProjectSlider";
 
 // Nombre de projets visibles par slide
-const PROJECTS_PER_SLIDE = 3;
+const PROJECTS_PER_SLIDE = 2;
 
 const Project = () => {
   const { secondaryColor, isDark } = useColor();

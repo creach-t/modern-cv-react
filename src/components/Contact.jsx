@@ -4,6 +4,7 @@ import { useColor } from "../contexts/ColorContext";
 import { getTextColor } from "../utils/color";
 import { Phone, Mail, MapPin, Linkedin } from "lucide-react";
 import ContactModal from "./ContactModal";
+import { useContactModal } from "../contexts/ContactModalContext";
 
 const iconMap = {
   Phone: Phone,
@@ -14,8 +15,8 @@ const iconMap = {
 
 const Contact = () => {
   const { secondaryColor, isDark } = useColor();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [contacts, setContacts] = useState([]);
+  const { openModal } = useContactModal();
 
   useEffect(() => {
     fetch("/data/contacts.json")
@@ -88,7 +89,7 @@ const Contact = () => {
         <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-10">
           <button
             className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 hover:scale-105 shadow-lg"
-            onClick={() => setIsModalOpen(true)}
+            onClick={openModal}
             style={{
               backgroundColor: secondaryColor,
               color: getTextColor(secondaryColor),
@@ -98,12 +99,6 @@ const Contact = () => {
           </button>
         </div>
       </div>
-
-      {/* Modale avec formulaire */}
-      <ContactModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </section>
   );
 };

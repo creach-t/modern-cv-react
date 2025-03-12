@@ -6,8 +6,8 @@
       "image": "/img/projects/devjobs.JPG",
       "link": "http://devjobs.creachtheo.fr",
       "github": "https://github.com/creach-t/job-search-france-travail-api",
-      "technologies": ["React", "Node.js", "Express.Js"],
-      "tools": ["Figma", "Tailwind CSS", "Git"],
+      "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
+      "tools": ["Git", "VS Code", "Docker", "NGINX"],
       "fr": {
       "label": "DevJobs",
       "value": "Application web de recherche d'emploi",
@@ -35,13 +35,13 @@
       "image": "/img/projects/ocoffee.JPG",
       "link": "https://ocoffee.creachtheo.fr",
       "github": "https://github.com/creach-t/ocoffee",
-      "technologies": ["Node.js", "Express.Js", "PostgreSQL", "Sequelize", "EJS"],
-      "tools": ["Figma", "VS Code", "Git"],
+      "technologies": ["EJS", "Node.js", "Express.Js", "PostgreSQL", "Sequelize", "HTML/CSS" ],
+      "tools": ["Git", "VS Code", "Docker", "Figma", "Jest"],
       "fr": {
         "label": "O'Coffee",
         "value": "Site E-commerce de vente de café",
         "description": "Boutique en ligne proposant une sélection de cafés de spécialité du monde entier",
-        "explanation": "O'Coffee est une plateforme e-commerce conçue pour les amateurs de café. Elle propose une expérience d'achat immersive avec des descriptions détaillées des origines, profils de torréfaction et notes de dégustation. Le système de paiement sécurisé et la gestion des stocks en temps réel assurent une expérience utilisateur fluide et fiable.",
+        "explanation": "O'Coffee est une plateforme e-commerce conçue pour les amateurs de café. Elle propose une expérience d'achat immersive avec des descriptions détaillées et origines. Le système de paiement sécurisé et la gestion des stocks en temps réel assurent une expérience utilisateur fluide et fiable.",
         "improvements": [
           "Integration API Stripe pour paiements sécurisés",
           "Système de notation et d'avis clients",
@@ -52,7 +52,7 @@
         "label": "O'Coffee",
         "value": "E-commerce site for selling coffee",
         "description": "Online store offering a selection of specialty coffees from around the world",
-        "explanation": "O'Coffee is an e-commerce platform designed for coffee lovers. It offers an immersive shopping experience with detailed descriptions of origins, roasting profiles, and tasting notes. The secure payment system and real-time inventory management ensure a smooth and reliable user experience.",
+        "explanation": "O'Coffee is an e-commerce platform designed for coffee lovers. It offers an immersive shopping experience with detailed descriptions and origins. The secure payment system and real-time stock management ensure a smooth and reliable user experience.",
         "improvements": [
           "Integration of Stripe API for secure payments",
           "Customer rating and review system",
@@ -66,30 +66,28 @@
       "image": "/img/projects/zombieland.JPG",
       "link": "https://zombieland.creachtheo.fr",
       "github": "https://github.com/creach-t/zombieland",
-      "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
-      "tools": ["Figma", "Git", "Eslint"],
+      "technologies": ["React", "Node.js", "Express.Js", "PostgreSQL", "Sequelize", "Tailwind CSS", "EJS"],
+      "tools": ["Git", "VS Code", "Docker", "Jest", "Figma", "Eslint", "Notion"],
       "fr": {
         "label": "ZombieLand",
         "value": "Site E-commerce de présentation et vente de billets pour un parc d'attraction",
         "description": "Plateforme immersive pour un parc d'attractions sur le thème des zombies, avec système de billetterie intégré",
-        "explanation": "ZombieLand est un projet complet développé pour promouvoir un parc d'attractions thématique. La plateforme offre un aperçu immersif des différentes attractions à travers des galeries photos, vidéos et descriptions narratives. Le système de billetterie intégré permet aux visiteurs de réserver leurs billets, choisir des options spéciales et générer des billets électroniques avec QR code.",
+        "explanation": "ZombieLand est un projet complet développé pour promouvoir un parc d'attractions thématique. La plateforme offre un aperçu immersif des différentes attractions. Le système de billetterie intégré permet aux visiteurs de réserver leurs billets. Un back office complet permet de gerer les attractions, les billets, les utilisateurs et les commandes.",
         "improvements": [
-          "Application mobile avec carte interactive du parc",
-          "Système de file d'attente virtuelle",
-          "Programme de fidélité avec points et récompenses",
-          "Réservation anticipée des créneaux pour attractions populaires"
+          "Refonte en next.js pour SEO et performances",
+          "Application mobile avec plan interactif du parc",
+          "Réservation avancée (Séjours, Hotels, etc.)"
         ]
       },
       "en": {
         "label": "ZombieLand",
         "value": "E-commerce site for showcasing and selling tickets for an amusement park",
         "description": "Immersive platform for a zombie-themed amusement park, with integrated ticketing system",
-        "explanation": "ZombieLand is a comprehensive project developed to promote a themed amusement park. The platform offers an immersive preview of various attractions through photo galleries, videos, and narrative descriptions. The integrated ticketing system allows visitors to book tickets, choose special options, and generate electronic tickets with QR codes.",
+        "explanation": "ZombieLand is a complete project developed to promote a themed amusement park. The platform offers an immersive overview of the different attractions. The integrated ticketing system allows visitors to book their tickets. A complete back office allows managing attractions, tickets, users, and orders.",
         "improvements": [
-          "Mobile app with interactive park map",
-          "Virtual queue system",
-          "Loyalty program with points and rewards",
-          "Advanced booking of slots for popular attractions"
+          "Refactor in next.js for SEO and performance",
+          "Mobile application with interactive park map",
+          "Advanced booking (Stays, Hotels, etc.)"
         ]
       }
     },
@@ -100,7 +98,7 @@
       "link": "https://creach-t.github.io/",
       "github": "https://github.com/creach-t/creach-t.github.io",
       "technologies": ["HTML", "CSS", "JavaScript"],
-      "tools": ["VS Code", "Git", "Formspree"],
+      "tools": ["Git", "VS Code", "Formspree"],
       "fr": {
         "label": "Premier Portfolio",
         "value": "Site web personnel statique",
@@ -108,4 +106,21 @@
         "explanation": "Ce portfolio représente ma première vitrine professionnelle en ligne, entièrement codée en HTML, CSS et JavaScript natif. Le site est totalement responsive et offre plusieurs fonctionnalités avancées, notamment un système de changement de langue (français/anglais), un mode sombre/clair, et une présentation détaillée de mes premiers projets web. L'interface est intuitive et met en valeur mes compétences techniques à travers un design épuré.",
         "improvements": [
           "Amélioration de l'accessibilité (ARIA)",
-          "Optimisation des performances (
+          "Optimisation des performances (lazy loading)",
+          "Utilisation de frameworks modernes (React, Next.js)"
+        ]
+      },
+      "en": {
+        "label": "First Portfolio",
+        "value": "Static personal website",
+        "description": "First portfolio developed in native HTML, CSS and JavaScript with multilingual support and dark/light mode",
+        "explanation": "This portfolio represents my first professional online showcase, entirely coded in native HTML, CSS and JavaScript. The site is fully responsive and offers several advanced features, including a language switching system (French/English), a dark/light mode, and a detailed presentation of my first web projects. The interface is intuitive and highlights my technical skills through a clean design.",
+        "improvements": [
+          "Accessibility improvements (ARIA)",
+          "Performance optimization (lazy loading)",
+          "Use of modern frameworks (React, Next.js)"
+        ]
+      }
+    }
+  ]
+}

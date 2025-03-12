@@ -92,6 +92,20 @@
           "Advanced booking of slots for popular attractions"
         ]
       }
-    }
-  ]
-}
+    },
+    {
+      "id": "oldportfolio",
+      "icon": "User",
+      "image": "/img/projects/oldportfolio.JPG",
+      "link": "https://creach-t.github.io/",
+      "github": "https://github.com/creach-t/creach-t.github.io",
+      "technologies": ["HTML", "CSS", "JavaScript"],
+      "tools": ["VS Code", "Git", "Formspree"],
+      "fr": {
+        "label": "Premier Portfolio",
+        "value": "Site web personnel statique",
+        "description": "Premier portfolio développé en HTML, CSS et JavaScript natif avec support multilingue et mode sombre/clair",
+        "explanation": "Ce portfolio représente ma première vitrine professionnelle en ligne, entièrement codée en HTML, CSS et JavaScript natif. Le site est totalement responsive et offre plusieurs fonctionnalités avancées, notamment un système de changement de langue (français/anglais), un mode sombre/clair, et une présentation détaillée de mes premiers projets web. L'interface est intuitive et met en valeur mes compétences techniques à travers un design épuré.",
+        "improvements": [
+          "Amélioration de l'accessibilité (ARIA)",
+          "Optimisation des performances (

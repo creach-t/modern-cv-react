@@ -10,42 +10,75 @@ export const useColor = () => {
   return context;
 };
 
-export const ColorProvider = ({ children }) => {
+export const ColorProvider = ({ 
+  children, 
+  initialDarkMode = true, 
+  initialColor = "#6667AB" 
+}) => {
   // État pour stocker les couleurs Pantone
   const [pantoneColors, setPantoneColors] = useState([]);
-  const [secondaryColor, setSecondaryColor] = useState("#6667AB"); // Valeur par défaut (Very Peri)
-  const [colorInfo, setColorInfo] = useState(null); // Information sur la couleur actuelle
-  const [isDark, setIsDark] = useState(true); // Mode sombre activé par défaut
+  const [secondaryColor, setSecondaryColor] = useState(initialColor);
+  const [colorInfo, setColorInfo] = useState(null);
+  const [isDark, setIsDark] = useState(initialDarkMode);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Chargement des couleurs depuis le JSON
+  // Chargement des couleurs depuis le JSON - uniquement côté client
   useEffect(() => {
-    const loadColors = async () => {
-      try {
-        // Dans un environnement réel, vous utiliseriez un import ou fetch
-        // Pour cet exemple, nous simulons le chargement depuis "pantone-colors.json"
-        const response = await fetch("data/colors.json");
-        const data = await response.json();
-        
-        if (data && data.colors && Array.isArray(data.colors)) {
-          setPantoneColors(data.colors);
+    // Vérifier si on est côté client
+    if (typeof window !== 'undefined') {
+      const loadColors = async () => {
+        try {
+          // Vérifier si des préférences locales existent
+          const savedDarkMode = localStorage.getItem('isDarkMode');
+          const savedColor = localStorage.getItem('secondaryColor');
           
-          // Sélectionner une couleur aléatoire au démarrage
-          const randomIndex = Math.floor(Math.random() * data.colors.length);
-          const randomColor = data.colors[randomIndex];
-          setSecondaryColor(randomColor.hex);
-          setColorInfo(randomColor);
+          if (savedDarkMode !== null) {
+            setIsDark(savedDarkMode === 'true');
+          }
+          
+          // Charger les couleurs depuis le JSON
+          const response = await fetch("data/colors.json");
+          const data = await response.json();
+          
+          if (data && data.colors && Array.isArray(data.colors)) {
+            setPantoneColors(data.colors);
+            
+            // Si une couleur a été sauvegardée, l'utiliser
+            if (savedColor) {
+              setSecondaryColor(savedColor);
+              
+              // Trouver les informations correspondantes
+              const colorDetails = data.colors.find(c => c.hex === savedColor);
+              if (colorDetails) {
+                setColorInfo(colorDetails);
+              }
+            } else {
+              // Sinon, sélectionner une couleur aléatoire
+              const randomIndex = Math.floor(Math.random() * data.colors.length);
+              const randomColor = data.colors[randomIndex];
+              setSecondaryColor(randomColor.hex);
+              setColorInfo(randomColor);
+            }
+          }
+          
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Erreur lors du chargement des couleurs Pantone:", error);
+          setIsLoading(false);
         }
-        
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Erreur lors du chargement des couleurs Pantone:", error);
-        setIsLoading(false);
-      }
-    };
-    
-    loadColors();
+      };
+      
+      loadColors();
+    }
   }, []);
+  
+  // Sauvegarder les préférences dans localStorage quand elles changent
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('isDarkMode', isDark.toString());
+      localStorage.setItem('secondaryColor', secondaryColor);
+    }
+  }, [isDark, secondaryColor]);
   
   // Fonction pour obtenir une couleur aléatoire depuis notre liste Pantone
   const getRandomPantoneColor = () => {

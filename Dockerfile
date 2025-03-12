@@ -15,11 +15,26 @@ COPY . .
 # Construire l'application pour la production
 RUN npm run build
 
-# Installer serve
-RUN npm install -g serve
+# Étape finale pour l'exécution SSR
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copier les dépendances et les fichiers de build
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/build ./build
+COPY --from=build /app/public ./public
+COPY --from=build /app/server ./server
+COPY --from=build /app/src ./src
+COPY --from=build /app/.babelrc ./
 
 # Exposer le port 2585
 EXPOSE 2585
 
-# Démarrer serve sur le port 2585
-CMD ["serve", "-s", "build", "-l", "2585"]
+# Variables d'environnement
+ENV NODE_ENV=production
+ENV PORT=2585
+
+# Démarrer le serveur SSR
+CMD ["node", "server/index.js"]

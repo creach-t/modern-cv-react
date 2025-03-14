@@ -11,12 +11,11 @@ import {
 } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import { getTextColor } from "../utils/color";
 
 const translations = {
   fr: {
     facebook: "Facebook",
-    twitter: "X (anciennement Twitter)",
+    twitter: "X",
     twitterHover: "À vos risques et périls...",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
@@ -25,7 +24,7 @@ const translations = {
   },
   en: {
     facebook: "Facebook",
-    twitter: "X (formerly Twitter)",
+    twitter: "X",
     twitterHover: "Enter at your own risk...",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",

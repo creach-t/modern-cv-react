@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   Github, ExternalLink, 
   ChevronDown, ChevronUp, 
-  Rocket, Wrench
+  Rocket, Wrench,
+  Code, Server
 } from "lucide-react";
 import SkillBadge from "./SkillBadge";
 import { getTextColor } from "../utils/color";
@@ -21,7 +22,136 @@ const ProjectCard = ({
   iconMap
 }) => {
   const IconComponent = iconMap[project.icon] || iconMap.FileCode;
-  // Utilisation directe de l'URL de l'image du projet sans générer de chemin personnalisé
+  const [githubMenuOpen, setGithubMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+  
+  // Fermer le menu si on clique ailleurs
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target) && 
+          buttonRef.current && !buttonRef.current.contains(event.target)) {
+        setGithubMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuRef, buttonRef]);
+
+  // Fonction pour rendre les boutons GitHub en fonction de la structure du projet
+  const renderGithubButtons = () => {
+    // Si github est un tableau
+    if (project.github && Array.isArray(project.github)) {
+      // Si un seul lien dans le tableau
+      if (project.github.length === 1) {
+        return (
+          <a
+            href={project.github[0]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
+          >
+            <Github size={18} />
+            <span>GitHub</span>
+          </a>
+        );
+      }
+      
+      // Si plusieurs liens dans le tableau
+      if (project.github.length > 1) {
+        return (
+          <div className="relative inline-block" ref={buttonRef}>
+            {/* Menu déroulant au-dessus du bouton quand il est ouvert */}
+            {githubMenuOpen && (
+              <div 
+                ref={menuRef}
+                className="absolute z-50 bottom-full left-0 mb-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 overflow-hidden"
+              >
+                <div className="py-1">
+                  {project.github.map((url, index) => {
+                    // Essayer de déterminer si c'est front ou back
+                    const isFront = url.toLowerCase().includes('front');
+                    const isBack = url.toLowerCase().includes('back');
+                    let label = "GitHub";
+                    let icon = <Github size={14} className="mr-2" />;
+                    
+                    if (isFront) {
+                      label = "Frontend";
+                      icon = <Code size={14} className="mr-2" />;
+                    } else if (isBack) {
+                      label = "Backend";
+                      icon = <Server size={14} className="mr-2" />;
+                    }
+                    
+                    return (
+                      <a
+                        key={index}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGithubMenuOpen(false);
+                        }}
+                      >
+                        {icon}
+                        {label}
+                      </a>
+                    );
+                  })}
+                </div>
+                {/* Flèche pointant vers le bouton */}
+                <div 
+                  className="absolute left-4 bottom-0 transform translate-y-full"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderTop: isDark ? '6px solid #1f2937' : '6px solid white'
+                  }}
+                />
+              </div>
+            )}
+
+            <button
+              className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setGithubMenuOpen(!githubMenuOpen);
+              }}
+            >
+              <Github size={18} />
+              <span>GitHub</span>
+              <ChevronDown size={16} className={`ml-1 transition-transform duration-200 ${githubMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+        );
+      }
+    }
+    
+    // Si le projet a un seul dépôt GitHub (format classique)
+    if (project.github && typeof project.github === 'string' && !project.github.includes(',')) {
+      return (
+        <a
+          href={project.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
+        >
+          <Github size={18} />
+          <span>GitHub</span>
+        </a>
+      );
+    }
+    
+    // Pas de dépôt GitHub
+    return null;
+  };
 
   return (
     <div
@@ -235,17 +365,8 @@ const ProjectCard = ({
                 </a>
               )}
               
-              {project.github && (
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
-                >
-                  <Github size={18} />
-                  <span>GitHub</span>
-                </a>
-              )}
+              {/* Rendu des boutons GitHub */}
+              {renderGithubButtons()}
             </div>
           </div>
         )}

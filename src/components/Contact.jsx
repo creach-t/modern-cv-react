@@ -5,6 +5,7 @@ import { getTextColor } from "../utils/color";
 import { Phone, Mail, MapPin, Linkedin } from "lucide-react";
 import ContactModal from "./ContactModal";
 import { useContactModal } from "../contexts/ContactModalContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const iconMap = {
   Phone: Phone,
@@ -13,19 +14,35 @@ const iconMap = {
   Linkedin: Linkedin,
 };
 
+// Traductions
+const translations = {
+  fr: {
+    title: "Contact",
+    buttonText: "Cliquer pour me contacter",
+    loadingError: "Erreur lors du chargement des contacts :"
+  },
+  en: {
+    title: "Contact",
+    buttonText: "Click to contact me",
+    loadingError: "Error loading contacts:"
+  }
+};
+
 const Contact = () => {
   const { secondaryColor, isDark } = useColor();
   const [contacts, setContacts] = useState([]);
   const { openModal } = useContactModal();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     fetch("/data/contacts.json")
       .then((response) => response.json())
       .then((data) => setContacts(data))
       .catch((error) =>
-        console.error("Erreur lors du chargement des contacts :", error)
+        console.error(`${t.loadingError} ${error}`)
       );
-  }, []);
+  }, [t.loadingError]);
 
   const textColor = isDark ? "white" : "black";
 
@@ -35,7 +52,7 @@ const Contact = () => {
         className="text-2xl font-bold mb-6 pb-2 relative"
         style={{ color: textColor }}
       >
-        Contact
+        {t.title}
         <div 
           className="absolute bottom-0 left-0 h-1 rounded-full w-14" 
           style={{ backgroundColor: secondaryColor }}
@@ -95,7 +112,7 @@ const Contact = () => {
               color: getTextColor(secondaryColor),
             }}
           >
-            Cliquer pour me contacter
+            {t.buttonText}
           </button>
         </div>
       </div>

@@ -5,28 +5,28 @@
       "icon": "Code",
       "image": "/img/projects/devjobs.JPG",
       "link": "http://devjobs.creachtheo.fr",
-      "github": "https://github.com/creach-t/job-search-france-travail-api",
+      "github": ["https://github.com/creach-t/job-search-france-travail-api"],
       "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
       "tools": ["Git", "VS Code", "Docker", "NGINX"],
       "fr": {
-      "label": "DevJobs",
-      "value": "Application web de recherche d'emploi",
-      "description": "Plateforme permettant aux développeurs de trouver des offres d'emploi pertinentes dans le secteur tech",
-      "explanation": "Cette application a été conçue pour simplifier la recherche d'emploi des développeurs, en centralisant les offres selon les technologies maîtrisées et la localisation. L'interface utilisateur intuitive permet de filtrer les résultats selon plusieurs critères, d'enregistrer des offres favorites et de postuler directement depuis la plateforme. Elle utilise l'API France Travail pour récupérer les offres d'emploi et une connexion AuthO2.0 pour sécuriser l'accès des utilisateurs.",
-      "improvements": [
-        "Meilleure gestions des recherches sauvegardées",
-        "Espace candidat pour suivre ses candidatures"
-      ]
+        "label": "DevJobs",
+        "value": "Application web de recherche d'emploi",
+        "description": "Plateforme permettant aux développeurs de trouver des offres d'emploi pertinentes dans le secteur tech",
+        "explanation": "Cette application a été conçue pour simplifier la recherche d'emploi des développeurs, en centralisant les offres selon les technologies maîtrisées et la localisation. L'interface utilisateur intuitive permet de filtrer les résultats selon plusieurs critères, d'enregistrer des offres favorites et de postuler directement depuis la plateforme. Elle utilise l'API France Travail pour récupérer les offres d'emploi et une connexion AuthO2.0 pour sécuriser l'accès des utilisateurs.",
+        "improvements": [
+          "Meilleure gestions des recherches sauvegardées",
+          "Espace candidat pour suivre ses candidatures"
+        ]
       },
       "en": {
-      "label": "DevJobs",
-      "value": "Job search web application",
-      "description": "Platform enabling developers to find relevant job opportunities in the tech sector",
-      "explanation": "This application was designed to simplify job searching for developers by centralizing offers based on mastered technologies and location. The intuitive user interface allows filtering results according to several criteria, saving favorite offers, and applying directly from the platform. It uses the France Travail API to fetch job offers and an AuthO2.0 connection to secure user access.",
-      "improvements": [
-        "Improved management of saved searches",
-        "Candidate space to track applications"
-      ]
+        "label": "DevJobs",
+        "value": "Job search web application",
+        "description": "Platform enabling developers to find relevant job opportunities in the tech sector",
+        "explanation": "This application was designed to simplify job searching for developers by centralizing offers based on mastered technologies and location. The intuitive user interface allows filtering results according to several criteria, saving favorite offers, and applying directly from the platform. It uses the France Travail API to fetch job offers and an AuthO2.0 connection to secure user access.",
+        "improvements": [
+          "Improved management of saved searches",
+          "Candidate space to track applications"
+        ]
       }
     },
     {
@@ -34,7 +34,7 @@
       "icon": "Coffee",
       "image": "/img/projects/ocoffee.JPG",
       "link": "https://ocoffee.creachtheo.fr",
-      "github": "https://github.com/creach-t/ocoffee",
+      "github": ["https://github.com/creach-t/ocoffee"],
       "technologies": ["EJS", "Node.js", "Express.Js", "PostgreSQL", "Sequelize", "HTML/CSS" ],
       "tools": ["Git", "VS Code", "Docker", "Figma", "Jest"],
       "fr": {
@@ -65,7 +65,10 @@
       "icon": "Skull",
       "image": "/img/projects/zombieland.JPG",
       "link": "https://zombieland.creachtheo.fr",
-      "github": "https://github.com/creach-t/zombieland",
+      "github": [
+        "https://github.com/creach-t/ZombieLand-front",
+        "https://github.com/creach-t/ZombieLand-back"
+      ],
       "technologies": ["React", "Node.js", "Express.Js", "PostgreSQL", "Sequelize", "Tailwind CSS", "EJS"],
       "tools": ["Git", "VS Code", "Docker", "Jest", "Figma", "Eslint", "Notion"],
       "fr": {
@@ -96,7 +99,7 @@
       "icon": "User",
       "image": "/img/projects/oldportfolio.JPG",
       "link": "https://creach-t.github.io/",
-      "github": "https://github.com/creach-t/creach-t.github.io",
+      "github": ["https://github.com/creach-t/creach-t.github.io"],
       "technologies": ["HTML/CSS", "JavaScript"],
       "tools": ["Git", "VS Code"],
       "fr": {

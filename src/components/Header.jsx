@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useColor } from "../contexts/ColorContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { 
   Github, 
   Linkedin, 
@@ -17,6 +18,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import ShareMenu from "./ShareMenu";
 import ContactModal from "./ContactModal";
 import { useContactModal } from "../contexts/ContactModalContext";
+
+// Traductions
+const translations = {
+  fr: {
+    developer: "Développeur",
+    copiedLink: "Lien copié dans le presse-papier !",
+    hello: "Hello!",
+    shareTitle: "Portfolio de Théo Créac'h - Développeur Full Stack"
+  },
+  en: {
+    developer: "Developer",
+    copiedLink: "Link copied to clipboard!",
+    hello: "Hello!",
+    shareTitle: "Théo Créac'h's Portfolio - Full Stack Developer"
+  }
+};
 
 const titles = [
   { prefix: "Full", suffix: "Stack" },
@@ -43,6 +60,8 @@ const wiggleAnimation = {
 
 const Header = () => {
   const { secondaryColor } = useColor();
+  const { language } = useLanguage();
+  const t = translations[language];
   const textColor = getTextColor(secondaryColor);
   const [index, setIndex] = useState(0);
   const [animation, setAnimation] = useState(animations[0]);
@@ -52,6 +71,7 @@ const Header = () => {
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const { openModal } = useContactModal();
+
   // Vérifier si l'appareil est mobile
   useEffect(() => {
     const checkMobile = () => {
@@ -113,7 +133,7 @@ const Header = () => {
   
   const handleShare = (platform) => {
     const url = window.location.href;
-    const title = "Portfolio de Théo Créac'h - Développeur Full Stack";
+    const title = t.shareTitle;
     
     let shareUrl;
     
@@ -135,7 +155,7 @@ const Header = () => {
         break;
       case 'copy':
         navigator.clipboard.writeText(url);
-        alert("Lien copié dans le presse-papier !");
+        alert(t.copiedLink);
         setShowShareMenu(false);
         return;
       default:
@@ -191,7 +211,7 @@ const Header = () => {
                       className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                      <span className="opacity-0 group-hover:opacity-100 text-white font-medium transition-opacity duration-300">Hello!</span>
+                      <span className="opacity-0 group-hover:opacity-100 text-white font-medium transition-opacity duration-300">{t.hello}</span>
                     </div>
                   </motion.div>
                   
@@ -200,7 +220,7 @@ const Header = () => {
                       Théo Créac'h
                     </h1>
                     <h2 className="text-lg md:text-xl font-medium opacity-80 flex gap-2" style={{ color: textColor }}>
-                      <span>Développeur</span>
+                      <span>{t.developer}</span>
                       <span className="flex gap-1">
                         <AnimatePresence mode="wait">
                           <motion.span
@@ -310,9 +330,6 @@ const Header = () => {
           </div>
         </div>
       </motion.header>
-      
-      {/* Modal de contact */}
-     <ContactModal/>
     </>
   );
 };

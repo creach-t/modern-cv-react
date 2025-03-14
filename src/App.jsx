@@ -13,22 +13,30 @@ import Project from './components/Project';
 
 const AppContent = () => {
   const { isDark } = useColor();
-
   return (
     <div className={`min-h-screen ${isDark ? 'dark' : ''}`}>
       <div className="bg-white dark:bg-gray-900 transition-colors duration-200">
         <Header />
         <main className="container mx-auto px-4 py-8">
+          {/* Utilisation de l'ordre flexible avec les classes order de Tailwind */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <Skills />
               <Project />
+              {/* Contact en desktop affiché en dessous de Project dans la première colonne */}
+              <div className="hidden md:block">
+                <Contact />
+              </div>
             </div>
             <div>
               <Experience />
               <Education />
-              <Contact />
             </div>
+          </div>
+          
+          {/* Contact en version mobile affiché en dernier */}
+          <div className="md:hidden mt-8">
+            <Contact />
           </div>
         </main>
         <SettingPanel />

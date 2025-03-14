@@ -2,10 +2,12 @@ import React from "react";
 import { useColor } from "../contexts/ColorContext";
 
 const ColorPicker = () => {
-  const { secondaryColor, setSecondaryColor } = useColor();
+  const { secondaryColor, setSecondaryColor, saveUserColor } = useColor();
 
   const handleColorChange = (e) => {
-    setSecondaryColor(e.target.value);
+    const newColor = e.target.value;
+    setSecondaryColor(newColor);
+    saveUserColor(newColor); // Enregistrer la couleur choisie par l'utilisateur
   };
 
   return (

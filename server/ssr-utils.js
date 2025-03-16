@@ -14,17 +14,41 @@ const path = require('path');
 const isUserAgentBot = (userAgent) => {
   if (!userAgent) return false;
   
+  // Version plus stricte de la détection, utilisant des expressions régulières
   const botPatterns = [
-    'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'slurp',
-    'baiduspider', 'facebookexternalhit', 'twitterbot', 'rogerbot',
-    'linkedinbot', 'embedly', 'quora link preview', 'showyoubot',
-    'outbrain', 'pinterest', 'slackbot', 'vkshare', 'w3c_validator',
-    'bot', 'spider', 'crawler', 'curl', 'wget', 'lighthouse', 'pingdom',
-    'phantom', 'headless'
+    /googlebot/i,
+    /bingbot/i,
+    /yandexbot/i,
+    /duckduckbot/i,
+    /slurp/i,
+    /baiduspider/i,
+    /facebookexternalhit/i,
+    /twitterbot/i,
+    /rogerbot/i,
+    /linkedinbot/i,
+    /embedly/i,
+    /quora link preview/i,
+    /showyoubot/i,
+    /outbrain/i,
+    /pinterest/i,
+    /slackbot/i,
+    /vkshare/i,
+    /w3c_validator/i,
+    /bot/i,
+    /spider/i,
+    /crawler/i
   ];
   
-  const lowercaseUA = userAgent.toLowerCase();
-  return botPatterns.some(pattern => lowercaseUA.includes(pattern));
+  // Log pour le débogage (sera visible dans server.log)
+  console.log(`Vérification du user-agent pour bot: "${userAgent}"`);
+  
+  return botPatterns.some(pattern => {
+    const isMatch = pattern.test(userAgent);
+    if (isMatch) {
+      console.log(`  Match trouvé avec pattern: ${pattern}`);
+    }
+    return isMatch;
+  });
 };
 
 /**
@@ -55,6 +79,10 @@ const findStaticAssets = () => {
           .map(file => `/static/js/${file}`);
       }
     }
+    
+    // Log des fichiers trouvés
+    console.log(`Fichiers CSS trouvés: ${cssFiles.join(', ')}`);
+    console.log(`Fichiers JS trouvés: ${jsFiles.join(', ')}`);
   } catch (error) {
     console.error(`Erreur lors de la recherche des fichiers statiques: ${error.message}`);
   }

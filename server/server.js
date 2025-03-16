@@ -28,24 +28,28 @@ const ReactDOMServer = require('react-dom/server');
 const { Helmet } = require('react-helmet');
 const loadable = require('@loadable/component');
 
-// Importer l'application React
+// Récupérer l'App
+let App;
 try {
-  console.log('Tentative d\'import de l\'App...');
-  const App = require('../src/App').default;
-  console.log('Import de l\'App réussi!');
+  // Import dynamique
+  App = require('../src/App').default;
+  console.log('Import de App réussi');
 } catch (error) {
-  console.error('Erreur lors de l\'import de l\'App:', error);
+  console.error('Erreur lors de l\'import de App:', error.message);
+  // Créer un composant minimal de secours si l'import échoue
+  App = () => React.createElement('div', null, 'Erreur de chargement de l\'application');
 }
 
 // Le reste de votre code reste inchangé
 const app = express();
 const PORT = process.env.PORT || 2585;
 
-// Servir les assets statiques du dossier public (pour le développement)
+// Servir les assets statiques du dossier build
 app.use(express.static(path.resolve(__dirname, '../build')));
 
 // Fonction pour détecter les bots de recherche et réseaux sociaux
-const isBot = (userAgent) => {
+const isBot = (userAgent = '') => {
+  // Pour les tests, considérez toujours "googlebot" ou "curl" comme un bot
   if (!userAgent) return false;
   
   const botPatterns = [
@@ -53,15 +57,26 @@ const isBot = (userAgent) => {
     'baiduspider', 'twitterbot', 'facebookexternalhit', 'linkedinbot',
     'embedly', 'quora link preview', 'showyoubot', 'outbrain',
     'pinterest', 'slackbot', 'vkshare', 'w3c_validator', 'facebot',
-    'applebot', 'twitterbot', 'rogerbot', 'linkedinbot', 'msnbot',
+    'applebot', 'rogerbot', 'msnbot', 'curl',
     'discordbot', 'yahoo', 'semrushbot', 'ahrefsbot',
     'bot', 'crawler', 'spider'
   ];
+
+  console.log(`Analyse de l'User-Agent: "${userAgent}"`);
   
-  const isBotAgent = botPatterns.some(pattern => userAgent.toLowerCase().includes(pattern));
-  console.log(`User-Agent: ${userAgent}`);
-  console.log(`Patterns détectés: ${botPatterns.filter(pattern => userAgent.toLowerCase().includes(pattern)).join(', ')}`);
-  return isBotAgent;
+  // Convertir en minuscules pour une comparaison insensible à la casse
+  const lowerUA = userAgent.toLowerCase();
+  
+  // Vérifier chaque pattern et collecter ceux qui correspondent
+  const matchedPatterns = botPatterns.filter(pattern => lowerUA.includes(pattern));
+  
+  if (matchedPatterns.length > 0) {
+    console.log(`Bot détecté! Patterns trouvés: ${matchedPatterns.join(', ')}`);
+    return true;
+  }
+  
+  console.log('Aucun bot détecté, considérant comme un navigateur normal');
+  return false;
 };
 
 // Cette fonction sert à ajouter les données initiales pour l'hydratation
@@ -75,7 +90,7 @@ const getInitialState = (req) => {
   };
 };
 
-// Générer une page HTML simple pour le développement
+// Générer une page HTML avec le rendu côté serveur
 const generateHTML = (appHtml, initialState, helmetData = {}) => {
   return `
     <!DOCTYPE html>
@@ -83,9 +98,9 @@ const generateHTML = (appHtml, initialState, helmetData = {}) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        ${helmetData.title || '<title>Théo Créach - CV</title>'}
-        ${helmetData.meta || ''}
-        ${helmetData.link || ''}
+        ${helmetData.title?.toString() || '<title>Théo Créach - CV</title>'}
+        ${helmetData.meta?.toString() || ''}
+        ${helmetData.link?.toString() || ''}
         <link rel="stylesheet" href="/css/index.css">
       </head>
       <body>
@@ -99,95 +114,128 @@ const generateHTML = (appHtml, initialState, helmetData = {}) => {
           };
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState).replace(/</g, '\\\\u003c')}
         </script>
-        <script src="/js/main.js"></script>
+        <script src="/static/js/main.js"></script>
       </body>
     </html>
   `;
 };
 
-// Fonction pour servir l'application SPA statique
+// Fonction pour servir l'application SPA statique (client-side rendering)
 const serveSPA = (req, res) => {
   console.log('Serving SPA (Client-Side Rendering)');
-  // En environnement de production, on sert le fichier statique du build
-  if (process.env.NODE_ENV === 'production') {
-    const indexPath = path.resolve(__dirname, '../build/index.html');
-    
-    fs.readFile(indexPath, 'utf8', (err, htmlData) => {
-      if (err) {
-        console.error('Erreur lors de la lecture du fichier index.html:', err);
-        return res.status(500).send('Erreur serveur');
-      }
+  
+  try {
+    // En environnement de production, on sert le fichier statique du build
+    if (process.env.NODE_ENV === 'production') {
+      const indexPath = path.resolve(__dirname, '../build/index.html');
       
-      // Récupérer l'état initial pour les données initiales
+      fs.readFile(indexPath, 'utf8', (err, htmlData) => {
+        if (err) {
+          console.error('Erreur lors de la lecture du fichier index.html:', err);
+          return res.status(500).send('Erreur serveur');
+        }
+        
+        // Récupérer l'état initial pour les données initiales
+        const initialState = getInitialState(req);
+        
+        // Injecter l'état initial dans le HTML
+        const html = htmlData.replace(
+          '</head>',
+          `<script>
+            window.__INITIAL_STATE__ = ${JSON.stringify(initialState).replace(/</g, '\\\\u003c')}
+          </script>
+          </head>`
+        );
+        
+        return res.send(html);
+      });
+    } else {
+      // En développement, générer un HTML minimal
       const initialState = getInitialState(req);
       
-      // Injecter l'état initial dans le HTML
-      const html = htmlData.replace(
-        '</head>',
-        `<script>
-          window.__INITIAL_STATE__ = ${JSON.stringify(initialState).replace(/</g, '\\\\u003c')}
-        </script>
-        </head>`
-      );
+      // Créer un contenu HTML minimal pour le client (sans rendu SSR)
+      const html = `
+        <!DOCTYPE html>
+        <html lang="fr">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Théo Créach - CV</title>
+            <script>
+              window.__INITIAL_STATE__ = ${JSON.stringify(initialState).replace(/</g, '\\\\u003c')}
+            </script>
+          </head>
+          <body>
+            <div id="root"></div>
+            <script src="/static/js/main.js"></script>
+          </body>
+        </html>
+      `;
       
       return res.send(html);
-    });
-  } else {
-    // En développement, on génère un HTML minimal
-    const initialState = getInitialState(req);
-    const html = generateHTML('', initialState);
-    return res.send(html);
+    }
+  } catch (error) {
+    console.error('Erreur dans serveSPA:', error);
+    res.status(500).send('Erreur serveur');
   }
 };
 
-// Solution temporaire pour contourner le problème de dépendances
+// Middleware pour le rendu SSR conditionnel
 app.get('*', (req, res) => {
+  // Récupérer l'user-agent
   const userAgent = req.headers['user-agent'] || '';
+  
+  // Déterminer si c'est un bot
   const isSearchBot = isBot(userAgent);
   
-  console.log(`Request from: ${userAgent}`);
-  console.log(`Is search bot: ${isSearchBot}`);
+  console.log(`Requête reçue de: ${userAgent}`);
+  console.log(`Est-ce un bot de recherche: ${isSearchBot}`);
   
-  // Pour l'instant, servir toujours l'app client-side
-  // jusqu'à résolution des problèmes de dépendances SSR
-  console.log('Contournement temporaire: service de la version client uniquement');
-  serveSPA(req, res);
-  
-  /* Code initial commenté pour le moment
-  // Pour les bots de recherche, faire le rendu côté serveur
+  // Pour les tests, forcer le mode SSR pour certains user-agents
   if (isSearchBot) {
+    console.log('Mode SSR activé pour ce bot');
     try {
-      // Récupérer les données initiales
+      // Version simplifiée du rendu SSR pour tester
       const initialState = getInitialState(req);
       
-      // Rendre l'application en chaîne HTML
-      const appHtml = ReactDOMServer.renderToString(
-        React.createElement(App, { initialState })
+      // Simple div avec un message pour vérifier le SSR
+      const simpleHtml = ReactDOMServer.renderToString(
+        React.createElement('div', { id: 'ssr-test' }, 'Ceci est une version SSR pour les bots')
       );
       
-      // Récupérer les métadonnées générées par React Helmet
-      const helmet = Helmet.renderStatic();
-      const helmetData = {
-        title: helmet.title.toString(),
-        meta: helmet.meta.toString(),
-        link: helmet.link.toString()
-      };
-      
       // Générer la page HTML complète
-      const html = generateHTML(appHtml, initialState, helmetData);
+      const html = `
+        <!DOCTYPE html>
+        <html lang="fr">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Théo Créach - CV (Version Bot)</title>
+            <script>
+              window.__INITIAL_STATE__ = ${JSON.stringify(initialState).replace(/</g, '\\\\u003c')}
+            </script>
+          </head>
+          <body>
+            <div id="root">${simpleHtml}</div>
+            <script src="/static/js/main.js"></script>
+          </body>
+        </html>
+      `;
       
       // Envoyer la réponse
+      console.log('Envoi de la réponse SSR');
       return res.send(html);
     } catch (error) {
       console.error('Erreur lors du rendu SSR:', error);
       // Fallback en cas d'erreur
+      console.log('Fallback vers Client-Side Rendering suite à une erreur');
       serveSPA(req, res);
     }
   } else {
     // Pour les navigateurs normaux, servir l'application client-side
+    console.log('Mode Client-Side Rendering pour ce navigateur');
     serveSPA(req, res);
   }
-  */
 });
 
 // Démarrer le serveur

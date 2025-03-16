@@ -10,6 +10,9 @@ const {
   ssrErrorHandling 
 } = require('./ssr-utils');
 
+// Importer les helpers pour React Helmet
+const { createSEOComponent, getHelmetData } = require('./helmet-helper');
+
 // Configuration des logs
 const log = (message) => {
   const timestamp = new Date().toISOString();
@@ -106,21 +109,29 @@ app.get('*', (req, res) => {
       // Définir l'état initial
       const initialState = createInitialState();
       
-      // Effectuer le vrai rendu SSR
-      const appHtml = ReactDOMServer.renderToString(
+      // Créer le composant SEO pour les métadonnées
+      const SEO = createSEOComponent({
+        title: 'Théo Créach - Développeur Web Full-Stack',
+        description: 'CV et portfolio de Théo Créach, développeur web full-stack spécialisé en React, Node.js et technologies modernes du web.',
+        url: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        keywords: 'CV, développeur, web, react, javascript, tailwind, full-stack, frontend, backend'
+      });
+      
+      // Wrapper App avec le composant SEO
+      const AppWithSEO = () => React.createElement(
+        React.Fragment,
+        null,
+        SEO,
         React.createElement(App, { initialState })
       );
       
-      let helmetData = { title: '', meta: '' };
-      try {
-        const helmet = Helmet.renderStatic();
-        helmetData = {
-          title: helmet.title.toString(),
-          meta: helmet.meta.toString()
-        };
-      } catch (helmetError) {
-        log(`Erreur avec React Helmet: ${helmetError.message}`);
-      }
+      // Effectuer le vrai rendu SSR
+      const appHtml = ReactDOMServer.renderToString(
+        React.createElement(AppWithSEO)
+      );
+      
+      // Récupérer les données de Helmet
+      const helmetData = getHelmetData();
       
       // Trouver les fichiers CSS et JS générés par webpack
       const { cssFiles, jsFiles } = findStaticAssets();
@@ -128,24 +139,25 @@ app.get('*', (req, res) => {
       // HTML complet avec le contenu SSR
       const html = `
         <!DOCTYPE html>
-        <html lang="fr">
+        <html ${helmetData.htmlAttributes}>
           <head>
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>Théo Créach - CV (SSR Bot)</title>
             ${helmetData.title}
             ${helmetData.meta}
+            ${helmetData.link}
             ${cssFiles.map(file => `<link rel="stylesheet" href="${file}">`).join('')}
             <!-- Preuve de rendu SSR pour débogage -->
             <meta name="rendered-by" content="server" />
             <meta name="user-agent" content="${userAgent}" />
             <meta name="render-time" content="${new Date().toISOString()}" />
           </head>
-          <body>
+          <body ${helmetData.bodyAttributes}>
             <div id="root">${appHtml}</div>
             <script>
               window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
             </script>
+            ${helmetData.script}
             ${jsFiles.map(file => `<script src="${file}"></script>`).join('')}
           </body>
         </html>
@@ -180,6 +192,8 @@ app.get('*', (req, res) => {
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>Théo Créach - CV</title>
+            <meta name="description" content="CV et portfolio de Théo Créach, développeur web full-stack" />
+            <link rel="canonical" href="${req.protocol}://${req.get('host')}${req.originalUrl}" />
             ${cssFiles.map(file => `<link rel="stylesheet" href="${file}">`).join('')}
             <!-- Preuve de rendu client pour débogage -->
             <meta name="rendered-by" content="client" />
@@ -225,4 +239,5 @@ app.listen(PORT, () => {
   log(`Serveur démarré sur http://localhost:${PORT}`);
   log(`Méthode alternative: utilisez ?bot=1 dans l'URL pour forcer le mode bot`);
   log(`Exemple: http://localhost:${PORT}/?bot=1`);
+  log(`Pour tester tous les user-agents: npm run test:ssr`);
 });

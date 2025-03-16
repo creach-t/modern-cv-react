@@ -1,7 +1,5 @@
 import React from "react";
 import { 
-  Facebook, 
-  Twitter, 
   Linkedin, 
   MessageCircle, 
   Phone, 
@@ -12,18 +10,12 @@ import { useLanguage } from "../contexts/LanguageContext";
 
 const translations = {
   fr: {
-    facebook: "Facebook",
-    twitter: "X",
-    twitterHover: "À vos risques et périls...",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
     sms: "SMS",
     copyLink: "Copier le lien"
   },
   en: {
-    facebook: "Facebook",
-    twitter: "X",
-    twitterHover: "Enter at your own risk...",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
     sms: "SMS",
@@ -68,45 +60,6 @@ const ShareMenu = ({ handleShare, isMobile, setShowShareMenu }) => {
           border: `1px solid ${secondaryColor}` // Bordure avec secondaryColor
         }}
       >
-        {/* Bouton Facebook */}
-        <button
-          onClick={() => handleShare('facebook')}
-          style={getDynamicStyles('facebook').base}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = getDynamicStyles('facebook').hover.backgroundColor;
-            e.currentTarget.style.color = getDynamicStyles('facebook').hover.color;
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = menuTextColor;
-          }}
-        >
-          <Facebook className="mr-2" />
-          {t.facebook}
-        </button>
-
-        {/* Bouton Twitter avec texte hover spécial */}
-        <button
-          onClick={() => handleShare('twitter')}
-          style={getDynamicStyles('twitter').base}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = getDynamicStyles('twitter').hover.backgroundColor;
-            e.currentTarget.style.color = getDynamicStyles('twitter').hover.color;
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = menuTextColor;
-          }}
-        >
-          <Twitter className="mr-2" />
-          {t.twitter}
-          <span 
-            className="ml-2 text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            style={{ color: secondaryColor }}
-          >
-            {t.twitterHover}
-          </span>
-        </button>
 
         {/* Bouton LinkedIn */}
         <button

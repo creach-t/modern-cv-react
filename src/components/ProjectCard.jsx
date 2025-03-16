@@ -5,6 +5,7 @@ import {
   Rocket, Wrench,
   Code, Server
 } from "lucide-react";
+
 import SkillBadge from "./SkillBadge";
 import { getTextColor } from "../utils/color";
 

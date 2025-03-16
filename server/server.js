@@ -8,10 +8,14 @@ const log = (message) => {
   console.log(`[${timestamp}] ${message}`);
   
   // Écrire également dans un fichier de log pour s'assurer qu'ils sont capturés
-  fs.appendFileSync(
-    path.join(__dirname, 'server.log'), 
-    `[${timestamp}] ${message}\n`
-  );
+  try {
+    fs.appendFileSync(
+      path.join(__dirname, 'server.log'), 
+      `[${timestamp}] ${message}\n`
+    );
+  } catch (err) {
+    console.error('Erreur d\'écriture de log:', err);
+  }
 };
 
 log('Démarrage du serveur...');
@@ -64,11 +68,11 @@ app.use(express.static(path.resolve(__dirname, '../build')));
 // Log pour toutes les requêtes
 app.use((req, res, next) => {
   log(`NOUVELLE REQUETE: ${req.method} ${req.url}`);
-  log(`Headers: ${JSON.stringify(req.headers)}`);
+  log(`IP: ${req.ip}, Headers: ${JSON.stringify(req.headers)}`);
   
-  // Modification spéciale pour le test avec curl
-  if (req.headers['user-agent'] && req.headers['user-agent'].includes('curl')) {
-    log('CURL DETECTÉ! Traitement comme un bot');
+  // Mode forcé pour les tests: si on a un paramètre bot=1 dans l'URL
+  if (req.query.bot === '1') {
+    log('Mode BOT forcé par paramètre URL');
     req.isBot = true;
   }
   
@@ -81,13 +85,14 @@ app.get('*', (req, res) => {
   const userAgent = req.headers['user-agent'] || '';
   log(`User-Agent: "${userAgent}"`);
   
-  // Vérifier si c'est un bot
+  // Vérifier si c'est un bot (par user-agent ou par paramètre)
   const isBot = 
-    req.isBot || // Flag spécial pour curl
+    req.isBot || // Flag spécial
     userAgent.toLowerCase().includes('googlebot') || 
     userAgent.toLowerCase().includes('bot') ||
     userAgent.toLowerCase().includes('spider') ||
-    userAgent.toLowerCase().includes('curl');
+    userAgent.toLowerCase().includes('curl') ||
+    req.query.bot === '1'; // Paramètre URL pour forcer le mode bot
   
   log(`Est-ce un bot: ${isBot ? 'OUI' : 'NON'}`);
   
@@ -109,6 +114,7 @@ app.get('*', (req, res) => {
               <h1>Version SSR pour les bots</h1>
               <p>Cette page a été rendue côté serveur.</p>
               <p>User-Agent: ${userAgent}</p>
+              <p>IP: ${req.ip}</p>
               <p>Date: ${new Date().toISOString()}</p>
             </div>
           </div>
@@ -147,5 +153,6 @@ app.get('*', (req, res) => {
 // Démarrer le serveur
 app.listen(PORT, () => {
   log(`Serveur démarré sur http://localhost:${PORT}`);
-  log(`Logs écrits dans ${path.join(__dirname, 'server.log')}`);
+  log(`Méthode alternative: utilisez ?bot=1 dans l'URL pour forcer le mode bot`);
+  log(`Exemple: http://localhost:${PORT}/?bot=1`);
 });

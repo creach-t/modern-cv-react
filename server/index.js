@@ -71,5 +71,15 @@ global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
 global.cancelAnimationFrame = (id) => clearTimeout(id);
 global.getComputedStyle = () => ({ getPropertyValue: () => {} });
 
+// Mock pour lucide-react
+jest.mock('lucide-react', () => ({
+  X: () => 'X Icon',
+  Mail: () => 'Mail Icon',
+  Linkedin: () => 'Linkedin Icon',
+  Github: () => 'Github Icon',
+  Phone: () => 'Phone Icon',
+  // Ajouter d'autres icônes selon vos besoins
+}));
+
 // Importer le serveur Express 
 require('./server');

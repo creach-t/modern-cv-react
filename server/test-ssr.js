@@ -40,8 +40,11 @@ const makeRequest = (userAgent) => {
       method: 'GET',
       headers: {
         'User-Agent': userAgent
-      }
+      },
+      timeout: 5000 // Ajouter un timeout de 5 secondes
     };
+
+    console.log(`Envoi de la requête: ${HOST}:${PORT}/ avec user-agent "${userAgent}"`);
 
     const req = http.request(options, (res) => {
       let data = '';
@@ -51,6 +54,7 @@ const makeRequest = (userAgent) => {
       });
       
       res.on('end', () => {
+        console.log(`Réponse reçue: ${res.statusCode}`);
         resolve({
           statusCode: res.statusCode,
           headers: res.headers,
@@ -60,7 +64,13 @@ const makeRequest = (userAgent) => {
     });
     
     req.on('error', (error) => {
+      console.error(`Erreur de connexion: ${error.message}`);
       reject(error);
+    });
+    
+    req.setTimeout(5000, () => {
+      req.abort();
+      reject(new Error('Timeout de la requête après 5 secondes'));
     });
     
     req.end();
@@ -69,13 +79,22 @@ const makeRequest = (userAgent) => {
 
 // Fonction pour vérifier le contenu et le type de rendu
 const analyzeResponse = (response, userAgent) => {
-  const isBot = userAgent.toLowerCase().includes('bot') || 
-                userAgent.toLowerCase().includes('facebook') ||
-                userAgent.toLowerCase().includes('slurp');
+  const isBot = (/bot|spider|crawler|facebook|slurp/i).test(userAgent);
 
+  // Vérifier si le rendu est fait côté serveur ou client
   const renderedBy = response.body.includes('meta name="rendered-by" content="server"') ? 'server' : 'client';
-  const hasSSRContent = response.body.includes('id="root">') && !response.body.includes('id="root"></div>');
+  
+  // Vérifier s'il y a du contenu prérendu entre les balises root
+  const rootTagMatch = response.body.match(/<div id="root">([\s\S]*?)<\/div>/);
+  const rootContent = rootTagMatch ? rootTagMatch[1].trim() : '';
+  const hasSSRContent = rootContent.length > 10; // Contenu significatif
+  
   const expectedRender = isBot ? 'server' : 'client';
+  
+  console.log(`Analyse pour ${userAgent.substring(0, 30)}...`);
+  console.log(`  Détecté comme: ${isBot ? 'Bot' : 'Navigateur'}`);
+  console.log(`  Rendu: ${renderedBy}`);
+  console.log(`  Contenu SSR: ${hasSSRContent ? 'Oui' : 'Non'} (${rootContent.length} caractères)`);
   
   return {
     userAgent,
@@ -154,7 +173,8 @@ const testBotParameter = async () => {
       method: 'GET',
       headers: {
         'User-Agent': 'Test Script'
-      }
+      },
+      timeout: 5000
     };
 
     const response = await new Promise((resolve, reject) => {
@@ -175,7 +195,13 @@ const testBotParameter = async () => {
       });
       
       req.on('error', (error) => {
+        console.error(`Erreur de connexion pour bot=1: ${error.message}`);
         reject(error);
+      });
+      
+      req.setTimeout(5000, () => {
+        req.abort();
+        reject(new Error('Timeout de la requête après 5 secondes'));
       });
       
       req.end();
@@ -187,9 +213,13 @@ const testBotParameter = async () => {
     
     // Vérification simple
     const isSSR = response.body.includes('meta name="rendered-by" content="server"');
+    const rootTagMatch = response.body.match(/<div id="root">([\s\S]*?)<\/div>/);
+    const rootContent = rootTagMatch ? rootTagMatch[1].trim() : '';
+    const hasContent = rootContent.length > 10;
     
     console.log(`  Résultat: ${isSSR ? 'PASS ✓' : 'FAIL ✗'}`);
     console.log(`  Rendu par: ${isSSR ? 'server' : 'client'}`);
+    console.log(`  Contenu SSR: ${hasContent ? 'Oui' : 'Non'} (${rootContent.length} caractères)`);
     console.log(`  Code HTTP: ${response.statusCode}`);
     console.log(`  Réponse enregistrée dans: ${filename}`);
   } catch (error) {

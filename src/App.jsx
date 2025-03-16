@@ -45,10 +45,26 @@ const AppContent = () => {
   );
 };
 
-const App = () => {
+// Mettre à jour App pour recevoir et utiliser initialState
+const App = ({ initialState }) => {
+  // Valeurs par défaut si initialState n'est pas fourni
+  const defaultInitialState = {
+    language: 'fr',
+    theme: {
+      isDark: true,
+      secondaryColor: '#6667AB'
+    }
+  };
+
+  // Fusionner avec les valeurs par défaut si initialState est undefined
+  const state = initialState || defaultInitialState;
+
   return (
-    <LanguageProvider>
-      <ColorProvider>
+    <LanguageProvider initialLanguage={state.language}>
+      <ColorProvider 
+        initialIsDark={state.theme?.isDark} 
+        initialSecondaryColor={state.theme?.secondaryColor}
+      >
         <ContactModalProvider>
           <AppContent />
         </ContactModalProvider>

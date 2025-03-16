@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   Github, ExternalLink, 
   ChevronDown, ChevronUp, 
-  Rocket, Wrench, Code, Server
+  Rocket, Wrench,
+  Code, Server
 } from "lucide-react";
 import SkillBadge from "./SkillBadge";
 import { getTextColor } from "../utils/color";
@@ -51,7 +52,6 @@ const ProjectCard = ({
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
-            onClick={(e) => e.stopPropagation()} // Empêcher la propagation
           >
             <Github size={18} />
             <span>GitHub</span>
@@ -68,7 +68,6 @@ const ProjectCard = ({
               <div 
                 ref={menuRef}
                 className="absolute z-50 bottom-full left-0 mb-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 overflow-hidden"
-                onClick={(e) => e.stopPropagation()} // Empêcher la propagation
               >
                 <div className="py-1">
                   {project.github.map((url, index) => {
@@ -143,7 +142,6 @@ const ProjectCard = ({
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
-          onClick={(e) => e.stopPropagation()} // Empêcher la propagation
         >
           <Github size={18} />
           <span>GitHub</span>
@@ -230,10 +228,9 @@ const ProjectCard = ({
         
         {/* Contenu détaillé (visible uniquement si développé) */}
         {isExpanded && (
-          <div 
-            className="p-5 pt-0 border-t border-gray-200 dark:border-gray-700"
-            onClick={(e) => e.stopPropagation()} // Prévenir la fermeture lors des clics dans le contenu
-          >
+          <div className="p-5 pt-0 border-t border-gray-200 dark:border-gray-700">
+            {/* Pas d'image en haut quand le projet est déployé */}
+            
             {/* Description courte */}
             <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
               {project.description}
@@ -362,24 +359,14 @@ const ProjectCard = ({
                     backgroundColor: secondaryColor,
                     color: getTextColor(secondaryColor)
                   }}
-                  onClick={(e) => e.stopPropagation()} // Empêcher la propagation
                 >
                   <ExternalLink size={18} />
                   <span>{language === "fr" ? "Visiter" : "Visit"}</span>
                 </a>
               )}
               
-              {project.github && (
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
-                >
-                  <Github size={18} />
-                  <span>GitHub</span>
-                </a>
-              )}
+              {/* Rendu des boutons GitHub */}
+              {renderGithubButtons()}
             </div>
           </div>
         )}

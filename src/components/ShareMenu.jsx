@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { 
   Facebook, 
@@ -11,12 +11,11 @@ import {
 } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import { getTextColor } from "../utils/color";
 
 const translations = {
   fr: {
     facebook: "Facebook",
-    twitter: "X (anciennement Twitter)",
+    twitter: "X",
     twitterHover: "À vos risques et périls...",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
@@ -25,7 +24,7 @@ const translations = {
   },
   en: {
     facebook: "Facebook",
-    twitter: "X (formerly Twitter)",
+    twitter: "X",
     twitterHover: "Enter at your own risk...",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
@@ -38,41 +37,15 @@ const ShareMenu = ({ handleShare, isMobile, setShowShareMenu }) => {
   const { secondaryColor, isDark } = useColor();
   const { language } = useLanguage();
   const t = translations[language];
-  const menuRef = useRef(null);
   
   // Obtenir la couleur du texte basée sur le thème
   const menuBgColor = isDark ? "#1f2937" : "white"; // gray-800 en dark mode, blanc en mode clair
   const menuTextColor = isDark ? "white" : "black";
   const hoverBgColor = isDark ? "#374151" : "#f3f4f6"; // gray-700 en dark mode, gray-100 en mode clair
   
-  // Gestionnaire de clic en dehors du menu
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowShareMenu(false);
-      }
-    };
-
-    // Ajouter le listener au document
-    document.addEventListener('mousedown', handleClickOutside);
-    
-    // Nettoyer le listener lors du démontage
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [setShowShareMenu]);
-  
   return (
     <>
-      {/* Overlay invisible pour capturer les clics */}
-      <div 
-        className="fixed inset-0 z-40"
-        onClick={() => setShowShareMenu(false)}
-      />
-      
-      {/* Menu de partage */}
       <motion.div
-        ref={menuRef}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
@@ -80,9 +53,8 @@ const ShareMenu = ({ handleShare, isMobile, setShowShareMenu }) => {
         style={{ 
           backgroundColor: menuBgColor,
           color: menuTextColor,
-          borderColor: secondaryColor, 
-          borderWidth: "2px",
-          borderStyle: "solid",
+          borderColor: isDark ? "#374151" : "#e5e7eb", // gray-700 ou gray-200
+          borderWidth: "1px",
         }}
       >
         <div className="py-1">
@@ -112,18 +84,10 @@ const ShareMenu = ({ handleShare, isMobile, setShowShareMenu }) => {
           >
             <XIcon className="w-5 h-5 text-black dark:text-white" />
             <span>{t.twitter}</span>
-            <div className="absolute invisible group-hover:visible left-0 bottom-full mb-2 p-2 bg-red-50 dark:bg-red-900 text-red-500 dark:text-red-200 text-xs rounded shadow-lg w-44 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-center"
-              style={{
-                borderColor: secondaryColor,
-                borderWidth: "1px",
-                borderStyle: "solid"
-              }}
-            >
+            <div className="absolute invisible group-hover:visible left-0 bottom-full mb-2 p-2 bg-red-50 dark:bg-red-900 text-red-500 dark:text-red-200 text-xs rounded shadow-lg w-44 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-center">
               <AlertTriangle className="w-3 h-3 mr-1 flex-shrink-0" />
               <span>{t.twitterHover}</span>
-              <div className="absolute top-full left-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-l-transparent border-r-transparent" 
-                style={{ borderTopColor: isDark ? "#7f1d1d" : "#fee2e2" }}
-              ></div>
+              <div className="absolute top-full left-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-l-transparent border-r-transparent border-t-red-50 dark:border-t-red-900"></div>
             </div>
           </button>
           
@@ -186,6 +150,12 @@ const ShareMenu = ({ handleShare, isMobile, setShowShareMenu }) => {
           </button>
         </div>
       </motion.div>
+      
+      {/* Overlay pour fermer le menu de partage */}
+      <div 
+        className="fixed inset-0 z-40"
+        onClick={() => setShowShareMenu(false)}
+      ></div>
     </>
   );
 };

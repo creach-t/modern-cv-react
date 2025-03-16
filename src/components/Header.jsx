@@ -1,7 +1,90 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useContactModal } from "../contexts/ContactModalContext";
+import ContactModal from "./contact/ContactModal";
+import CompactHeader from "./header/CompactHeader";
+import ExpandedHeader from "./header/ExpandedHeader";
+import headerTranslations from "../translations/headerTranslations";
+import { headerSizeConfig, scrollConfig } from "../config/layoutConfig";
+import { getTextColor, hexToRgba, shareHandler } from "../utils/uiUtils";
+
+// Hook personnalisé pour les effets du header
+const useHeaderEffects = () => {
+  const [index, setIndex] = useState(0);
+  const [animation, setAnimation] = useState(0);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  // Fonction pour faire défiler vers le haut
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  // Effect pour mesurer la hauteur du header
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+    }
+  }, []);
+
+  // Effect pour détecter le défilement
+  useEffect(() => {
+    const handleScroll = () => {
+      const position = window.pageYOffset;
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      setScrolled(position > 0);
+      setScrollProgress(Math.min(position / 400, 1)); // Calculer le progrès (limité à 1)
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Effect pour détecter les changements de taille d'écran
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Effet pour animer les titres
+  useEffect(() => {
+    const titleInterval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % 3);
+      setAnimation((prevAnim) => (prevAnim + 1) % 3);
+    }, 3000);
+
+    return () => clearInterval(titleInterval);
+  }, []);
+
+  return {
+    index,
+    animation,
+    showShareMenu,
+    setShowShareMenu,
+    isMobile,
+    scrolled,
+    scrollProgress,
+    headerRef,
+    headerHeight,
+    scrollToTop,
+  };
+};
 
 const titles = [
   { prefix: "Full", suffix: "Stack" },
@@ -162,7 +245,7 @@ const Header = () => {
       </motion.header>
       
       {/* Modal de contact */}
-     <ContactModal/>
+      <ContactModal/>
     </>
   );
 };

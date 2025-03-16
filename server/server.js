@@ -45,8 +45,10 @@ app.get('*', (req, res) => {
       // Récupérer les données initiales
       const initialState = getInitialState(req);
       
-      // Rendre l'application en chaîne HTML
-      const appHtml = ReactDOMServer.renderToString(<App initialState={initialState} />);
+      // Rendre l'application en chaîne HTML - utiliser createElement pour JSX
+      const appHtml = ReactDOMServer.renderToString(
+        React.createElement(App, { initialState })
+      );
       
       // Récupérer les métadonnées générées par React Helmet
       const helmet = Helmet.renderStatic();

@@ -11,15 +11,65 @@ require('@babel/register')({
   ]
 });
 
-// Polyfills pour le SSR
-global.window = {};
-global.document = { createElement: () => {} };
+// Polyfills complets pour le SSR
+global.SVGElement = function() {};
+global.HTMLElement = function() {};
+global.Element = function() {};
 
-// Empêcher les erreurs liées aux APIs du navigateur en environnement Node.js
-if (typeof window !== 'undefined') {
-  // Certains modules peuvent dépendre d'objets spécifiques au navigateur
-  global.HTMLElement = {};
-}
+// Un polyfill complet pour window
+global.window = {
+  addEventListener: () => {},
+  removeEventListener: () => {},
+  getComputedStyle: () => ({ getPropertyValue: () => {} }),
+  innerWidth: 1200,
+  innerHeight: 800,
+  visualViewport: { width: 1200, height: 800 },
+  scrollX: 0,
+  scrollY: 0,
+  devicePixelRatio: 1,
+  setTimeout: setTimeout,
+  clearTimeout: clearTimeout,
+  matchMedia: () => ({
+    matches: false,
+    addListener: () => {},
+    removeListener: () => {}
+  })
+};
+
+// Polyfill pour document
+global.document = {
+  createElement: () => ({
+    style: {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    setAttribute: () => {},
+    appendChild: () => {}
+  }),
+  createElementNS: () => ({
+    style: {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    setAttribute: () => {},
+    appendChild: () => {}
+  }),
+  head: { appendChild: () => {} },
+  body: { 
+    appendChild: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {}
+  },
+  documentElement: {
+    addEventListener: () => {},
+    removeEventListener: () => {}
+  },
+  getElementById: () => null,
+  querySelectorAll: () => []
+};
+
+global.navigator = { userAgent: 'node' };
+global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
+global.cancelAnimationFrame = (id) => clearTimeout(id);
+global.getComputedStyle = () => ({ getPropertyValue: () => {} });
 
 // Importer le serveur Express 
 require('./server');

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState, useRef} from "react";
 import { 
   Github, ExternalLink, 
   ChevronDown, ChevronUp, 
-  Rocket, Wrench
+  Rocket, Wrench, Code, Server
 } from "lucide-react";
 import SkillBadge from "./SkillBadge";
 import { getTextColor } from "../utils/color";

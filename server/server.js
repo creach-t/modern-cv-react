@@ -1,6 +1,28 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+
+// Ajouter ces polyfills avant d'importer React et vos composants
+global.SVGElement = function() {};
+global.HTMLElement = function() {};
+global.Element = function() {};
+global.document = global.document || {
+  createElement: () => ({}),
+  head: { appendChild: () => {} },
+  createElementNS: () => ({}),
+  getElementById: () => null
+};
+global.window = global.window || {
+  addEventListener: () => {},
+  removeEventListener: () => {},
+  innerWidth: 1200,
+  innerHeight: 800
+};
+global.navigator = { userAgent: 'node' };
+global.requestAnimationFrame = () => 0;
+global.cancelAnimationFrame = () => {};
+
+// Maintenant importer React et autres dépendances
 const React = require('react');
 const ReactDOMServer = require('react-dom/server');
 const { Helmet } = require('react-helmet');
@@ -9,17 +31,15 @@ const loadable = require('@loadable/component');
 // Importer l'application React
 const App = require('../src/App').default;
 
-// Créer l'application Express
+// Le reste de votre code reste inchangé
 const app = express();
 const PORT = process.env.PORT || 2585;
 
 // Servir les assets statiques du dossier public (pour le développement)
-app.use(express.static(path.resolve(__dirname, '../public')));
+app.use(express.static(path.resolve(__dirname, '../build')));
 
 // Cette fonction sert à ajouter les données initiales pour l'hydratation
 const getInitialState = (req) => {
-  // Ici vous pourriez récupérer des données basées sur la requête
-  // Par exemple, détecter la langue, les préférences de thème, etc.
   return {
     language: 'fr',
     theme: {
@@ -45,6 +65,12 @@ const generateHTML = (appHtml, initialState, helmetData = {}) => {
       <body>
         <div id="root">${appHtml}</div>
         <script>
+          // Définir process avant tout autre script
+          window.process = { 
+            env: {
+              NODE_ENV: '${process.env.NODE_ENV || 'development'}'
+            }
+          };
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState).replace(/</g, '\\u003c')}
         </script>
         <script src="/js/main.js"></script>
@@ -79,7 +105,10 @@ app.get('*', (req, res) => {
     return res.send(html);
   } catch (error) {
     console.error('Erreur lors du rendu SSR:', error);
-    return res.status(500).send(`Erreur lors du rendu de la page: ${error.message}`);
+    // En cas d'erreur, envoyer une version sans SSR
+    const initialState = getInitialState(req);
+    const html = generateHTML('', initialState);
+    return res.send(html);
   }
 });
 

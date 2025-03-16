@@ -1,7 +1,18 @@
-import React from 'react';
-import { hydrateRoot } from 'react-dom/client';
+import React, { useEffect, useState } from 'react';
+import { hydrateRoot, createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
+
+// Wrapper qui résout les problèmes d'hydratation
+function ClientOnlyRender({ children }) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  return mounted ? children : <div style={{ visibility: 'hidden' }}>{children}</div>;
+}
 
 // Récupérer l'état initial fourni par le serveur
 const initialState = window.__INITIAL_STATE__ || {
@@ -12,12 +23,13 @@ const initialState = window.__INITIAL_STATE__ || {
   }
 };
 
-// Utiliser hydrateRoot au lieu de createRoot pour l'hydratation SSR
 const rootElement = document.getElementById('root');
 
-// En développement, utiliser createRoot pour éviter les avertissements d'hydratation
-if (process.env.NODE_ENV === 'development') {
-  const { createRoot } = require('react-dom/client');
+// Détection basée sur la présence de contenu HTML prérendu
+const hasPrerenderedContent = rootElement.innerHTML.trim().length > 0;
+
+if (!hasPrerenderedContent) {
+  // Pas de contenu prérendu, utiliser createRoot
   const root = createRoot(rootElement);
   root.render(
     <React.StrictMode>
@@ -25,11 +37,13 @@ if (process.env.NODE_ENV === 'development') {
     </React.StrictMode>
   );
 } else {
-  // En production, utiliser hydrateRoot pour l'hydratation SSR
+  // Avec contenu prérendu, utiliser hydrateRoot et le wrapper pour résoudre les problèmes
   hydrateRoot(
     rootElement,
     <React.StrictMode>
-      <App initialState={initialState} />
+      <ClientOnlyRender>
+        <App initialState={initialState} />
+      </ClientOnlyRender>
     </React.StrictMode>
   );
 }

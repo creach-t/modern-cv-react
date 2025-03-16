@@ -1,5 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useContactModal } from "../contexts/ContactModalContext";
@@ -91,7 +90,7 @@ const Header = () => {
       backdropFilter: "blur(10px)",
       WebkitBackdropFilter: "blur(10px)",
 
-      // Fallback IE (approx.) : risque de flouter tout l'élément au lieu de l’arrière-plan
+      // Fallback IE (approx.) : risque de flouter tout l'élément au lieu de l'arrière-plan
       filter: "progid:DXImageTransform.Microsoft.Blur(pixelradius=10)",
 
       color: textColor,

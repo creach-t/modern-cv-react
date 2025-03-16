@@ -21,18 +21,22 @@ export const useColor = () => {
 
 export const ColorProvider = ({ 
   children, 
-  initialDarkMode = true, 
-  initialColor = "#6667AB" 
+  initialIsDark, 
+  initialSecondaryColor 
 }) => {
+  const isClient = typeof window !== 'undefined';
+  
   // État pour stocker les couleurs Pantone
   const [pantoneColors, setPantoneColors] = useState([]);
-  const [secondaryColor, setSecondaryColor] = useState(initialColor);
+  const [secondaryColor, setSecondaryColor] = useState(initialSecondaryColor || "#6667AB");
   const [colorInfo, setColorInfo] = useState(null);
-  const [isDark, setIsDark] = useState(initialDarkMode);
+  const [isDark, setIsDark] = useState(initialIsDark !== undefined ? initialIsDark : true);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fonction pour enregistrer la couleur de l'utilisateur
   const saveUserColor = (color) => {
+    if (!isClient) return;
+    
     try {
       localStorage.setItem(USER_COLOR_KEY, color);
     } catch (error) {
@@ -68,6 +72,12 @@ export const ColorProvider = ({
 
   // Chargement des couleurs depuis le JSON et récupération de la couleur utilisateur
   useEffect(() => {
+    // Ne pas exécuter sur le serveur
+    if (!isClient) {
+      setIsLoading(false);
+      return;
+    }
+    
     const loadColors = async () => {
       try {
         // Dans un environnement réel, vous utiliseriez un import ou fetch
@@ -124,15 +134,15 @@ export const ColorProvider = ({
     };
 
     loadColors();
-  }, []);
+  }, [isClient]);
 
   // Mettre à jour les informations de couleur lorsque la couleur secondaire change
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (isClient) {
       localStorage.setItem('isDarkMode', isDark.toString());
       localStorage.setItem('secondaryColor', secondaryColor);
     }
-  }, [secondaryColor, pantoneColors, updateColorInfo]);
+  }, [secondaryColor, isDark, isClient]);
 
   // Fonction pour obtenir une couleur aléatoire depuis notre liste Pantone
   const getRandomPantoneColor = () => {

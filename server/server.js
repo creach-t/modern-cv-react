@@ -29,7 +29,13 @@ const { Helmet } = require('react-helmet');
 const loadable = require('@loadable/component');
 
 // Importer l'application React
-const App = require('../src/App').default;
+try {
+  console.log('Tentative d\'import de l\'App...');
+  const App = require('../src/App').default;
+  console.log('Import de l\'App réussi!');
+} catch (error) {
+  console.error('Erreur lors de l\'import de l\'App:', error);
+}
 
 // Le reste de votre code reste inchangé
 const app = express();
@@ -52,7 +58,10 @@ const isBot = (userAgent) => {
     'bot', 'crawler', 'spider'
   ];
   
-  return botPatterns.some(pattern => userAgent.toLowerCase().includes(pattern));
+  const isBotAgent = botPatterns.some(pattern => userAgent.toLowerCase().includes(pattern));
+  console.log(`User-Agent: ${userAgent}`);
+  console.log(`Patterns détectés: ${botPatterns.filter(pattern => userAgent.toLowerCase().includes(pattern)).join(', ')}`);
+  return isBotAgent;
 };
 
 // Cette fonction sert à ajouter les données initiales pour l'hydratation
@@ -98,6 +107,7 @@ const generateHTML = (appHtml, initialState, helmetData = {}) => {
 
 // Fonction pour servir l'application SPA statique
 const serveSPA = (req, res) => {
+  console.log('Serving SPA (Client-Side Rendering)');
   // En environnement de production, on sert le fichier statique du build
   if (process.env.NODE_ENV === 'production') {
     const indexPath = path.resolve(__dirname, '../build/index.html');
@@ -130,7 +140,7 @@ const serveSPA = (req, res) => {
   }
 };
 
-// Middleware pour le rendu SSR conditionnel
+// Solution temporaire pour contourner le problème de dépendances
 app.get('*', (req, res) => {
   const userAgent = req.headers['user-agent'] || '';
   const isSearchBot = isBot(userAgent);
@@ -138,6 +148,12 @@ app.get('*', (req, res) => {
   console.log(`Request from: ${userAgent}`);
   console.log(`Is search bot: ${isSearchBot}`);
   
+  // Pour l'instant, servir toujours l'app client-side
+  // jusqu'à résolution des problèmes de dépendances SSR
+  console.log('Contournement temporaire: service de la version client uniquement');
+  serveSPA(req, res);
+  
+  /* Code initial commenté pour le moment
   // Pour les bots de recherche, faire le rendu côté serveur
   if (isSearchBot) {
     try {
@@ -171,6 +187,7 @@ app.get('*', (req, res) => {
     // Pour les navigateurs normaux, servir l'application client-side
     serveSPA(req, res);
   }
+  */
 });
 
 // Démarrer le serveur

@@ -98,6 +98,7 @@ app.get('*', (req, res) => {
   log(`User-Agent: "${userAgent}"`);
   
   // Vérifier si c'est un bot (par user-agent ou par paramètre)
+  // Note: isUserAgentBot a été renforcé avec des regex et des logs
   const isBot = req.isBot || isUserAgentBot(userAgent) || req.query.bot === '1';
   
   log(`Est-ce un bot: ${isBot ? 'OUI' : 'NON'}`);
@@ -125,10 +126,14 @@ app.get('*', (req, res) => {
         React.createElement(App, { initialState })
       );
       
+      log('Tentative de rendu SSR...');
+      
       // Effectuer le vrai rendu SSR
       const appHtml = ReactDOMServer.renderToString(
         React.createElement(AppWithSEO)
       );
+      
+      log(`Rendu SSR réussi, HTML généré: ${appHtml.length} caractères`);
       
       // Récupérer les données de Helmet
       const helmetData = getHelmetData();
@@ -235,7 +240,7 @@ app.get('*', (req, res) => {
 });
 
 // Démarrer le serveur
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   log(`Serveur démarré sur http://localhost:${PORT}`);
   log(`Méthode alternative: utilisez ?bot=1 dans l'URL pour forcer le mode bot`);
   log(`Exemple: http://localhost:${PORT}/?bot=1`);

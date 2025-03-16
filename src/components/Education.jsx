@@ -12,7 +12,6 @@ const Education = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   const textColor = isDark ? "white" : "black";
-  const bgColor = isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.02)";
   const detailsColor = isDark ? "rgb(209 213 219)" : "rgb(55 65 81)";
   const badgeBgColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
 

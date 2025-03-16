@@ -57,8 +57,11 @@ export const useHeaderEffects = () => {
   
   // Mesurer la hauteur du header pour le spacer
   useEffect(() => {
-    if (headerRef.current) {
-      setHeaderHeight(headerRef.current.offsetHeight);
+    // Store the current value of headerRef to use in the cleanup function
+    const currentHeaderRef = headerRef.current;
+    
+    if (currentHeaderRef) {
+      setHeaderHeight(currentHeaderRef.offsetHeight);
       
       const resizeObserver = new ResizeObserver(entries => {
         for (let entry of entries) {
@@ -66,11 +69,12 @@ export const useHeaderEffects = () => {
         }
       });
       
-      resizeObserver.observe(headerRef.current);
+      resizeObserver.observe(currentHeaderRef);
       
       return () => {
-        if (headerRef.current) {
-          resizeObserver.unobserve(headerRef.current);
+        // Use the stored ref in the cleanup function
+        if (currentHeaderRef) {
+          resizeObserver.unobserve(currentHeaderRef);
         }
       };
     }

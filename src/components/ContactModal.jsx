@@ -56,7 +56,6 @@ const ContactModal = ({ isOpen, onClose }) => {
   
   // Définition des couleurs en fonction du thème
   const textColor = isDark ? "white" : "black";
-  const bgColor = isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.95)";
   const inputBgColor = isDark ? "rgba(255, 255, 255, 0.05)" : "white";
   const placeholderColor = isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)";
   const borderColor = isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";

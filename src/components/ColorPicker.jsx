@@ -1,29 +1,51 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useColor } from "../contexts/ColorContext";
+import { Palette } from "lucide-react";
 
-const ColorPicker = () => {
+const ColorPicker = ({ onColorChange }) => {
   const { secondaryColor, setSecondaryColor, saveUserColor } = useColor();
+  const colorInputRef = useRef(null);
 
   const handleColorChange = (e) => {
     const newColor = e.target.value;
-    setSecondaryColor(newColor);
-    saveUserColor(newColor); // Enregistrer la couleur choisie par l'utilisateur
+    
+    // Si un gestionnaire externe est fourni, l'utiliser
+    if (onColorChange) {
+      onColorChange(newColor);
+    } else {
+      // Sinon, utiliser le comportement par défaut
+      setSecondaryColor(newColor);
+      saveUserColor(newColor);
+    }
+  };
+
+  const handlePaletteClick = () => {
+    // Programmatically trigger the color input click
+    if (colorInputRef.current) {
+      colorInputRef.current.click();
+    }
   };
 
   return (
-    <div className="p-2 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-      <label htmlFor="colorPicker" className="flex items-center gap-2">
-        <span className="text-sm font-medium text-black dark:text-white">
-          Couleur
-        </span>
-        <input
-          type="color"
-          id="colorPicker"
-          value={secondaryColor}
-          onChange={handleColorChange}
-          className="w-8 h-8 p-1 bg-transparent border rounded cursor-pointer dark:border-gray-600"
+    <div className="relative">
+      <input
+        ref={colorInputRef}
+        type="color"
+        value={secondaryColor}
+        onChange={handleColorChange}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+      />
+      <button 
+        onClick={handlePaletteClick}
+        className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 transition-all transform hover:scale-105"
+        aria-label="Pick Color"
+      >
+        <Palette 
+          color={secondaryColor} 
+          style={{ color: secondaryColor }} 
+          className="w-6 h-6 text-gray-700 dark:text-gray-200" 
         />
-      </label>
+      </button>
     </div>
   );
 };

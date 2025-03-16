@@ -93,7 +93,7 @@ const SkillBadge = ({
 
   return (
     <div
-      className={`flex items-center rounded-full transition-all ${
+      className={`select-none flex items-center rounded-full transition-all ${
         effectivelyExpanded ? 'py-1 px-3' : 'p-2'
       } ${isShaking ? 'animate-wiggle' : ''} ${
         isInteractionDisabled ? 'pointer-events-none' : 'hover:shadow-sm'

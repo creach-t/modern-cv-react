@@ -34,14 +34,14 @@
       "icon": "Coffee",
       "image": "/img/projects/ocoffee.JPG",
       "link": "https://ocoffee.creachtheo.fr",
-      "github": ["https://github.com/creach-t/ocoffee"],
+      "github": ["https://github.com/creach-t/O-Coffee"],
       "technologies": ["EJS", "Node.js", "Express.Js", "PostgreSQL", "Sequelize", "HTML/CSS" ],
       "tools": ["Git", "VS Code", "Docker", "Figma", "Jest"],
       "fr": {
         "label": "O'Coffee",
         "value": "Site E-commerce de vente de café",
         "description": "Boutique en ligne proposant une sélection de cafés de spécialité du monde entier",
-        "explanation": "O'Coffee est une plateforme e-commerce conçue pour les amateurs de café. Elle propose une expérience d'achat immersive avec des descriptions détaillées et origines. Le système de paiement sécurisé et la gestion des stocks en temps réel assurent une expérience utilisateur fluide et fiable.",
+        "explanation": "O'Coffee est une plateforme e-commerce conçue pour les amateurs de café. Elle propose une expérience d'achat immersive avec des descriptions détaillées et origines.",
         "improvements": [
           "Integration API Stripe pour paiements sécurisés",
           "Système de notation et d'avis clients",
@@ -52,7 +52,7 @@
         "label": "O'Coffee",
         "value": "E-commerce site for selling coffee",
         "description": "Online store offering a selection of specialty coffees from around the world",
-        "explanation": "O'Coffee is an e-commerce platform designed for coffee lovers. It offers an immersive shopping experience with detailed descriptions and origins. The secure payment system and real-time stock management ensure a smooth and reliable user experience.",
+        "explanation": "O'Coffee is an e-commerce platform designed for coffee lovers. It offers an immersive shopping experience with detailed descriptions and origins.",
         "improvements": [
           "Integration of Stripe API for secure payments",
           "Customer rating and review system",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { Code, Coffee, Skull, FileCode, ChevronLeft, ChevronRight } from "lucide-react";
@@ -30,49 +30,55 @@ const Project = () => {
     Skull
   };
 
-  // Réinitialise le timer d'auto-slide après une interaction utilisateur
-  const resetAutoSlideTimer = () => {
-    // Annuler le timer existant si présent
-    if (autoSlideTimerRef.current) {
-      clearTimeout(autoSlideTimerRef.current);
-    }
-    
-    // Configurer un nouveau timer
-    autoSlideTimerRef.current = setTimeout(() => {
-      // Passer à la slide suivante et fermer la carte développée
-      navigateSlider('next');
-      setExpandedProject(null);
-    }, AUTO_SLIDE_DELAY);
-  };
+  // Utiliser useMemo pour les fonctions interdépendantes
+  const sliderMethods = useMemo(() => {
+    // Réinitialise le timer d'auto-slide après une interaction utilisateur
+    const resetAutoSlideTimer = () => {
+      // Annuler le timer existant si présent
+      if (autoSlideTimerRef.current) {
+        clearTimeout(autoSlideTimerRef.current);
+      }
+      
+      // Configurer un nouveau timer
+      autoSlideTimerRef.current = setTimeout(() => {
+        // Passer à la slide suivante et fermer la carte développée
+        navigateSlider('next');
+        setExpandedProject(null);
+      }, AUTO_SLIDE_DELAY);
+    };
 
-  // Navigation dans le slider
-  const navigateSlider = (direction) => {
-    let newSlide;
-    const totalProjects = projects.length;
-    
-    if (direction === 'next') {
-      newSlide = currentSlide + PROJECTS_PER_SLIDE;
-      if (newSlide >= totalProjects) {
-        newSlide = 0;
+    // Navigation dans le slider
+    const navigateSlider = (direction) => {
+      let newSlide;
+      const totalProjects = projects.length;
+      
+      if (direction === 'next') {
+        newSlide = currentSlide + PROJECTS_PER_SLIDE;
+        if (newSlide >= totalProjects) {
+          newSlide = 0;
+        }
+      } else {
+        newSlide = currentSlide - PROJECTS_PER_SLIDE;
+        if (newSlide < 0) {
+          newSlide = Math.floor((totalProjects - 1) / PROJECTS_PER_SLIDE) * PROJECTS_PER_SLIDE;
+        }
       }
-    } else {
-      newSlide = currentSlide - PROJECTS_PER_SLIDE;
-      if (newSlide < 0) {
-        newSlide = Math.floor((totalProjects - 1) / PROJECTS_PER_SLIDE) * PROJECTS_PER_SLIDE;
-      }
-    }
-    
-    setCurrentSlide(newSlide);
-    setExpandedProject(null); // Fermer la carte lors du changement de slide
-    resetAutoSlideTimer();
-  };
-  
-  // Navigation directe à un index
-  const goToSlide = (index) => {
-    setCurrentSlide(index * PROJECTS_PER_SLIDE);
-    setExpandedProject(null); // Fermer la carte lors du changement de slide
-    resetAutoSlideTimer();
-  };
+      
+      setCurrentSlide(newSlide);
+      setExpandedProject(null); // Fermer la carte lors du changement de slide
+      resetAutoSlideTimer();
+      return newSlide;
+    };
+
+    // Navigation directe à un index
+    const goToSlide = (index) => {
+      setCurrentSlide(index * PROJECTS_PER_SLIDE);
+      setExpandedProject(null); // Fermer la carte lors du changement de slide
+      resetAutoSlideTimer();
+    };
+
+    return { navigateSlider, goToSlide, resetAutoSlideTimer };
+  }, [currentSlide, projects.length]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -151,7 +157,7 @@ const Project = () => {
   // Configuration de l'auto-slide
   useEffect(() => {
     // Initialiser le timer d'auto-slide
-    resetAutoSlideTimer();
+    sliderMethods.resetAutoSlideTimer();
     
     // Fonction de nettoyage pour annuler le timer lors du démontage
     return () => {
@@ -159,7 +165,7 @@ const Project = () => {
         clearTimeout(autoSlideTimerRef.current);
       }
     };
-  }, [projects, currentSlide]);
+  }, [projects, currentSlide, sliderMethods]);
   
   // Détecteurs d'activité utilisateur pour gérer le timer
   useEffect(() => {
@@ -171,7 +177,7 @@ const Project = () => {
       
       // Définir un nouveau timer pour réinitialiser l'auto-slide
       userInteractionTimerRef.current = setTimeout(() => {
-        resetAutoSlideTimer();
+        sliderMethods.resetAutoSlideTimer();
       }, 500); // Délai court pour "debouncer" les événements
     };
     
@@ -194,12 +200,12 @@ const Project = () => {
         clearTimeout(userInteractionTimerRef.current);
       }
     };
-  }, []);
+  }, [sliderMethods]);
 
   // Fonction pour basculer l'état d'expansion d'un projet
   const toggleProjectExpansion = (index) => {
     setExpandedProject(expandedProject === index ? null : index);
-    resetAutoSlideTimer();
+    sliderMethods.resetAutoSlideTimer();
   };
 
   // Couleurs pour les éléments de l'interface
@@ -261,7 +267,7 @@ const Project = () => {
                 return (
                   <button
                     key={i}
-                    onClick={() => goToSlide(i)}
+                    onClick={() => sliderMethods.goToSlide(i)}
                     className="transition-all duration-300 rounded-full"
                     style={{ 
                       width: isActive ? '8px' : '6px',
@@ -280,7 +286,7 @@ const Project = () => {
             {/* Boutons de navigation */}
             <div className="flex items-center">
               <button 
-                onClick={() => navigateSlider('prev')}
+                onClick={() => sliderMethods.navigateSlider('prev')}
                 className="p-1 rounded-full transition-transform duration-300 mr-1"
                 style={{ 
                   color: textColor,
@@ -293,7 +299,7 @@ const Project = () => {
               </button>
               
               <button 
-                onClick={() => navigateSlider('next')}
+                onClick={() => sliderMethods.navigateSlider('next')}
                 className="p-1 rounded-full transition-transform duration-300"
                 style={{ 
                   color: textColor,

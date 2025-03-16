@@ -99,7 +99,7 @@ export const scrollConfig = {
     iconTransitionDuration: 0.35,
     
     // Courbe d'accélération pour les transitions des icônes sociales
-    iconTransitionTiming: 'ease-in-out'
+    iconTransitionTiming: 'easeInOut'
   };
   
   // Configuration des animations d'opacité

@@ -1,46 +1,66 @@
 {
-  "fr": [
+  "experiences": [
     {
-      "title": "Stage Développeur Web",
-      "company": "Imperiatec",
-      "location": "Paris, France",
+      "id": "imperiatec",
+      "icon": "Code",
       "period": "sept 2024 - nov 2024",
-      "description": [
-        "Création et refactorisation de composants React Native et ReactJS",
-        "Développement de nouvelles fonctionnalités"
-      ]
+      "company": {
+        "name": "Imperiatec",
+        "location": "Paris, France"
+      },
+      "technologies": ["React", "React Native", "JavaScript", "TypeScript"],
+      "tools": ["Git", "HTML/CSS"],
+      "fr": {
+        "label": "Stage Développeur Web",
+        "value": "Imperiatec - Paris",
+        "description": "Création et refactorisation de composants React Native et ReactJS",
+        "details": [
+          "Création et refactorisation de composants React Native et ReactJS",
+          "Développement de nouvelles fonctionnalités"
+        ],
+        "explanation": "Durant ce stage, j'ai participé au développement d'applications mobiles et web en utilisant les technologies React et React Native. J'ai collaboré avec une équipe de développeurs pour améliorer les fonctionnalités existantes et en créer de nouvelles."
+      },
+      "en": {
+        "label": "Web Developer Internship",
+        "value": "Imperiatec - Paris",
+        "description": "Creating and refactoring React Native and ReactJS components",
+        "details": [
+          "Creating and refactoring React Native and ReactJS components",
+          "Developing new features"
+        ],
+        "explanation": "During this internship, I participated in the development of mobile and web applications using React and React Native technologies. I collaborated with a team of developers to improve existing features and create new ones."
+      }
     },
     {
-      "title": "Stage de Développeur Web",
-      "company": "Association CSF",
-      "location": "Melun, France",
+      "id": "csf",
+      "icon": "Globe",
       "period": "juin 2010 - août 2010",
-      "description": [
-        "Création et déploiement d'un site web pour une école primaire",
-        "Formation des équipes enseignantes à l'utilisation de l'outil"
-      ]
-    }
-  ],
-  "en": [
-    {
-      "title": "Web Developer Internship",
-      "company": "Imperiatec",
-      "location": "Paris, France",
-      "period": "Sept 2024 - Nov 2024",
-      "description": [
-        "Creating and refactoring React Native and ReactJS components",
-        "Developing new features"
-      ]
-    },
-    {
-      "title": "Web Developer Internship",
-      "company": "Association CSF",
-      "location": "Melun, France",
-      "period": "June 2010 - August 2010",
-      "description": [
-        "Creating and deploying a website for a primary school",
-        "Training teaching staff to use the tool"
-      ]
+      "company": {
+        "name": "Association CSF",
+        "location": "Melun, France"
+      },
+      "technologies": ["PHP", "JavaScript"],
+      "tools": ["HTML/CSS"],
+      "fr": {
+        "label": "Stage de Développeur Web",
+        "value": "Association CSF - Melun",
+        "description": "Création et déploiement d'un site web pour une école primaire",
+        "details": [
+          "Création et déploiement d'un site web pour une école primaire",
+          "Formation des équipes enseignantes à l'utilisation de l'outil"
+        ],
+        "explanation": "Au cours de ce stage, j'ai conçu et développé un site web complet pour une école primaire. J'ai travaillé en étroite collaboration avec les équipes pédagogiques pour comprendre leurs besoins et les former à l'utilisation de la plateforme."
+      },
+      "en": {
+        "label": "Web Developer Internship",
+        "value": "Association CSF - Melun",
+        "description": "Creating and deploying a website for a primary school",
+        "details": [
+          "Creating and deploying a website for a primary school",
+          "Training teaching staff to use the tool"
+        ],
+        "explanation": "During this internship, I designed and developed a complete website for a primary school. I worked closely with the teaching staff to understand their needs and train them on how to use the platform."
+      }
     }
   ]
 }

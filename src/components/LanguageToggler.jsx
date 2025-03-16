@@ -1,28 +1,32 @@
 import React from "react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { Globe } from "lucide-react";
 
-const LanguageToggler = () => {
+const LanguageToggler = ({ onClick }) => {
   const { language, toggleLanguage } = useLanguage();
+
+  const handleLanguageToggle = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      toggleLanguage();
+    }
+  };
+
+  const LanguageFlag = () => {
+    return language === "fr" ? "🇫🇷" : "🇬🇧";
+  };
 
   return (
     <button
-      onClick={toggleLanguage}
-      className="p-2 bg-white rounded-lg shadow-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-sm font-medium flex items-center justify-center"
+      onClick={handleLanguageToggle}
+      className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 transition-all transform hover:scale-105"
       aria-label={language === "fr" ? "Switch to English" : "Passer en français"}
     >
-      {language === "fr" ? (
-        <img 
-          src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/fr.svg" 
-          alt="Drapeau français" 
-          className="w-6 h-4"
-        />
-      ) : (
-        <img 
-          src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/gb.svg" 
-          alt="British flag" 
-          className="w-6 h-4"
-        />
-      )}
+      <Globe className="absolute opacity-0">
+        <LanguageFlag />
+      </Globe>
+      <LanguageFlag />
     </button>
   );
 };

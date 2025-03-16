@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 // Clé pour le stockage localStorage
 const USER_COLOR_KEY = "user_preferred_color";
@@ -30,8 +30,8 @@ export const ColorProvider = ({ children }) => {
     }
   };
 
-  // Fonction pour mettre à jour les informations de couleur en fonction de la couleur secondaire
-  const updateColorInfo = (color) => {
+  // Utiliser useCallback pour memoizer la fonction et éviter les dépendances cycliques
+  const updateColorInfo = useCallback((color) => {
     // Chercher si la couleur existe dans notre palette pantone
     const foundColor = pantoneColors.find(c => c.hex.toLowerCase() === color.toLowerCase());
     
@@ -46,7 +46,7 @@ export const ColorProvider = ({ children }) => {
         description: "Couleur choisie par l'utilisateur"
       });
     }
-  };
+  }, [pantoneColors]);
   
   // Chargement des couleurs depuis le JSON et récupération de la couleur utilisateur
   useEffect(() => {
@@ -107,7 +107,7 @@ export const ColorProvider = ({ children }) => {
     if (pantoneColors.length > 0) {
       updateColorInfo(secondaryColor);
     }
-  }, [secondaryColor, pantoneColors]);
+  }, [secondaryColor, pantoneColors, updateColorInfo]);
   
   // Fonction pour obtenir une couleur aléatoire depuis notre liste Pantone
   const getRandomPantoneColor = () => {

@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { useColor } from "../contexts/ColorContext";
 import { getTextColor } from "../utils/color";
 import { Phone, Mail, MapPin, Linkedin } from "lucide-react";
-import ContactModal from "./ContactModal";
 import { useContactModal } from "../contexts/ContactModalContext";
 import { useLanguage } from "../contexts/LanguageContext";
 

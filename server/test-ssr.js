@@ -6,6 +6,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const isbot = require('isbot');
 
 // Liste des user-agents à tester
 const userAgents = [
@@ -45,6 +46,7 @@ const makeRequest = (userAgent) => {
     };
 
     console.log(`Envoi de la requête: ${HOST}:${PORT}/ avec user-agent "${userAgent}"`);
+    console.log(`isbot détecte ce user-agent comme: ${isbot(userAgent) ? 'BOT' : 'NON BOT'}`);
 
     const req = http.request(options, (res) => {
       let data = '';
@@ -79,7 +81,8 @@ const makeRequest = (userAgent) => {
 
 // Fonction pour vérifier le contenu et le type de rendu
 const analyzeResponse = (response, userAgent) => {
-  const isBot = (/bot|spider|crawler|facebook|slurp/i).test(userAgent);
+  // Utiliser isbot pour la détection cohérente avec le serveur
+  const isBot = isbot(userAgent);
 
   // Vérifier si le rendu est fait côté serveur ou client
   const renderedBy = response.body.includes('meta name="rendered-by" content="server"') ? 'server' : 'client';
@@ -109,6 +112,8 @@ const analyzeResponse = (response, userAgent) => {
 // Fonction principale qui exécute les tests
 const runTests = async () => {
   console.log('Test de compatibilité SSR...');
+  console.log('----------------------------');
+  console.log('Version isbot utilisée: ' + isbot.version);
   console.log('----------------------------');
   
   const results = [];
@@ -172,7 +177,7 @@ const testBotParameter = async () => {
       path: '/?bot=1',
       method: 'GET',
       headers: {
-        'User-Agent': 'Test Script'
+        'User-Agent': 'Test Script for Bot Parameter'
       },
       timeout: 5000
     };
@@ -280,6 +285,7 @@ const generateHtmlReport = () => {
       Total: ${results.length} tests
     </p>
     <p>Rapport généré le ${new Date().toLocaleString()}</p>
+    <p>Version isbot utilisée: ${isbot.version}</p>
   </div>
   
   <h2>Résultats détaillés</h2>

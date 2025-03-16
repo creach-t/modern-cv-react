@@ -2,6 +2,14 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
+// Importer les utilitaires SSR
+const { 
+  isUserAgentBot, 
+  findStaticAssets, 
+  createInitialState,
+  ssrErrorHandling 
+} = require('./ssr-utils');
+
 // Configuration des logs
 const log = (message) => {
   const timestamp = new Date().toISOString();
@@ -80,22 +88,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Fonction pour vérifier s'il s'agit d'un bot
-const isUserAgentBot = (userAgent) => {
-  if (!userAgent) return false;
-  
-  const botPatterns = [
-    'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'slurp',
-    'baiduspider', 'facebookexternalhit', 'twitterbot', 'rogerbot',
-    'linkedinbot', 'embedly', 'quora link preview', 'showyoubot',
-    'outbrain', 'pinterest', 'slackbot', 'vkshare', 'w3c_validator',
-    'bot', 'spider', 'crawler', 'curl', 'wget'
-  ];
-  
-  const lowercaseUA = userAgent.toLowerCase();
-  return botPatterns.some(pattern => lowercaseUA.includes(pattern));
-};
-
 // Middleware pour le rendu SSR conditionnel
 app.get('*', (req, res) => {
   // Récupérer l'user-agent
@@ -112,13 +104,7 @@ app.get('*', (req, res) => {
     
     try {
       // Définir l'état initial
-      const initialState = {
-        language: 'fr',
-        theme: {
-          isDark: true,
-          secondaryColor: '#6667AB'
-        }
-      };
+      const initialState = createInitialState();
       
       // Effectuer le vrai rendu SSR
       const appHtml = ReactDOMServer.renderToString(
@@ -137,32 +123,7 @@ app.get('*', (req, res) => {
       }
       
       // Trouver les fichiers CSS et JS générés par webpack
-      let cssFiles = [];
-      let jsFiles = [];
-      
-      try {
-        const buildDir = path.resolve(__dirname, '../build');
-        
-        if (fs.existsSync(buildDir)) {
-          // Parcourir le dossier static/css
-          const cssDir = path.join(buildDir, 'static/css');
-          if (fs.existsSync(cssDir)) {
-            cssFiles = fs.readdirSync(cssDir)
-              .filter(file => file.endsWith('.css'))
-              .map(file => `/static/css/${file}`);
-          }
-          
-          // Parcourir le dossier static/js
-          const jsDir = path.join(buildDir, 'static/js');
-          if (fs.existsSync(jsDir)) {
-            jsFiles = fs.readdirSync(jsDir)
-              .filter(file => file.endsWith('.js'))
-              .map(file => `/static/js/${file}`);
-          }
-        }
-      } catch (fsError) {
-        log(`Erreur lors de la recherche des fichiers statiques: ${fsError.message}`);
-      }
+      const { cssFiles, jsFiles } = findStaticAssets();
       
       // HTML complet avec le contenu SSR
       const html = `
@@ -175,6 +136,10 @@ app.get('*', (req, res) => {
             ${helmetData.title}
             ${helmetData.meta}
             ${cssFiles.map(file => `<link rel="stylesheet" href="${file}">`).join('')}
+            <!-- Preuve de rendu SSR pour débogage -->
+            <meta name="rendered-by" content="server" />
+            <meta name="user-agent" content="${userAgent}" />
+            <meta name="render-time" content="${new Date().toISOString()}" />
           </head>
           <body>
             <div id="root">${appHtml}</div>
@@ -189,30 +154,10 @@ app.get('*', (req, res) => {
       log('Envoi de la réponse SSR réussie');
       return res.send(html);
     } catch (error) {
-      log(`Erreur de rendu SSR: ${error.message}`);
-      log(`Stack trace: ${error.stack}`);
+      ssrErrorHandling.logRenderError(error, log);
       
       // Fallback en cas d'erreur SSR
-      const fallbackHtml = `
-        <!DOCTYPE html>
-        <html lang="fr">
-          <head>
-            <meta charset="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>Théo Créach - CV (Fallback)</title>
-          </head>
-          <body>
-            <div id="root">
-              <div style="padding: 20px; background: #f7f7f7; border: 1px solid #ddd; margin: 30px auto; max-width: 600px;">
-                <h1>Théo Créach - CV</h1>
-                <p>Une erreur s'est produite lors du rendu SSR.</p>
-                <p>Pour voir le CV complet, veuillez accéder à cette page avec un navigateur normal.</p>
-                <p><small>Error: ${error.message}</small></p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `;
+      const fallbackHtml = ssrErrorHandling.createFallbackHtml(error);
       
       log('Envoi de la réponse fallback');
       return res.status(500).send(fallbackHtml);
@@ -222,37 +167,10 @@ app.get('*', (req, res) => {
     
     try {
       // Trouver les fichiers CSS et JS générés par webpack
-      let cssFiles = [];
-      let jsFiles = [];
-      
-      const buildDir = path.resolve(__dirname, '../build');
-      
-      if (fs.existsSync(buildDir)) {
-        // Parcourir le dossier static/css
-        const cssDir = path.join(buildDir, 'static/css');
-        if (fs.existsSync(cssDir)) {
-          cssFiles = fs.readdirSync(cssDir)
-            .filter(file => file.endsWith('.css'))
-            .map(file => `/static/css/${file}`);
-        }
-        
-        // Parcourir le dossier static/js
-        const jsDir = path.join(buildDir, 'static/js');
-        if (fs.existsSync(jsDir)) {
-          jsFiles = fs.readdirSync(jsDir)
-            .filter(file => file.endsWith('.js'))
-            .map(file => `/static/js/${file}`);
-        }
-      }
+      const { cssFiles, jsFiles } = findStaticAssets();
       
       // Définir l'état initial pour le client aussi
-      const initialState = {
-        language: 'fr',
-        theme: {
-          isDark: true,
-          secondaryColor: '#6667AB'
-        }
-      };
+      const initialState = createInitialState();
       
       // HTML pour les navigateurs avec les bons chemins de fichiers
       const html = `
@@ -263,6 +181,9 @@ app.get('*', (req, res) => {
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>Théo Créach - CV</title>
             ${cssFiles.map(file => `<link rel="stylesheet" href="${file}">`).join('')}
+            <!-- Preuve de rendu client pour débogage -->
+            <meta name="rendered-by" content="client" />
+            <meta name="render-time" content="${new Date().toISOString()}" />
           </head>
           <body>
             <div id="root">

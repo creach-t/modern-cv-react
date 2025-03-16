@@ -1,10 +1,10 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const isbot = require('isbot');
 
 // Importer les utilitaires SSR
 const { 
-  isUserAgentBot, 
   findStaticAssets, 
   createInitialState,
   ssrErrorHandling 
@@ -29,7 +29,8 @@ const log = (message) => {
   }
 };
 
-log('Démarrage du serveur...');
+log('Démarrage du serveur avec SSR...');
+log('Version de isbot: ' + isbot.version);
 
 // Ajouter ces polyfills avant d'importer React et vos composants
 global.SVGElement = function() {};
@@ -80,7 +81,7 @@ app.use(express.static(path.resolve(__dirname, '../build')));
 // Log pour toutes les requêtes
 app.use((req, res, next) => {
   log(`NOUVELLE REQUETE: ${req.method} ${req.url}`);
-  log(`IP: ${req.ip}, Headers: ${JSON.stringify(req.headers)}`);
+  log(`IP: ${req.ip}, Headers User-Agent: "${req.headers['user-agent']}"`);
   
   // Mode forcé pour les tests: si on a un paramètre bot=1 dans l'URL
   if (req.query.bot === '1') {
@@ -95,13 +96,16 @@ app.use((req, res, next) => {
 app.get('*', (req, res) => {
   // Récupérer l'user-agent
   const userAgent = req.headers['user-agent'] || '';
+  
+  // Utiliser isbot pour détecter si c'est un bot
+  const isBotCheck = isbot(userAgent);
   log(`User-Agent: "${userAgent}"`);
+  log(`Détection isbot: ${isBotCheck ? 'BOT' : 'NON BOT'}`);
   
-  // Vérifier si c'est un bot (par user-agent ou par paramètre)
-  // Note: isUserAgentBot a été renforcé avec des regex et des logs
-  const isBot = req.isBot || isUserAgentBot(userAgent) || req.query.bot === '1';
+  // Vérifier si c'est un bot (par isbot ou par paramètre)
+  const isBot = req.isBot || isBotCheck || req.query.bot === '1';
   
-  log(`Est-ce un bot: ${isBot ? 'OUI' : 'NON'}`);
+  log(`Décision finale - Est-ce un bot: ${isBot ? 'OUI' : 'NON'}`);
   
   if (isBot) {
     log('Rendu SSR pour bot');

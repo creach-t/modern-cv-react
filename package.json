@@ -24,7 +24,8 @@
     "eject": "react-scripts eject",
     "start:ssr": "node server/index.js",
     "build:ssr": "npm run build && npm run start:ssr",
-    "dev:ssr": "NODE_ENV=development npm run start:ssr"
+    "dev:ssr": "NODE_ENV=development npm run start:ssr",
+    "test:ssr": "node server/test-ssr.js"
   },
   "eslintConfig": {
     "extends": [

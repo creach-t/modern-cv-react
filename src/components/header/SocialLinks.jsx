@@ -1,5 +1,5 @@
 import React from "react";
-import { motion,  } from "framer-motion";
+import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, Share2 } from "lucide-react";
 import { wiggleAnimation } from "../../constants/headerConstants";
 import ShareMenu from "../ShareMenu";
@@ -26,7 +26,7 @@ const SocialLinks = ({
 
   return (
     <motion.div 
-      className="flex gap-4 mt-4 md:mt-0 items-center"
+      className={`flex gap-4 items-center ${compact ? "" : "mt-4 md:mt-0"}`}
       // Le bloc entier peut se déplacer légèrement vers la gauche lors du scroll
       style={{
         transform: `translateX(${-socialIconsConfig.blockOffset * scrollProgress}px)`
@@ -90,40 +90,44 @@ const SocialLinks = ({
         </>
       )}
       
-      {/* Mail et Share: toujours visibles */}
-      <motion.button
-        onClick={openModal}
-        className="hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
-        whileHover="hover"
-        variants={wiggleAnimation}
-      >
-        <Mail 
-          className={`${compact ? "w-5 h-5" : "w-6 h-6"}`} 
-          style={{ color: textColor }} 
-        />
-      </motion.button>
-      
-      <div className="relative">
-        <motion.button 
-          onClick={() => setShowShareMenu(!showShareMenu)}
-          className="flex items-center justify-center p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors duration-200"
-          aria-label="Partager"
+      {/* Mail and Share icons container for consistent alignment */}
+      <div className="flex items-center">
+        {/* Mail icon */}
+        <motion.button
+          onClick={openModal}
+          className="flex items-center justify-center hover:opacity-80 transition-opacity p-2 hover:bg-white hover:bg-opacity-20 rounded-full"
           whileHover="hover"
           variants={wiggleAnimation}
         >
-          <Share2 
+          <Mail 
             className={`${compact ? "w-5 h-5" : "w-6 h-6"}`} 
             style={{ color: textColor }} 
           />
         </motion.button>
         
-        {showShareMenu && (
-          <ShareMenu 
-            handleShare={handleShare} 
-            isMobile={isMobile} 
-            setShowShareMenu={setShowShareMenu} 
-          />
-        )}
+        {/* Share icon and menu */}
+        <div className="relative flex items-center">
+          <motion.button 
+            onClick={() => setShowShareMenu(!showShareMenu)}
+            className="flex items-center justify-center p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors duration-200"
+            aria-label="Partager"
+            whileHover="hover"
+            variants={wiggleAnimation}
+          >
+            <Share2 
+              className={`${compact ? "w-5 h-5" : "w-6 h-6"}`} 
+              style={{ color: textColor }} 
+            />
+          </motion.button>
+          
+          {showShareMenu && (
+            <ShareMenu 
+              handleShare={handleShare} 
+              isMobile={isMobile} 
+              setShowShareMenu={setShowShareMenu} 
+            />
+          )}
+        </div>
       </div>
     </motion.div>
   );

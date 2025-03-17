@@ -5,8 +5,10 @@ import { Sun, Moon } from "lucide-react";
 const DarkModeToggler = () => {
   const { isDark, setIsDark } = useColor();
 
+  // Pas besoin de modifier cette fonction car setIsDark a été remplacé par toggleDarkMode
+  // dans le contexte, qui sauve automatiquement la préférence
   const toggleDarkMode = () => {
-    setIsDark(!isDark);
+    setIsDark();
   };
 
   return (

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 
 // Clé pour le stockage localStorage
 const USER_COLOR_KEY = "user_preferred_color";
+const USER_THEME_KEY = "user_preferred_theme"; // Nouvelle clé pour le thème
 
 const ColorContext = createContext();
 
@@ -18,7 +19,7 @@ export const ColorProvider = ({ children }) => {
   const [pantoneColors, setPantoneColors] = useState([]);
   const [secondaryColor, setSecondaryColor] = useState("#6667AB"); // Valeur par défaut (Very Peri)
   const [colorInfo, setColorInfo] = useState(null); // Information sur la couleur actuelle
-  const [isDark, setIsDark] = useState(true); // Mode sombre activé par défaut
+  const [isDark, setIsDark] = useState(false); // Valeur initiale à false, sera déterminée par useEffect
   const [isLoading, setIsLoading] = useState(true);
   
   // Fonction pour enregistrer la couleur de l'utilisateur
@@ -29,6 +30,74 @@ export const ColorProvider = ({ children }) => {
       console.error("Erreur lors de l'enregistrement de la couleur:", error);
     }
   };
+
+  // Fonction pour enregistrer le choix de thème de l'utilisateur
+  const saveUserTheme = (isDarkMode) => {
+    try {
+      localStorage.setItem(USER_THEME_KEY, JSON.stringify(isDarkMode));
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement du thème:", error);
+    }
+  };
+
+  // Déterminer le thème initial en suivant l'ordre de priorité
+  useEffect(() => {
+    // 1. Vérifier si l'utilisateur a déjà fait un choix (localStorage)
+    try {
+      const savedTheme = localStorage.getItem(USER_THEME_KEY);
+      
+      if (savedTheme !== null) {
+        // Utiliser le thème sauvegardé
+        setIsDark(JSON.parse(savedTheme));
+      } else {
+        // 2. Vérifier la préférence du navigateur
+        const prefersDark = window.matchMedia && 
+          window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (prefersDark !== undefined) {
+          setIsDark(prefersDark);
+        } else {
+          // 3. Par défaut: mode sombre
+          setIsDark(true);
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération du thème:", error);
+      // En cas d'erreur, utiliser le mode sombre par défaut
+      setIsDark(true);
+    }
+  }, []);
+
+  // Observer les changements de préférence du système
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Ne pas mettre à jour si l'utilisateur a déjà fait un choix explicite
+    const hasUserPreference = localStorage.getItem(USER_THEME_KEY) !== null;
+    
+    const handleChange = (e) => {
+      if (!hasUserPreference) {
+        setIsDark(e.matches);
+      }
+    };
+    
+    // Ajouter un écouteur pour le changement de préférence
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+    } else {
+      // Fallback pour les anciens navigateurs
+      mediaQuery.addListener(handleChange);
+    }
+    
+    // Nettoyage
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
+    };
+  }, []);
 
   // Utiliser useCallback pour memoizer la fonction et éviter les dépendances cycliques
   const updateColorInfo = useCallback((color) => {
@@ -141,6 +210,13 @@ export const ColorProvider = ({ children }) => {
     
     return false;
   };
+
+  // Fonction modifiée pour changer le mode sombre/clair
+  const toggleDarkMode = () => {
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    saveUserTheme(newIsDark); // Enregistrer le choix de l'utilisateur
+  };
   
   const value = {
     secondaryColor,
@@ -151,7 +227,7 @@ export const ColorProvider = ({ children }) => {
     setColorByName,      // Fonction pour définir une couleur par son nom
     saveUserColor,       // Fonction pour enregistrer la couleur choisie par l'utilisateur
     isDark,
-    setIsDark,
+    setIsDark: toggleDarkMode, // Remplacer setIsDark par toggleDarkMode pour enregistrer les préférences
     isLoading
   };
   

@@ -11,6 +11,7 @@ import Education from './components/Education';
 import Contact from './components/Contact';
 import { useColor } from './contexts/ColorContext';
 import Project from './components/Project';
+import SoftSkills from './components/SoftSkills';
 
 const AppContent = () => {
   const { isDark } = useColor();
@@ -23,6 +24,7 @@ const AppContent = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <Skills />
+              <SoftSkills />
               <Project />
               {/* Contact en desktop affiché en dessous de Project dans la première colonne */}
               <div className="hidden md:block">

@@ -1,3 +1,9 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Plan du site pour les moteurs de recherche
+Sitemap: https://creachtheo.fr/sitemap.xml
+
+# Respecter un délai de 1 seconde entre les requêtes (pour éviter la surcharge du serveur)
+Crawl-delay: 1

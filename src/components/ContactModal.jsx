@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Send, Check, AlertCircle, User, AtSign, FileText, MessageSquare } from "lucide-react";
+import { X, Mail, Send, Check, AlertCircle, User, AtSign, FileText, MessageSquare, Copy } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getTextColor } from "../utils/color";
-
 // Contenu multilingue
 const translations = {
   fr: {
@@ -25,7 +24,8 @@ const translations = {
     confirmTitle: "Confirmer l'envoi",
     confirmMessage: "Êtes-vous sûr de vouloir envoyer ce message ?",
     confirmYes: "Oui, envoyer",
-    confirmNo: "Non, annuler"
+    confirmNo: "Non, annuler",
+    emailCopied: "Email copié dans le presse-papiers !"
   },
   en: {
     title: "New message",
@@ -45,10 +45,10 @@ const translations = {
     confirmTitle: "Confirm sending",
     confirmMessage: "Are you sure you want to send this message?",
     confirmYes: "Yes, send",
-    confirmNo: "No, cancel"
+    confirmNo: "No, cancel",
+    emailCopied: "Email copied to clipboard!"
   }
 };
-
 const ContactModal = ({ isOpen, onClose }) => {
   const { secondaryColor, isDark } = useColor();
   const { language } = useLanguage();
@@ -82,6 +82,9 @@ const ContactModal = ({ isOpen, onClose }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   
+  // État pour le message de copie d'email
+  const [showCopyMessage, setShowCopyMessage] = useState(false);
+  
   // Gestion des changements dans les champs du formulaire
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,6 +92,18 @@ const ContactModal = ({ isOpen, onClose }) => {
       ...prev,
       [name]: value
     }));
+  };
+  
+  // Fonction pour copier l'email
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText("creach.t@gmail.com")
+      .then(() => {
+        setShowCopyMessage(true);
+        setTimeout(() => setShowCopyMessage(false), 2000);
+      })
+      .catch(err => {
+        console.error('Erreur lors de la copie:', err);
+      });
   };
   
   // Réinitialiser le formulaire
@@ -323,9 +338,9 @@ const ContactModal = ({ isOpen, onClose }) => {
               
               <form onSubmit={handleSubmitRequest}>
                 <div className="space-y-4">
-                  {/* À: (destinataire) */}
+                  {/* À: (destinataire) avec copie au clic */}
                   <div 
-                    className="flex items-center pb-3"
+                    className="flex items-center pb-3 relative"
                     style={{ borderBottom: `1px solid ${borderColor}` }}
                   >
                     <span 
@@ -335,14 +350,35 @@ const ContactModal = ({ isOpen, onClose }) => {
                       {t.to}:
                     </span>
                     <div 
-                      className="px-3 py-1 rounded-md text-sm flex-1"
+                      onClick={handleCopyEmail}
+                      className="px-3 py-1 rounded-md text-sm flex-1 flex items-center justify-between cursor-pointer hover:bg-opacity-80 transition-all"
                       style={{ 
                         backgroundColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
                         color: detailsColor
                       }}
+                      title="Cliquer pour copier"
                     >
-                      creach.t@gmail.com
+                      <span>creach.t@gmail.com</span>
+                      <Copy size={14} style={{ color: detailsColor }} className="ml-2" />
                     </div>
+                    
+                    {/* Message de confirmation de copie */}
+                    <AnimatePresence>
+                      {showCopyMessage && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute right-0 -bottom-8 z-10 text-xs px-2 py-1 rounded"
+                          style={{
+                            backgroundColor: secondaryColor,
+                            color: getTextColor(secondaryColor)
+                          }}
+                        >
+                          {t.emailCopied}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                   
                   {/* De: (expéditeur) */}
@@ -495,5 +531,4 @@ const ContactModal = ({ isOpen, onClose }) => {
     </AnimatePresence>
   );
 };
-
 export default ContactModal;

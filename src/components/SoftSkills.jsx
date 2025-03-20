@@ -12,6 +12,7 @@ const SoftSkills = () => {
   const { secondaryColor, isDark } = useColor();
   const { language } = useLanguage();
   const [softSkills, setSoftSkills] = useState([]);
+  const [hobbies, setHobbies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [flippedCards, setFlippedCards] = useState({});
 
@@ -54,11 +55,19 @@ const SoftSkills = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/data/softSkills.json");
-        const data = await response.json();
-        setSoftSkills(data);
+        // Charger les soft skills
+        const skillsResponse = await fetch("/data/softSkills.json");
+        const skillsData = await skillsResponse.json();
+        // Filtrer pour exclure les hobbies si présent dans le fichier softSkills.json
+        const filteredSkills = skillsData.filter(skill => skill.id !== 'hobbies');
+        setSoftSkills(filteredSkills);
+        
+        // Charger les hobbies depuis un fichier séparé
+        const hobbiesResponse = await fetch("/data/hobbies.json");
+        const hobbiesData = await hobbiesResponse.json();
+        setHobbies(hobbiesData);
       } catch (error) {
-        console.error("Erreur lors du chargement des soft skills :", error);
+        console.error("Erreur lors du chargement des données :", error);
       } finally {
         setIsLoading(false);
       }
@@ -82,6 +91,20 @@ const SoftSkills = () => {
     );
   }
 
+  // Calculer toutes les cartes à afficher, y compris la carte des hobbies
+  const allCards = [
+    ...softSkills,
+    {
+      id: 'hobbies',
+      icon: 'heart',
+      title: {
+        fr: 'Loisirs',
+        en: 'Hobbies'
+      },
+      color: '#F0756A'
+    }
+  ];
+
   return (
     <section className="mb-8">
       <h2 className="text-xl font-bold mb-4 pb-2 relative" style={{ color: textColor }}>
@@ -90,7 +113,7 @@ const SoftSkills = () => {
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {softSkills.map((skill) => {
+        {allCards.map((skill) => {
           const Icon = iconMap[skill.icon] || Award;
           const isFlipped = flippedCards[skill.id] || false;
           
@@ -170,21 +193,19 @@ const SoftSkills = () => {
                 {skill.id === 'hobbies' ? (
                   <div className="flex items-center h-full">
                     <div className="flex flex-wrap gap-1 w-full">
-                      <div className="flex items-center bg-opacity-20 rounded-full px-2 py-0.5"
-                           style={{ backgroundColor: `${secondaryColor}30` }}>
-                        <Wrench size={12} style={{ color: secondaryColor }} className="mr-1" />
-                        <span className="text-xs" style={{ color: textColor }}>Bricolage</span>
-                      </div>
-                      <div className="flex items-center bg-opacity-20 rounded-full px-2 py-0.5"
-                           style={{ backgroundColor: `${secondaryColor}30` }}>
-                        <Cpu size={12} style={{ color: secondaryColor }} className="mr-1" />
-                        <span className="text-xs" style={{ color: textColor }}>Électronique</span>
-                      </div>
-                      <div className="flex items-center bg-opacity-20 rounded-full px-2 py-0.5"
-                           style={{ backgroundColor: `${secondaryColor}30` }}>
-                        <Leaf size={12} style={{ color: secondaryColor }} className="mr-1" />
-                        <span className="text-xs" style={{ color: textColor }}>Nature</span>
-                      </div>
+                      {hobbies.map((hobby) => {
+                        const HobbyIcon = iconMap[hobby.icon] || Heart;
+                        return (
+                          <div
+                            key={hobby.id}
+                            className="flex items-center bg-opacity-20 rounded-full px-2 py-0.5"
+                            style={{ backgroundColor: `${secondaryColor}30` }}
+                          >
+                            <HobbyIcon size={12} style={{ color: secondaryColor }} className="mr-1" />
+                            <span className="text-xs" style={{ color: textColor }}>{hobby.title[language]}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (

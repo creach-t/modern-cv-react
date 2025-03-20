@@ -1,0 +1,29 @@
+[
+    {
+      "id": "diy",
+      "icon": "tool",
+      "title": {
+        "fr": "Bricolage",
+        "en": "DIY"
+      },
+      "color": "#F0756A"
+    },
+    {
+      "id": "electronics",
+      "icon": "cpu",
+      "title": {
+        "fr": "Électronique", 
+        "en": "Electronics"
+      },
+      "color": "#F0756A"
+    },
+    {
+      "id": "nature",
+      "icon": "leaf",
+      "title": {
+        "fr": "Nature",
+        "en": "Nature"
+      },
+      "color": "#F0756A"
+    }
+  ]

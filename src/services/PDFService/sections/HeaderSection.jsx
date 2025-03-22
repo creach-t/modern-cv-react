@@ -53,18 +53,17 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
             // Déterminer la configuration d'icône spécifique
             const iconType = contact.type || 'document';
             const iconConfig = contactIcons[iconType] || {};
-            const iconColor = iconConfig.color || 'white';
-            const iconBgColor = iconConfig.backgroundColor || secondaryColor;
+            const iconColor = iconConfig.color || secondaryColor;
             const iconSize = headerOptions.contactIconSize || 16;
             
             return (
               <View key={index} style={[styles.contactItem, dynamicStyles.contactItemBackground]}>
-                {/* Icône du contact */}
+                {/* Icône du contact sans fond */}
                 <View style={styles.contactIcon}>
                   {getContactIcon(iconType, {
                     color: iconColor,
-                    backgroundColor: iconBgColor,
-                    size: iconSize
+                    size: iconSize,
+                    // Ne pas définir de backgroundColor pour supprimer le fond bleu
                   })}
                 </View>
                 

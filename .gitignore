@@ -44,4 +44,4 @@ $RECYCLE.BIN/
 
 # temporary folders
 tmp/
-temp/
+temp/build/

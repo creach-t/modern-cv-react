@@ -1,21 +1,8 @@
 // src/services/PDFService/sections/HeaderSection.jsx
 
 import React from 'react';
-import { Text, View, Image, Link, Svg, Path } from '@react-pdf/renderer';
-import icons from '../icons';
-
-// Composant simple d'icône
-const ContactIcon = ({ type, color = 'white', backgroundColor = '#0077cc', size = 16 }) => {
-  // Fallback pour les types d'icônes non reconnus
-  const iconType = icons[type] ? type : 'document';
-  
-  // Créer l'icône
-  const IconComponent = icons[iconType];
-  
-  return IconComponent ? 
-    <IconComponent color={color} backgroundColor={backgroundColor} size={size} /> :
-    <View style={{ width: size, height: size, backgroundColor, borderRadius: size/2 }} />;
-};
+import { Text, View, Image, Link } from '@react-pdf/renderer';
+import { getContactIcon } from '../icons/ContactIcons';
 
 /**
  * Section d'en-tête du CV inspirée du header du site web
@@ -35,6 +22,7 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
   
   // Couleur secondaire pour les icônes
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
+  const headerTextColor = dynamicStyles.headerTextColor?.color || 'white';
   
   return (
     <View style={[styles.header, dynamicStyles.headerBackground]}>
@@ -61,27 +49,35 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
 
         {/* Liens de contact */}
         <View style={styles.contactsContainer}>
-          {userData.contacts.map((contact, index) => (
-            <View key={index} style={[styles.contactItem, dynamicStyles.contactItemBackground]}>
-              {/* Test 1: Icône simple */}
-              <View style={{
-                width: 16,
-                height: 16,
-                backgroundColor: secondaryColor,
-                borderRadius: 8,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }} />
-              
-              {contact.url ? (
-                <Link src={contact.url} style={styles.contactLink}>
+          {userData.contacts.map((contact, index) => {
+            // Déterminer la configuration d'icône spécifique
+            const iconType = contact.type || 'document';
+            const iconConfig = contactIcons[iconType] || {};
+            const iconColor = iconConfig.color || 'white';
+            const iconBgColor = iconConfig.backgroundColor || secondaryColor;
+            const iconSize = headerOptions.contactIconSize || 16;
+            
+            return (
+              <View key={index} style={[styles.contactItem, dynamicStyles.contactItemBackground]}>
+                {/* Icône du contact */}
+                <View style={styles.contactIcon}>
+                  {getContactIcon(iconType, {
+                    color: iconColor,
+                    backgroundColor: iconBgColor,
+                    size: iconSize
+                  })}
+                </View>
+                
+                {contact.url ? (
+                  <Link src={contact.url} style={styles.contactLink}>
+                    <Text style={[styles.contactText, dynamicStyles.headerTextColor]}>{contact.value}</Text>
+                  </Link>
+                ) : (
                   <Text style={[styles.contactText, dynamicStyles.headerTextColor]}>{contact.value}</Text>
-                </Link>
-              ) : (
-                <Text style={[styles.contactText, dynamicStyles.headerTextColor]}>{contact.value}</Text>
-              )}
-            </View>
-          ))}
+                )}
+              </View>
+            );
+          })}
         </View>
       </View>
     </View>

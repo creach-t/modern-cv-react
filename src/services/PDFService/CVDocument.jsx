@@ -40,7 +40,7 @@ const CVDocument = ({ userData, userConfig = {}, language }) => {
         size={config.document.size} 
         style={{
           ...baseStyles.page,
-          padding: config.document.padding
+          padding: 0 // Forcer à 0 pour supprimer toutes les marges
         }}
       >
         {/* En-tête (sections communes) */}

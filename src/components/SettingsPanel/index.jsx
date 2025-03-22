@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ColorPicker from "./ColorPicker";
 import DarkModeToggler from "./DarkModeToggler";
 import LanguageToggler from "./LanguageToggler";
-import PdfExportButton from "../ui/PdfExportButton";
+import PdfExportButton from "./PdfExportButton";
 import { Settings } from "lucide-react";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";

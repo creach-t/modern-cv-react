@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import { useColor } from "../../contexts/ColorContext";
-import { useLanguage } from "../../contexts/LanguageContext";
+import { useColor } from "../../../contexts/ColorContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 import { Code, Coffee, Skull, FileCode, ChevronLeft, ChevronRight } from "lucide-react";
-import ProjectSlider from "../ui/ProjectSlider";
+import ProjectSlider from "./ProjectSlider";
 
 // Nombre de projets visibles par slide
 const PROJECTS_PER_SLIDE = 1;

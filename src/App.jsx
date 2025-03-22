@@ -2,9 +2,9 @@ import React from 'react';
 import { ColorProvider } from './contexts/ColorContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ContactModalProvider } from './contexts/ContactModalContext';
-import { Github } from 'lucide-react';
-import SettingPanel from './components/settings/SettingsPanel';
+import SettingPanel from './components/SettingsPanel';
 import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import Skills from './components/sections/Skills';
 import Experience from './components/sections/Experience';
 import Education from './components/sections/Education';
@@ -43,19 +43,7 @@ const AppContent = () => {
           </div>
         </main>
         <SettingPanel />
-        
-        {/* Lien GitHub discret en bas de page */}
-        <footer className="container mx-auto px-4 py-4 text-center">
-          <a 
-            href="https://github.com/creach-t/modern-cv-react" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-block text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 opacity-50 hover:opacity-100 transition-all duration-200"
-            aria-label="Lien vers le dépôt GitHub"
-          >
-            <Github size={24} />
-          </a>
-        </footer>
+        <Footer />
       </div>
     </div>
   );

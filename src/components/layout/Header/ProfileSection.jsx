@@ -4,7 +4,7 @@ import { titles, wiggleAnimation } from "../../../constants/headerConstants";
 import { headerTranslations } from "../../../constants/headerTranslations";
 import { useLanguage } from "../../../contexts/LanguageContext";
 import { titleAnimations, slideConfig, opacityConfig } from "../../../config/animationConfig";
-import AvailableBadge from "../../ui/AvailableBadge";
+import AvailableBadge from "./AvailableBadge";
 
 const ProfileSection = ({ textColor, index, animation, scrollProgress }) => {
   const { language } = useLanguage();

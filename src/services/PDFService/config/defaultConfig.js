@@ -49,7 +49,14 @@ const defaultConfig = {
         options: {
           showProfilePicture: true,
           showContacts: true,
-          profilePictureSize: 70
+          profilePictureSize: 70,
+          profilePictureBorderWidth: 2,
+          profilePictureBorderColor: 'white',
+          useFullSecondaryColor: true, // Utiliser la couleur secondaire pleine (sans transparence)
+          contactItemStyle: 'pill', // 'pill', 'flat', 'underline'
+          contactIconSize: 16,
+          contactTextColor: 'auto', // 'auto', 'white', 'black', or any color code
+          contactItemPadding: 5
         }
       },
       skills: {
@@ -178,6 +185,47 @@ const defaultConfig = {
         paddingBottom: 5,
         marginBottom: 10
       }
+    },
+    
+    // Configuration des icônes de contact
+    contactIcons: {
+      email: {
+        type: 'material', // 'material', 'custom'
+        name: 'email',
+        color: 'white',
+        backgroundColor: '#0077cc', // Par défaut, utilisera la couleur secondaire
+      },
+      phone: {
+        type: 'material',
+        name: 'phone',
+        color: 'white',
+        backgroundColor: '#0077cc',
+      },
+      website: {
+        type: 'material',
+        name: 'language',
+        color: 'white',
+        backgroundColor: '#0077cc',
+      },
+      linkedin: {
+        type: 'material',
+        name: 'linkedin',
+        color: 'white',
+        backgroundColor: '#0077cc',
+      },
+      github: {
+        type: 'material',
+        name: 'code',
+        color: 'white',
+        backgroundColor: '#0077cc',
+      },
+      location: {
+        type: 'material',
+        name: 'location_on',
+        color: 'white',
+        backgroundColor: '#0077cc',
+      },
+      // Vous pouvez ajouter d'autres types de contact ici
     }
   };
   

@@ -23,6 +23,7 @@ class LayoutManager {
    */
   createHeader(userData) {
     const commonSections = this.configManager.getLayoutConfig().commonSections;
+    const fullConfig = this.configManager.getConfig();
     
     return commonSections.map(sectionName => {
       const SectionComponent = createSectionComponent(sectionName);
@@ -40,7 +41,7 @@ class LayoutManager {
           dynamicStyles={this.dynamicStyles}
           translations={this.translations}
           language={this.language}
-          config={sectionConfig}
+          config={fullConfig}
         />
       );
     });
@@ -90,6 +91,7 @@ class LayoutManager {
    */
   createSingleColumnLayout(userData) {
     const { columns } = this.configManager.getVisibleSections();
+    const fullConfig = this.configManager.getConfig();
     const allSections = [...columns[0], ...(columns[1] || [])].sort((a, b) => {
       const orderA = this.configManager.getSectionConfig(a).order;
       const orderB = this.configManager.getSectionConfig(b).order;
@@ -114,7 +116,7 @@ class LayoutManager {
               dynamicStyles={this.dynamicStyles}
               translations={this.translations}
               language={this.language}
-              config={sectionConfig}
+              config={fullConfig}
             />
           );
         })}
@@ -130,6 +132,7 @@ class LayoutManager {
   createMultiColumnLayout(userData) {
     const { columns, columnWidths } = this.configManager.getVisibleSections();
     const spaceBetween = this.configManager.getLayoutConfig().spaceBetweenColumns;
+    const fullConfig = this.configManager.getConfig();
     
     return (
       <View style={{
@@ -164,7 +167,7 @@ class LayoutManager {
                   dynamicStyles={this.dynamicStyles}
                   translations={this.translations}
                   language={this.language}
-                  config={sectionConfig}
+                  config={fullConfig}
                 />
               );
             })}

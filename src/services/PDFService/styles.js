@@ -1,6 +1,7 @@
 // src/services/PDFService/styles.js
 
 import { StyleSheet } from '@react-pdf/renderer';
+import { getContrastTextColor } from './utils';
 
 /**
  * Calcule l'espacement en fonction de la densité
@@ -27,6 +28,9 @@ const getDensitySpacing = (density) => {
 export const buildStylesFromConfig = (config) => {
   const { style, sections } = config;
   const { colors, fonts, sectionTitle } = style;
+  
+  // Déterminer la couleur de texte optimale pour le header
+  const headerTextColor = getContrastTextColor(colors.secondary);
   
   // Construire les styles de base
   const baseStyles = StyleSheet.create({
@@ -93,6 +97,7 @@ export const buildStylesFromConfig = (config) => {
       height: sections.header?.options?.profilePictureSize || 70,
       borderRadius: (sections.header?.options?.profilePictureSize || 70) / 2,
       border: '2pt solid white',
+      objectFit: 'cover',
     },
     nameSection: {
       gap: 5,
@@ -100,6 +105,7 @@ export const buildStylesFromConfig = (config) => {
     name: {
       fontSize: fonts.sizes.name,
       fontWeight: 'bold',
+      color: headerTextColor,
     },
     titleContainer: {
       flexDirection: 'row',
@@ -108,10 +114,12 @@ export const buildStylesFromConfig = (config) => {
     title: {
       fontSize: fonts.sizes.title,
       opacity: 0.85,
+      color: headerTextColor,
     },
     titleHighlight: {
       fontSize: fonts.sizes.title,
       fontWeight: 'medium',
+      color: headerTextColor,
     },
     contactsContainer: {
       flexDirection: 'row',
@@ -140,6 +148,7 @@ export const buildStylesFromConfig = (config) => {
     },
     contactText: {
       fontSize: fonts.sizes.small,
+      color: headerTextColor,
     },
     contactLink: {
       textDecoration: 'none',
@@ -295,7 +304,10 @@ export const buildStylesFromConfig = (config) => {
       borderBottomColor: colors.secondary,
     },
     headerBackground: {
-      backgroundColor: colors.background.header || (colors.secondary + '15'),
+      backgroundColor: colors.secondary, // Couleur secondaire pleine
+    },
+    headerTextColor: {
+      color: headerTextColor,
     },
     leftColumnBorder: {
       borderRightColor: colors.secondary + '30',

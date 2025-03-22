@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
+import { SkillIcon, getTechnologyIconName } from '../icons/SkillIcons';
 
 /**
  * Section des compétences techniques
@@ -9,11 +10,17 @@ import { Text, View } from '@react-pdf/renderer';
  * @param {Object} styles - Styles de base
  * @param {Object} dynamicStyles - Styles dynamiques basés sur la couleur
  * @param {Object} translations - Traductions
+ * @param {Object} config - Configuration complète
  * @returns {React.Component} - Section des compétences
  */
-export const SkillsSection = ({ userData, styles, dynamicStyles, translations }) => {
+export const SkillsSection = ({ userData, styles, dynamicStyles, translations, config }) => {
   // Vérifier si userData.skills existe, sinon utiliser un tableau vide
   const skills = userData?.skills || [];
+  
+  // Options de la section skills
+  const skillsOptions = config?.sections?.skills?.options || {};
+  const showIcons = skillsOptions.showIcons !== false; // Par défaut true
+  const iconSize = skillsOptions.iconSize || 16;
 
   return (
     <View style={[styles.section, styles.skillsSection]}>
@@ -31,11 +38,20 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations })
             .filter(skill => skill.level > 2)
             .sort((a, b) => b.level - a.level)
             .map((skill, skillIndex) => (
-              <Text key={skillIndex} style={styles.skillItem}>
-                • {skill.name}
-              </Text>
-            ))
-          }
+              <View key={skillIndex} style={styles.skillItemContainer}>
+                {showIcons && (
+                  <View style={styles.skillIconContainer}>
+                    <SkillIcon 
+                      name={skill.icon || getTechnologyIconName(skill.name)} 
+                      size={iconSize} 
+                    />
+                  </View>
+                )}
+                <Text style={styles.skillItem}>
+                  {skill.name}
+                </Text>
+              </View>
+            ))}
         </View>
       ))}
     </View>

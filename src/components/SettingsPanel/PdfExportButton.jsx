@@ -4,10 +4,16 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { useColor } from "../../contexts/ColorContext";
 import generatePDF from "../../services/PDFService";
 
-const PdfExportButton = ({ onClick }) => {
+// Vous pourriez créer un hook personnalisé ou un contexte pour gérer la configuration du PDF
+// import { usePdfConfig } from "../../contexts/PdfConfigContext";
+
+const PdfExportButton = ({ onClick, pdfConfig = null }) => {
   const { language } = useLanguage();
   const { secondaryColor } = useColor();
   const [isExporting, setIsExporting] = useState(false);
+  
+  // Si vous avez un contexte de configuration, vous pourriez l'utiliser ici
+  // const { pdfConfig } = usePdfConfig();
   
   const exportToPdf = async () => {
     // Notifier la fonction parent si fournie
@@ -38,8 +44,14 @@ const PdfExportButton = ({ onClick }) => {
       
       // Délai pour permettre au message de s'afficher
       setTimeout(async () => {
-        // Appel à la fonction generatePDF du service
-        const success = await generatePDF(language, secondaryColor);
+        // Si une configuration personnalisée est fournie, l'utiliser
+        // Sinon, créer une configuration basique avec la couleur secondaire
+        const config = pdfConfig || { 
+          style: { colors: { secondary: secondaryColor } }
+        };
+        
+        // Appel à la fonction generatePDF du service avec la configuration
+        const success = await generatePDF(language, config);
         
         // Supprimer le message d'exportation
         document.body.removeChild(exportingMessage);
@@ -71,7 +83,7 @@ const PdfExportButton = ({ onClick }) => {
       setIsExporting(false);
     }
   };
-
+  
   return (
     <button
       onClick={exportToPdf}

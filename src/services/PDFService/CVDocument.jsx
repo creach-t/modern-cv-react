@@ -1,89 +1,56 @@
 // src/services/PDFService/CVDocument.jsx
 
 import React from 'react';
-import { Document, Page, Text, View } from '@react-pdf/renderer';
-import { baseStyles, getDynamicStyles } from './styles';
+import { Document, Page } from '@react-pdf/renderer';
+import { buildStylesFromConfig } from './styles';
 import { getTranslations } from './translations';
-import { HeaderSection } from './sections/HeaderSection';
-import { SkillsSection } from './sections/SkillsSection';
-import { SoftSkillsSection } from './sections/SoftSkillsSection';
-import { ProjectsSection } from './sections/ProjectsSection';
-import { ExperienceSection } from './sections/ExperienceSection';
-import { EducationSection } from './sections/EducationSection';
+import LayoutManager from './layout/layoutManager';
+import ConfigManager from './config/configManager';
 
 /**
  * Composant principal du document PDF
  * @param {Object} userData - Données utilisateur formatées
- * @param {string} secondaryColor - Couleur secondaire du thème
+ * @param {Object} userConfig - Configuration personnalisée (optionnel)
  * @param {string} language - Langue ('fr' ou 'en')
  * @returns {React.Component} - Document PDF
  */
-const CVDocument = ({ userData, secondaryColor, language }) => {
-  const dynamicStyles = getDynamicStyles(secondaryColor);
+const CVDocument = ({ userData, userConfig = {}, language }) => {
+  // Créer le gestionnaire de configuration avec les paramètres utilisateur
+  const configManager = new ConfigManager(userConfig);
+  const config = configManager.getConfig();
+  
+  // Obtenir les styles basés sur la configuration
+  const { baseStyles, dynamicStyles } = buildStylesFromConfig(config);
+  
+  // Obtenir les traductions
   const translations = getTranslations(language);
+  
+  // Créer le gestionnaire de layout
+  const layoutManager = new LayoutManager(
+    configManager,
+    baseStyles,
+    dynamicStyles,
+    translations,
+    language
+  );
 
   return (
     <Document>
-      <Page size="A4" style={baseStyles.page}>
-        {/* Header section */}
-        <HeaderSection 
-          userData={userData} 
-          styles={baseStyles} 
-          dynamicStyles={dynamicStyles} 
-        />
-
-        {/* Main content with two columns */}
-        <View style={baseStyles.twoColumns}>
-          {/* Left column */}
-          <View style={baseStyles.leftColumn}>
-            <SkillsSection 
-              skills={userData.skills} 
-              styles={baseStyles} 
-              dynamicStyles={dynamicStyles} 
-              translations={translations} 
-            />
-            
-            <SoftSkillsSection 
-              softSkills={userData.softSkills} 
-              styles={baseStyles} 
-              dynamicStyles={dynamicStyles} 
-              translations={translations} 
-              language={language} 
-            />
-            
-            <ProjectsSection 
-              projects={userData.projects} 
-              styles={baseStyles} 
-              dynamicStyles={dynamicStyles} 
-              translations={translations} 
-              language={language} 
-            />
-          </View>
-
-          {/* Right column */}
-          <View style={baseStyles.rightColumn}>
-            <ExperienceSection 
-              experiences={userData.experiences} 
-              styles={baseStyles} 
-              dynamicStyles={dynamicStyles} 
-              translations={translations} 
-              language={language} 
-            />
-            
-            <EducationSection 
-              education={userData.education} 
-              styles={baseStyles} 
-              dynamicStyles={dynamicStyles} 
-              translations={translations} 
-              language={language} 
-            />
-          </View>
-        </View>
-
-        {/* Footer with generation information */}
-        <Text style={baseStyles.footer}>
-          {translations.generatedWith} Modern CV React - {new Date().toLocaleDateString()}
-        </Text>
+      <Page 
+        size={config.document.size} 
+        style={{
+          ...baseStyles.page,
+          padding: config.document.padding
+        }}
+      >
+        {/* En-tête (sections communes) */}
+        {layoutManager.createHeader(userData)}
+        
+        {/* Contenu principal */}
+        {layoutManager.createMainLayout(userData)}
+        
+        {/* Footer */}
+        {layoutManager.createFooter()}
       </Page>
     </Document>
   );

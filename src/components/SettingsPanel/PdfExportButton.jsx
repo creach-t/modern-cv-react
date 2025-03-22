@@ -45,10 +45,21 @@ const PdfExportButton = ({ onClick, pdfConfig = null }) => {
       // Délai pour permettre au message de s'afficher
       setTimeout(async () => {
         // Si une configuration personnalisée est fournie, l'utiliser
-        // Sinon, créer une configuration basique avec la couleur secondaire
+        // Sinon, créer une configuration avec la couleur secondaire et sans marges
         const config = pdfConfig || { 
+          document: {
+            padding: 0 // Aucune marge
+          },
           style: { colors: { secondary: secondaryColor } }
         };
+        
+        // Si une configuration est fournie mais sans spécification sur les marges,
+        // s'assurer que les marges sont à 0
+        if (pdfConfig && !pdfConfig.document) {
+          config.document = { padding: 0 };
+        } else if (pdfConfig && pdfConfig.document && pdfConfig.document.padding !== 0) {
+          config.document.padding = 0;
+        }
         
         // Appel à la fonction generatePDF du service avec la configuration
         const success = await generatePDF(language, config);

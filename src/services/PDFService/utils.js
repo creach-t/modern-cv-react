@@ -87,3 +87,47 @@ export const deepMerge = (target, source) => {
     
     return dateObj.toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', options[format] || options.medium);
   };
+
+/**
+ * Convertit une couleur hexadécimale en RGB
+ * @param {string} hex - Couleur au format hexadécimal
+ * @returns {Object} - Objet {r, g, b}
+ */
+export const hexToRgb = (hex) => {
+  // Supprime le # si présent
+  hex = hex.replace(/^#/, '');
+  
+  // Si c'est un format court (#RGB), on le convertit en format long (#RRGGBB)
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+  
+  // Extraire les composantes r, g, b
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  return { r, g, b };
+};
+
+/**
+ * Calcule le contraste entre une couleur et le blanc/noir pour déterminer
+ * quelle couleur de texte utiliser pour une meilleure lisibilité
+ * @param {string} backgroundColor - Couleur d'arrière-plan au format hexadécimal
+ * @returns {string} - 'white' ou 'black' selon la meilleure lisibilité
+ */
+export const getContrastTextColor = (backgroundColor) => {
+  // Si la couleur n'est pas définie ou n'est pas un format hexadécimal
+  if (!backgroundColor || !backgroundColor.startsWith('#')) {
+    return 'black'; // Valeur par défaut
+  }
+  
+  const { r, g, b } = hexToRgb(backgroundColor);
+  
+  // Formule de luminosité perçue (selon WCAG)
+  // Voir: https://www.w3.org/TR/WCAG20-TECHS/G17.html
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+  // Si la luminosité est supérieure à 0.5, utiliser du texte noir, sinon du texte blanc
+  return luminance > 0.5 ? 'black' : 'white';
+};

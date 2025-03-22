@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useColor } from '../contexts/ColorContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useColor } from '../../contexts/ColorContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { 
   Target, Calendar, Puzzle, Users, BarChart2, Award, Brain,
   ArrowLeftRight, Heart, Wrench, Cpu, Leaf
 } from 'lucide-react';
 import './SoftSkills.css';
-import { getTextColor } from '../utils/color';
+import { getTextColor } from '../../utils/color';
 
 const SoftSkills = () => {
   const { secondaryColor, isDark } = useColor();

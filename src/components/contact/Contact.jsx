@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useColor } from "../contexts/ColorContext";
-import { getTextColor } from "../utils/color";
+import { useColor } from "../../contexts/ColorContext";
+import { getTextColor } from "../../utils/color";
 import { Phone, Mail, MapPin, Linkedin } from "lucide-react";
-import { useContactModal } from "../contexts/ContactModalContext";
-import { useLanguage } from "../contexts/LanguageContext";
+import { useContactModal } from "../../contexts/ContactModalContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const iconMap = {
   Phone: Phone,

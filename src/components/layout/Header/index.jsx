@@ -1,15 +1,15 @@
 import React from "react";
-import { useColor } from "../contexts/ColorContext";
-import { useLanguage } from "../contexts/LanguageContext";
-import { useContactModal } from "../contexts/ContactModalContext";
+import { useColor } from "../../../contexts/ColorContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
+import { useContactModal } from "../../../contexts/ContactModalContext";
 import { motion } from "framer-motion";
-import { getTextColor } from "../utils/color";
-import { headerTranslations } from "../constants/headerTranslations";
-import { useHeaderEffects } from "../hooks/useHeaderEffects";
-import { handleShare as shareHandler } from "../utils/shareUtils";
-import ExpandedHeader from "./header/ExpandedHeader";
-import CompactHeader from "./header/CompactHeader";
-import { scrollConfig, headerSizeConfig } from "../config/animationConfig";
+import { getTextColor } from "../../../utils/color";
+import { headerTranslations } from "../../../constants/headerTranslations";
+import { useHeaderEffects } from "../../../hooks/useHeaderEffects";
+import { handleShare as shareHandler } from "../../../utils/shareUtils";
+import ExpandedHeader from "./ExpandedHeader";
+import CompactHeader from "./CompactHeader";
+import { scrollConfig, headerSizeConfig } from "../../../config/animationConfig";
 
 const Header = () => {
   const { secondaryColor } = useColor();

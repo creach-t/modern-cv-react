@@ -1,10 +1,10 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { titles, wiggleAnimation } from "../../constants/headerConstants";
-import { headerTranslations } from "../../constants/headerTranslations";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { titleAnimations, slideConfig, opacityConfig } from "../../config/animationConfig";
-import AvailableBadge from "../AvailableBadge";
+import { titles, wiggleAnimation } from "../../../constants/headerConstants";
+import { headerTranslations } from "../../../constants/headerTranslations";
+import { useLanguage } from "../../../contexts/LanguageContext";
+import { titleAnimations, slideConfig, opacityConfig } from "../../../config/animationConfig";
+import AvailableBadge from "../../ui/AvailableBadge";
 
 const ProfileSection = ({ textColor, index, animation, scrollProgress }) => {
   const { language } = useLanguage();

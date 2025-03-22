@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Send, Check, AlertCircle, User, AtSign, FileText, MessageSquare, Copy } from "lucide-react";
-import { useColor } from "../contexts/ColorContext";
-import { useLanguage } from "../contexts/LanguageContext";
-import { getTextColor } from "../utils/color";
+import { useColor } from "../../contexts/ColorContext";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { getTextColor } from "../../utils/color";
 // Contenu multilingue
 const translations = {
   fr: {

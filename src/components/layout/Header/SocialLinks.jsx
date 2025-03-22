@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, Share2 } from "lucide-react";
-import { wiggleAnimation } from "../../constants/headerConstants";
-import ShareMenu from "../ShareMenu";
-import { socialIconsConfig } from "../../config/animationConfig";
+import { wiggleAnimation } from "../../../constants/headerConstants";
+import ShareMenu from "./ShareMenu";
+import { socialIconsConfig } from "../../../config/animationConfig";
 
 const SocialLinks = ({ 
   textColor, 

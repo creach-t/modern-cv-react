@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useColor } from '../contexts/ColorContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useColor } from '../../contexts/ColorContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { Code, Server, Terminal, Wrench, Smartphone, Beaker } from 'lucide-react';
-import SkillBadge from './SkillBadge';
+import SkillBadge from '../ui/SkillBadge';
 
 const Skills = () => {
   const { secondaryColor, isDark } = useColor();

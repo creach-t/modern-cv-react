@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FileDown } from "lucide-react";
-import { useLanguage } from "../contexts/LanguageContext";
-import { useColor } from "../contexts/ColorContext";
-import generatePDF from "../services/PDFService";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { useColor } from "../../contexts/ColorContext";
+import generatePDF from "../../services/PDFService";
 
 const PdfExportButton = ({ onClick }) => {
   const { language } = useLanguage();

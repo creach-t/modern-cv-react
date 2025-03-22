@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useColor } from '../contexts/ColorContext';
+import { useColor } from '../../contexts/ColorContext';
 
 const SkillBadge = ({
   name,

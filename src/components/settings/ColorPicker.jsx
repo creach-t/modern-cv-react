@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useColor } from "../contexts/ColorContext";
+import { useColor } from "../../contexts/ColorContext";
 import { Palette } from "lucide-react";
 
 const ColorPicker = ({ onColorChange }) => {

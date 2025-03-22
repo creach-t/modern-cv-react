@@ -3,15 +3,15 @@ import { ColorProvider } from './contexts/ColorContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ContactModalProvider } from './contexts/ContactModalContext';
 import { Github } from 'lucide-react';
-import SettingPanel from './components/SettingsPanel';
-import Header from './components/Header';
-import Skills from './components/Skills';
-import Experience from './components/Experience';
-import Education from './components/Education';
-import Contact from './components/Contact';
+import SettingPanel from './components/settings/SettingsPanel';
+import Header from './components/layout/Header';
+import Skills from './components/sections/Skills';
+import Experience from './components/sections/Experience';
+import Education from './components/sections/Education';
+import Contact from './components/contact/Contact';
 import { useColor } from './contexts/ColorContext';
-import Project from './components/Project';
-import SoftSkills from './components/SoftSkills';
+import Project from './components/sections/Project';
+import SoftSkills from './components/sections/SoftSkills';
 
 const AppContent = () => {
   const { isDark } = useColor();

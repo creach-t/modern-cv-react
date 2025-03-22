@@ -5,8 +5,8 @@ import {
   Phone, 
   Link2
 } from "lucide-react";
-import { useColor } from "../contexts/ColorContext";
-import { useLanguage } from "../contexts/LanguageContext";
+import { useColor } from "../../../contexts/ColorContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 const translations = {
   fr: {

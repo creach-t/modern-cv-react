@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useColor } from "../contexts/ColorContext";
-import { useLanguage } from "../contexts/LanguageContext";
+import { useColor } from "../../contexts/ColorContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 import { GraduationCap, Calendar, MapPin, Book, Briefcase, Code, Wrench } from "lucide-react";
-import SkillBadge from "./SkillBadge";
+import SkillBadge from "../ui/SkillBadge";
 
 const Education = () => {
   const { secondaryColor, isDark } = useColor();

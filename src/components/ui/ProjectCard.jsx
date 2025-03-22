@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 import SkillBadge from "./SkillBadge";
-import { getTextColor } from "../utils/color";
+import { getTextColor } from "../../utils/color";
 
 const ProjectCard = ({ 
   project, 

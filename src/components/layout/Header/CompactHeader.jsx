@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import SocialLinks from "./SocialLinks";
-import AvailableBadge from "../AvailableBadge";
-import { slideConfig, hoverConfig, opacityConfig } from "../../config/animationConfig";
+import AvailableBadge from "../../ui/AvailableBadge";
+import { slideConfig, hoverConfig, opacityConfig } from "../../../config/animationConfig";
 
 const CompactHeader = ({ 
   textColor, 

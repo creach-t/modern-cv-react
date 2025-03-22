@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { SkillIcon, getTechnologyIconName } from '../icons/SkillIcons';
+import { SkillIconColored, getTechnologyIconName } from '../icons/SkillIcons';
 
 /**
  * Section des compétences techniques
@@ -21,6 +21,7 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
   const skillsOptions = config?.sections?.skills?.options || {};
   const showIcons = skillsOptions.showIcons !== false; // Par défaut true
   const iconSize = skillsOptions.iconSize || 16;
+  const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
 
   return (
     <View style={[styles.section, styles.skillsSection]}>
@@ -41,9 +42,10 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
               <View key={skillIndex} style={styles.skillItemContainer}>
                 {showIcons && (
                   <View style={styles.skillIconContainer}>
-                    <SkillIcon 
-                      name={skill.icon || getTechnologyIconName(skill.name)} 
+                    <SkillIconColored 
+                      name={skill.name} 
                       size={iconSize} 
+                      color={secondaryColor}
                     />
                   </View>
                 )}

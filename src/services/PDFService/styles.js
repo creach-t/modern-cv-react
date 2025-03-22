@@ -29,8 +29,39 @@ export const buildStylesFromConfig = (config) => {
   const { style, sections } = config;
   const { colors, fonts, sectionTitle } = style;
   
-  // Déterminer la couleur de texte optimale pour le header
-  const headerTextColor = getContrastTextColor(colors.secondary);
+  // Options du header
+  const headerOptions = sections.header?.options || {};
+  
+  // Déterminer la couleur de texte pour le header
+  let headerTextColor = headerOptions.contactTextColor || 'auto';
+  if (headerTextColor === 'auto') {
+    headerTextColor = getContrastTextColor(colors.secondary);
+  }
+  
+  // Définir les styles de contact selon le style choisi
+  let contactItemStyles = {};
+  switch (headerOptions.contactItemStyle || 'pill') {
+    case 'flat':
+      contactItemStyles = {
+        backgroundColor: 'transparent',
+        padding: headerOptions.contactItemPadding || 3,
+      };
+      break;
+    case 'underline':
+      contactItemStyles = {
+        backgroundColor: 'transparent',
+        padding: headerOptions.contactItemPadding || 3,
+        borderBottom: `1pt solid ${colors.secondary}`,
+      };
+      break;
+    case 'pill':
+    default:
+      contactItemStyles = {
+        backgroundColor: colors.secondary + '15',
+        padding: headerOptions.contactItemPadding || 3,
+        borderRadius: 3,
+      };
+  }
   
   // Construire les styles de base
   const baseStyles = StyleSheet.create({
@@ -86,6 +117,7 @@ export const buildStylesFromConfig = (config) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       flexWrap: 'wrap',
+      padding: 10,
     },
     profileSection: {
       flexDirection: 'row',
@@ -93,10 +125,10 @@ export const buildStylesFromConfig = (config) => {
       gap: 15,
     },
     profilePicture: {
-      width: sections.header?.options?.profilePictureSize || 70,
-      height: sections.header?.options?.profilePictureSize || 70,
-      borderRadius: (sections.header?.options?.profilePictureSize || 70) / 2,
-      border: '2pt solid white',
+      width: headerOptions.profilePictureSize || 70,
+      height: headerOptions.profilePictureSize || 70,
+      borderRadius: (headerOptions.profilePictureSize || 70) / 2,
+      border: `${headerOptions.profilePictureBorderWidth || 2}pt solid ${headerOptions.profilePictureBorderColor || 'white'}`,
       objectFit: 'cover',
     },
     nameSection: {
@@ -131,20 +163,22 @@ export const buildStylesFromConfig = (config) => {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 5,
-      backgroundColor: '#f8f8f8',
-      padding: 3,
-      borderRadius: 3,
+      ...contactItemStyles,
     },
     contactIcon: {
-      width: 16,
-      height: 16,
-      borderRadius: 8,
+      width: headerOptions.contactIconSize || 16,
+      height: headerOptions.contactIconSize || 16,
       justifyContent: 'center',
       alignItems: 'center',
     },
-    iconShape: {
-      width: 10,
-      height: 10,
+    contactIconCircle: {
+      width: (headerOptions.contactIconSize || 16) - 2,
+      height: (headerOptions.contactIconSize || 16) - 2,
+      borderRadius: ((headerOptions.contactIconSize || 16) - 2) / 2,
+      backgroundColor: colors.secondary,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     contactText: {
       fontSize: fonts.sizes.small,
@@ -304,7 +338,7 @@ export const buildStylesFromConfig = (config) => {
       borderBottomColor: colors.secondary,
     },
     headerBackground: {
-      backgroundColor: colors.secondary, // Couleur secondaire pleine
+      backgroundColor: headerOptions.useFullSecondaryColor ? colors.secondary : (colors.secondary + '15'),
     },
     headerTextColor: {
       color: headerTextColor,

@@ -38,6 +38,7 @@ const Header = () => {
   
   return (
     <>
+      
       {/* Spacer div qui prend la même hauteur que le header */}
       <div style={{ height: headerHeight }}></div>
       

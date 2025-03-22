@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ColorPicker from "./ColorPicker";
 import DarkModeToggler from "./DarkModeToggler";
 import LanguageToggler from "./LanguageToggler";
+import PdfExportButton from "./PdfExportButton";
 import { Settings } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -74,6 +75,12 @@ const SettingsPanel = () => {
         />
         <LanguageToggler 
           onClick={() => handleSettingChange(toggleLanguage)} 
+        />
+        <PdfExportButton 
+          onClick={() => {
+            // Ne pas fermer le panneau pendant l'export
+            // car l'utilisateur pourrait vouloir choisir des options d'export
+          }} 
         />
       </div>
     </div>

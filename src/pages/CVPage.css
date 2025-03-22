@@ -1,0 +1,253 @@
+/* src/pages/CVPage.css */
+
+.cv-page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .cv-page-header {
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .cv-page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  /* Styles des messages */
+  .message {
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  .message.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Layout principal */
+  .cv-page-content {
+    display: flex;
+    gap: 30px;
+  }
+  
+  /* Panneau de contrôle */
+  .cv-controls {
+    width: 250px;
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cv-controls h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+  }
+  
+  .control-group {
+    margin-bottom: 25px;
+  }
+  
+  .control-group h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  
+  .control-group h4 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: #6c757d;
+  }
+  
+  /* Boutons de langue */
+  .language-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .language-buttons button {
+    padding: 8px 15px;
+    border: 1px solid #ced4da;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .language-buttons button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #0069d9;
+  }
+  
+  .language-buttons button:hover:not(.active) {
+    background-color: #f1f3f5;
+  }
+  
+  /* Sélecteur de couleur */
+  .color-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .color-input input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Couleurs prédéfinies */
+  .predefined-colors {
+    margin-top: 15px;
+  }
+  
+  .color-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .color-button {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+  }
+  
+  .color-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .color-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* Bouton de génération */
+  .generate-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .generate-button:hover {
+    background-color: #218838;
+  }
+  
+  .generate-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  /* Zone d'aperçu */
+  .cv-preview-wrapper {
+    flex-grow: 1;
+  }
+  
+  .cv-preview-wrapper h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .preview-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    overflow: auto;
+  }
+  
+  /* État de chargement et erreur */
+  .loading, .error {
+    padding: 30px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #6c757d;
+  }
+  
+  .error {
+    color: #721c24;
+    background-color: #f8d7da;
+  }
+  
+  /* Styles pour la prévisualisation du CV */
+  .cv-preview-container {
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .cv-page {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    margin: 0 auto;
+    max-width: 100%;
+    min-height: 842px; /* Approximation d'une page A4 */
+    position: relative;
+    padding: 30px;
+  }
+  
+  .preview-controls {
+    margin-bottom: 20px;
+    display: none; /* Cacher ces contrôles car ils sont déjà dans le panneau latéral */
+  }
+  
+  /* Adaptations pour les écrans plus petits */
+  @media (max-width: 900px) {
+    .cv-page-content {
+      flex-direction: column;
+    }
+    
+    .cv-controls {
+      width: 100%;
+    }
+  }

@@ -76,7 +76,7 @@
         "name": "Framer Motion",
         "level": 0,
         "logo": "/icons/framermotion-original.svg"
-      },      
+      },
       {
         "name": "EJS",
         "level": 1,
@@ -365,7 +365,7 @@
       {
         "name": "Testing Library",
         "level": 0,
-        "logo": "/icons/octopus-128x128.png"
+        "logo": "https://testing-library.com/img/octopus-128x128.png"
       },
       {
         "name": "Cypress",

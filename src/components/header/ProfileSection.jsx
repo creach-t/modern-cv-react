@@ -4,6 +4,7 @@ import { titles, wiggleAnimation } from "../../constants/headerConstants";
 import { headerTranslations } from "../../constants/headerTranslations";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { titleAnimations, slideConfig, opacityConfig } from "../../config/animationConfig";
+import AvailableBadge from "../AvailableBadge";
 
 const ProfileSection = ({ textColor, index, animation, scrollProgress }) => {
   const { language } = useLanguage();
@@ -32,17 +33,23 @@ const ProfileSection = ({ textColor, index, animation, scrollProgress }) => {
       </motion.div>
       
       <div className="text-center md:text-left">
-        <motion.h1 
-          className="text-3xl md:text-4xl font-bold mb-1" 
+        <motion.div 
           style={{ 
-            color: textColor,
             transform: `translateX(${-slideConfig.nameDistance * scrollProgress}px)`,
             opacity: 1 - (opacityConfig.nameOpacityFactor * scrollProgress),
             transition: `transform ${slideConfig.slideTransitionDuration}s ${slideConfig.slideTransitionTiming}, opacity ${opacityConfig.opacityTransitionDuration}s ${opacityConfig.opacityTransitionTiming}`
           }}
         >
-          Théo Créac'h
-        </motion.h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-1" style={{ color: textColor }}>
+            Théo Créac'h
+          </h1>
+          
+          {/* Badge juste sous le nom */}
+          <div className="mb-2">
+            <AvailableBadge />
+          </div>
+        </motion.div>
+        
         <motion.h2 
           className="text-lg md:text-xl font-medium opacity-80 flex gap-2" 
           style={{ 

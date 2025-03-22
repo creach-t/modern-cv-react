@@ -71,6 +71,9 @@ const defaultConfig = {
         options: {
           groupByCategory: true,
           showCategoryTitles: true,
+          showIcons: true, // Afficher les icônes des compétences
+          iconSize: 16, // Taille des icônes
+          iconPosition: 'left', // Position des icônes ('left', 'right')
           density: 'normal' // 'compact', 'normal', 'spacious'
         }
       },
@@ -192,38 +195,32 @@ const defaultConfig = {
       email: {
         type: 'material', // 'material', 'custom'
         name: 'email',
-        color: 'white',
-        backgroundColor: '#0077cc', // Par défaut, utilisera la couleur secondaire
+        color: '#0077cc', // Par défaut, utilisera la couleur secondaire
       },
       phone: {
         type: 'material',
         name: 'phone',
-        color: 'white',
-        backgroundColor: '#0077cc',
+        color: '#0077cc',
       },
       website: {
         type: 'material',
         name: 'language',
-        color: 'white',
-        backgroundColor: '#0077cc',
+        color: '#0077cc',
       },
       linkedin: {
         type: 'material',
         name: 'linkedin',
-        color: 'white',
-        backgroundColor: '#0077cc',
+        color: '#0077cc',
       },
       github: {
         type: 'material',
         name: 'code',
-        color: 'white',
-        backgroundColor: '#0077cc',
+        color: '#0077cc',
       },
       location: {
         type: 'material',
         name: 'location_on',
-        color: 'white',
-        backgroundColor: '#0077cc',
+        color: '#0077cc',
       },
       // Vous pouvez ajouter d'autres types de contact ici
     }

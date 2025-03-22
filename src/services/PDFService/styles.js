@@ -275,10 +275,21 @@ export const buildStylesFromConfig = (config) => {
       padding: 3,
       borderRadius: 3,
     },
+    skillItemContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 4,
+      marginLeft: 5,
+    },
+    skillIconContainer: {
+      width: (sections.skills?.options?.iconSize || 16) + 2,
+      height: (sections.skills?.options?.iconSize || 16) + 2,
+      marginRight: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
     skillItem: {
       fontSize: fonts.sizes.normal,
-      marginBottom: 2,
-      marginLeft: 5,
     },
     
     // Styles spécifiques pour la section Soft Skills

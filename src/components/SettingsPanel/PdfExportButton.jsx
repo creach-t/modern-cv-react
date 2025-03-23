@@ -102,9 +102,6 @@ const PdfExportButton = ({ onClick, pdfConfig = null }) => {
       title={language === "fr" ? "Exporter en PDF" : "Export as PDF"}
     >
       <FileDown className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-      <span className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-        {language === "fr" ? "Exporter en PDF" : "Export as PDF"}
-      </span>
     </button>
   );
 };

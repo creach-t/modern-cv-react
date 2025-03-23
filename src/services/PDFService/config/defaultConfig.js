@@ -24,11 +24,11 @@ const defaultConfig = {
       columns: [
         {
           width: '30%',
-          sections: ['skills', 'softSkills', 'projects']
+          sections: ['skills', 'softSkills']
         },
         {
           width: '70%',
-          sections: ['experience', 'education']
+          sections: ['experience', 'education', 'projects']
         }
       ],
       commonSections: ['header'], // Sections qui s'étalent sur toutes les colonnes
@@ -48,7 +48,7 @@ const defaultConfig = {
           showProfilePicture: true,
           showContacts: true,
           profilePictureSize: 60,
-          profilePictureBorderWidth: 3,
+          profilePictureBorderWidth: 2,
           profilePictureBorderColor: 'white',
           useFullSecondaryColor: true, // Utiliser la couleur secondaire pleine (sans transparence)
           contactItemStyle: 'flat', // 'pill', 'flat', 'underline'
@@ -169,7 +169,7 @@ const defaultConfig = {
         secondary: 'Roboto',
         heading: 'Roboto',
         sizes: {
-          sectionTitle: 16,
+          sectionTitle: 13,
           name: 24,
           title: 14,
           companyName: 14,

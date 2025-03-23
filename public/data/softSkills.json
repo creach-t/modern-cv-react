@@ -1,80 +1,74 @@
 [
-    {
-      "id": "precision",
-      "icon": "target",
-      "title": {
-        "fr": "Rigueur",
-        "en": "Precision"
-      },
-      "description": {
-        "fr": "Je suis précisément les tâches et procédures.",
-        "en": "I precisely follow tasks and procedures."
-      },
-      "color": "#4A6FA5"
+  {
+    "id": "precision",
+    "icon": "target",
+    "title": {
+      "fr": "Rigueur",
+      "en": "Precision"
     },
-    {
-      "id": "planning",
-      "icon": "calendar",
-      "title": {
-        "fr": "Planification",
-        "en": "Planning"
-      },
-      "description": {
-        "fr": "J'aime programmer en avance les choses à faire.",
-        "en": "I plan things well in advance."
-      },
-      "color": "#47A8BD"
-    },
-    {
-      "id": "problem-solving",
-      "icon": "puzzle",
-      "title": {
-        "fr": "Résolution de problèmes",
-        "en": "Problem Solving"
-      },
-      "description": {
-        "fr": "J'analyse pour mieux comprendre et résoudre les problèmes.",
-        "en": "I analyze to understand and solve complex problems."
-      },
-      "color": "#F26419"
-    },
-    {
-      "id": "self-improvement",
-      "icon": "bar-chart-2",
-      "title": {
-        "fr": "Auto-évaluation",
-        "en": "Self-improvement"
-      },
-      "description": {
-        "fr": "Je sais comment m'améliorer.",
-        "en": "I know how to improve myself."
-      },
-      "color": "#6B9080"
-    },
-    {
-      "id": "leadership",
-      "icon": "users",
-      "title": {
-        "fr": "Leadership",
-        "en": "Leadership"
-      },
-      "description": {
-        "fr": "Je fédère autour d'une vision commune.",
-        "en": "I unite teams around a shared vision."
-      },
-      "color": "#9B5DE5"
-    },
-    {
-      "id": "hobbies",
-      "icon": "heart",
-      "title": {
-        "fr": "Hobbies",
-        "en": "Hobbies"
-      },
-      "description": {
-        "fr": "",
-        "en": ""
-      },
-      "color": "#F0756A"
+    "description": {
+      "fr": "Je suis précisément les tâches et procédures.",
+      "en": "I precisely follow tasks and procedures."
     }
-  ]
+  },
+  {
+    "id": "planning",
+    "icon": "calendar",
+    "title": {
+      "fr": "Planification",
+      "en": "Planning"
+    },
+    "description": {
+      "fr": "J'aime programmer en avance les choses à faire.",
+      "en": "I plan things well in advance."
+    }
+  },
+  {
+    "id": "problem-solving",
+    "icon": "puzzle",
+    "title": {
+      "fr": "Résolution de problèmes",
+      "en": "Problem Solving"
+    },
+    "description": {
+      "fr": "J'analyse pour mieux comprendre et résoudre les problèmes.",
+      "en": "I analyze to understand and solve complex problems."
+    }
+  },
+  {
+    "id": "self-improvement",
+    "icon": "bar-chart-2",
+    "title": {
+      "fr": "Auto-évaluation",
+      "en": "Self-improvement"
+    },
+    "description": {
+      "fr": "Je sais comment m'améliorer.",
+      "en": "I know how to improve myself."
+    }
+  },
+  {
+    "id": "leadership",
+    "icon": "users",
+    "title": {
+      "fr": "Leadership",
+      "en": "Leadership"
+    },
+    "description": {
+      "fr": "Je fédère autour d'une vision commune.",
+      "en": "I unite teams around a shared vision."
+    }
+  },
+  {
+    "id": "hobbies",
+    "icon": "heart",
+    "title": {
+      "fr": "Hobbies",
+      "en": "Hobbies"
+    },
+    "description": {
+      "fr": "",
+      "en": ""
+    }
+  }
+]

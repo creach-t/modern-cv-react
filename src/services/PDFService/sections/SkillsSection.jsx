@@ -21,7 +21,15 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
   const skillsOptions = config?.sections?.skills?.options || {};
   const showIcons = skillsOptions.showIcons !== false; // Par défaut true
   const iconSize = skillsOptions.iconSize || 16;
-  const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
+
+  // Fonction pour grouper les compétences par paires
+  const createSkillPairs = (skills) => {
+    const pairs = [];
+    for (let i = 0; i < skills.length; i += 2) {
+      pairs.push(skills.slice(i, i + 2));
+    }
+    return pairs;
+  };
 
   return (
     <View style={[styles.section, styles.skillsSection]}>
@@ -35,25 +43,42 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
           <Text style={[styles.skillCategoryTitle, dynamicStyles.skillCategoryBackground, dynamicStyles.colorAccent]}>
             {category.category}
           </Text>
-          {category.skills
-            .filter(skill => skill.level > 2)
-            .sort((a, b) => b.level - a.level)
-            .map((skill, skillIndex) => (
-              <View key={skillIndex} style={styles.skillItemContainer}>
-                {showIcons && (
-                  <View style={styles.skillIconContainer}>
-                    <SkillIconColored 
-                      name={skill.name} 
-                      size={iconSize} 
-                      color={secondaryColor}
-                    />
-                  </View>
-                )}
-                <Text style={styles.skillItem}>
-                  {skill.name}
-                </Text>
-              </View>
-            ))}
+          
+          {/* Grouper les compétences par paires */}
+          {createSkillPairs(
+            category.skills
+              .filter(skill => skill.level > 2)
+              .sort((a, b) => b.level - a.level)
+          ).map((pair, pairIndex) => (
+            <View key={pairIndex} style={{ flexDirection: 'row', marginBottom: 4 }}>
+              {pair.map((skill, skillIndex) => (
+                <View 
+                  key={skillIndex} 
+                  style={{ 
+                    flexDirection: 'row', 
+                    alignItems: 'center',
+                    width: '50%',
+                    paddingLeft: 5,
+                  }}
+                >
+                  {showIcons && (
+                    <View style={styles.skillIconContainer}>
+                      <SkillIconColored 
+                        name={skill.name} 
+                        size={iconSize}
+                      />
+                    </View>
+                  )}
+                  <Text style={[
+                    styles.skillItem,
+                    { maxWidth: '80%', fontSize: 9 }  // Réduire légèrement la taille de police
+                  ]}>
+                    {skill.name}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ))}
         </View>
       ))}
     </View>

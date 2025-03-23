@@ -9,45 +9,45 @@ export const getContactIconType = (contact) => {
   if (!contact) return 'document';
 
   const { type, value, label } = contact;
-  
+
   // Si le type est déjà défini, on le retourne
   if (type) return type;
-  
+
   // Sinon, on le détermine en fonction de la valeur ou du label
   const lowerValue = (value || '').toLowerCase();
   const lowerLabel = (label || '').toLowerCase();
-  
+
   if (lowerValue.includes('@') || lowerLabel.includes('email') || lowerLabel.includes('mail')) {
     return 'email';
   }
-  
-  if (lowerLabel.includes('tél') || lowerLabel.includes('tel') || lowerLabel.includes('phone') || 
-      /^\+?[\d\s\(\)-]{8,}$/.test(lowerValue)) {
+
+  if (lowerLabel.includes('tél') || lowerLabel.includes('tel') || lowerLabel.includes('phone') ||
+    /^\+?[\d\s()-]{8,}$/.test(lowerValue)) {
     return 'phone';
   }
-  
+
   if (lowerValue.includes('linkedin.com') || lowerLabel.includes('linkedin')) {
     return 'linkedin';
   }
-  
+
   if (lowerValue.includes('github.com') || lowerLabel.includes('github')) {
     return 'github';
   }
-  
-  if (lowerLabel.includes('site') || lowerLabel.includes('web') || 
-      lowerValue.startsWith('http') || lowerValue.includes('.com') || lowerValue.includes('.fr')) {
+
+  if (lowerLabel.includes('site') || lowerLabel.includes('web') ||
+    lowerValue.startsWith('http') || lowerValue.includes('.com') || lowerValue.includes('.fr')) {
     return 'website';
   }
-  
+
   if (lowerLabel.includes('adresse') || lowerLabel.includes('location') || lowerLabel.includes('ville')) {
     return 'location';
   }
-  
-  if (lowerValue.includes('twitter.com') || lowerLabel.includes('twitter') || 
-      lowerValue.includes('x.com') || lowerLabel.includes('x ')) {
+
+  if (lowerValue.includes('twitter.com') || lowerLabel.includes('twitter') ||
+    lowerValue.includes('x.com') || lowerLabel.includes('x ')) {
     return 'twitter';
   }
-  
+
   // Valeur par défaut
   return 'document';
 };
@@ -67,20 +67,21 @@ export const buildUserData = async (language) => {
       fetch('/data/education.json').then(res => res.json()),
       fetch('/data/projects.json').then(res => res.json()),
       fetch('/data/contacts.json').then(res => res.json()),
+      fetch('/data/contacts.json').then(res => res.json()),
     ]);
 
     // Formattage des données de titre en fonction de la langue
-    const titleData = language === 'fr' 
-      ? { 
-          prefix: 'Développeur ', 
-          highlight: 'Full Stack ', 
-          suffix: 'JavaScript' 
-        }
-      : { 
-          prefix: 'Full Stack ', 
-          highlight: 'JavaScript ', 
-          suffix: 'Developer' 
-        };
+    const titleData = language === 'fr'
+      ? {
+        prefix: 'Développeur ',
+        highlight: 'Full Stack ',
+        suffix: 'JavaScript'
+      }
+      : {
+        prefix: 'Full Stack ',
+        highlight: 'JavaScript ',
+        suffix: 'Developer'
+      };
 
     // Ajouter le type d'icône à chaque contact s'il n'est pas déjà défini
     const formattedContacts = contacts.map(contact => ({
@@ -90,7 +91,7 @@ export const buildUserData = async (language) => {
 
     // Construction de l'objet contenant toutes les données pour le CV
     return {
-      name: 'Théo CREACH',
+      name: 'Théo Créac\'h',
       title: titleData,
       profilePicture: '/img/profil_picture.png',
       contacts: formattedContacts,

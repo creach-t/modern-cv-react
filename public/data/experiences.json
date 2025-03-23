@@ -32,6 +32,71 @@
       }
     },
     {
+      "id": "bricoman",
+      "icon": "Wrench",
+      "period": "2020 - 2025",
+      "company": {
+        "name": "Bricoman",
+        "location": "Saint-Maur-des-Fossés, France"
+      },
+      "technologies": [],
+      "tools": ["Logiciels de chiffrage", "Outils de gestion"],
+      "fr": {
+        "label": "Conseiller de vente",
+        "value": "Bricoman - Saint-Maur-des-Fossés",
+        "description": "Conseiller technique et formateur logiciels",
+        "details": [
+          "Formation des équipes aux logiciels de l'entreprise",
+          "Création de fichiers de chiffrage et devisage",
+          "Gestion SAV et commandes sur-mesure"
+        ],
+        "explanation": "Ce poste m'a permis de développer des compétences en formation technique, en résolution de problèmes complexes, et en gestion de projets sur-mesure. J'ai également acquis une rigueur méthodologique et une capacité d'analyse qui se transfèrent parfaitement au développement web."
+      },
+      "en": {
+        "label": "Sales Advisor",
+        "value": "Bricoman - Saint-Maur-des-Fossés",
+        "description": "Technical advisor and software trainer",
+        "details": [
+          "Training teams on company software",
+          "Creating pricing files and quotes",
+          "Managing after-sales service and custom orders"
+        ],
+        "explanation": "This position allowed me to develop skills in technical training, complex problem-solving, and custom project management. I also acquired methodological rigor and analytical capabilities that transfer perfectly to web development."
+      }
+    },
+    {
+      "id": "naturalia",
+      "icon": "ShoppingBag",
+      "period": "2013 - 2017",
+      "company": {
+        "name": "Naturalia",
+        "location": "Paris, France"
+      },
+      "technologies": [],
+      "tools": ["Outils de gestion", "Logiciels de planification"],
+      "fr": {
+        "label": "Responsable de magasin",
+        "value": "Naturalia - Paris",
+        "description": "Management d'équipe et gestion opérationnelle",
+        "details": [
+          "Coordination et management d'une équipe de 7+ personnes",
+          "Optimisation des processus et des ressources",
+          "Planification et suivi de projets"
+        ],
+        "explanation": "En tant que responsable de magasin, j'ai développé d'excellentes compétences en gestion de projet, communication d'équipe et résolution de problèmes. Ces soft skills sont essentielles dans le développement web, notamment pour le travail en équipe et la méthodologie agile."
+      },
+      "en": {
+        "label": "Store Manager",
+        "value": "Naturalia - Paris",
+        "description": "Team management and operational management",
+        "details": [
+          "Coordination and management of a 7+ person team",
+          "Process and resource optimization",
+          "Project planning and monitoring"
+        ],
+        "explanation": "As a store manager, I developed excellent project management, team communication and problem-solving skills. These soft skills are essential in web development, particularly for teamwork and agile methodology."
+      }
+    },{
       "id": "csf",
       "icon": "Globe",
       "period": "juin 2010 - août 2010",
@@ -61,6 +126,6 @@
         ],
         "explanation": "During this internship, I designed and developed a complete website for a primary school. I worked closely with the teaching staff to understand their needs and train them on how to use the platform."
       }
-    }
+    }   
   ]
 }

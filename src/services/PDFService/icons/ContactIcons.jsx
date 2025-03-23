@@ -122,7 +122,7 @@ export const getContactIcon = (type, props = {}) => {
   return <IconComponent {...props} />;
 };
 
-export default {
+const ContactIcons = {
   ContactIcon,
   EmailIcon,
   PhoneIcon,
@@ -134,3 +134,5 @@ export default {
   DocumentIcon,
   getContactIcon
 };
+
+export default ContactIcons;

@@ -268,7 +268,7 @@ export const buildStylesFromConfig = (config) => {
       marginBottom: 10,
     },
     skillCategoryTitle: {
-      fontSize: fonts.sizes.normal + 2,
+      fontSize: fonts.sizes.normal,
       fontWeight: 500,
       marginBottom: 5,
       backgroundColor: '#f0f0f0',

@@ -41,19 +41,17 @@ const defaultConfig = {
         visible: true,
         order: 0,
         style: {
-          padding: 20,
-          marginBottom: 20,
-          borderRadius: 5,
+          padding: 5,
           backgroundColor: '#f5f5f5'
         },
         options: {
           showProfilePicture: true,
           showContacts: true,
-          profilePictureSize: 70,
-          profilePictureBorderWidth: 2,
+          profilePictureSize: 60,
+          profilePictureBorderWidth: 3,
           profilePictureBorderColor: 'white',
           useFullSecondaryColor: true, // Utiliser la couleur secondaire pleine (sans transparence)
-          contactItemStyle: 'pill', // 'pill', 'flat', 'underline'
+          contactItemStyle: 'flat', // 'pill', 'flat', 'underline'
           contactIconSize: 16,
           contactTextColor: 'auto', // 'auto', 'white', 'black', or any color code
           contactItemPadding: 5

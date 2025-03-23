@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { SkillIconColored, getTechnologyIconName } from '../icons/SkillIcons';
+import { SkillIconColored } from '../icons/SkillIcons';
 
 /**
  * Section des compétences techniques

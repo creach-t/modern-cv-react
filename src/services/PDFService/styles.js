@@ -1,7 +1,7 @@
 // src/services/PDFService/styles.js
 
 import { StyleSheet } from '@react-pdf/renderer';
-import { getContrastTextColor } from './utils';
+import { getTextColor } from '../../utils/color';
 
 /**
  * Calcule l'espacement en fonction de la densité
@@ -35,7 +35,7 @@ export const buildStylesFromConfig = (config) => {
   // Déterminer la couleur de texte pour le header
   let headerTextColor = headerOptions.contactTextColor || 'auto';
   if (headerTextColor === 'auto') {
-    headerTextColor = getContrastTextColor(colors.secondary);
+    headerTextColor = getTextColor(colors.secondary);
   }
   
   // Définir les styles de contact selon le style choisi
@@ -128,7 +128,7 @@ export const buildStylesFromConfig = (config) => {
       width: headerOptions.profilePictureSize || 70,
       height: headerOptions.profilePictureSize || 70,
       borderRadius: (headerOptions.profilePictureSize || 70) / 2,
-      border: `${headerOptions.profilePictureBorderWidth || 2}pt solid ${headerOptions.profilePictureBorderColor || 'white'}`,
+      border: `${headerOptions.profilePictureBorderWidth || 2}pt solid ${headerTextColor}`,
       objectFit: 'cover',
     },
     nameSection: {

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Text, View, Image, Link } from '@react-pdf/renderer';
 import { getContactIcon } from '../icons/ContactIcons';
+import { getTextColor } from '../../../utils/color';
 
 /**
  * Section d'en-tête du CV inspirée du header du site web
@@ -22,7 +23,6 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
   
   // Couleur secondaire pour les icônes
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
-  const headerTextColor = dynamicStyles.headerTextColor?.color || 'white';
   
   return (
     <View style={[styles.header, dynamicStyles.headerBackground]}>
@@ -53,7 +53,7 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
             // Déterminer la configuration d'icône spécifique
             const iconType = contact.type || 'document';
             const iconConfig = contactIcons[iconType] || {};
-            const iconColor = iconConfig.color || secondaryColor;
+            const iconColor = getTextColor(secondaryColor);
             const iconSize = headerOptions.contactIconSize || 16;
             
             return (

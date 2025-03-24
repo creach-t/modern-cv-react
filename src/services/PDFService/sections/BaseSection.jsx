@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
+import { getSectionConfig } from './sectionUtils';
 
 export const BaseSection = ({ 
   title,
@@ -12,27 +13,23 @@ export const BaseSection = ({
   sectionName,
   customStyle = {}
 }) => {
-  const sectionConfig = config?.sections?.[sectionName] || {};
-  const sectionStyle = sectionConfig.style || {};
+  // Obtenir la configuration de la section spécifique
+  const sectionConfig = getSectionConfig(sectionName, config);
+  const sectionStyle = sectionConfig?.style || {};
+  
+  // Obtenir les styles de titre configurés
+  const titleStyle = config?.theme?.sectionTitle || {};
   
   return (
     <View style={[
       styles.section, 
-      sectionStyle,
+      styles[`${sectionName}Section`] || {},
       customStyle
     ]}>
       <Text style={[
         styles.sectionTitle, 
         dynamicStyles.sectionTitleBorder, 
-        dynamicStyles.colorAccent,
-        { 
-          fontSize: 13, 
-          fontWeight: 700, 
-          marginBottom: 4,
-          color: '#000',
-          textAlign: 'center',
-          padding: 2,
-        }
+        dynamicStyles.colorAccent
       ]}>
         {title}
       </Text>

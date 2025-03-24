@@ -2,12 +2,11 @@
 
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { SkillIconColored } from '../icons/SkillIcons';
 
 /**
  * Récupère la configuration d'une section spécifique
  * @param {string} sectionName - Nom de la section
- * @param {Object} config - Configuration complète
+ * @param {Object} config - Configuration globale
  * @returns {Object} - Configuration de la section
  */
 export const getSectionConfig = (sectionName, config) => {
@@ -15,77 +14,121 @@ export const getSectionConfig = (sectionName, config) => {
 };
 
 /**
- * Crée un badge de période
- * @param {string} period - Texte de la période
- * @param {string} color - Couleur d'arrière-plan du badge
- * @returns {React.Component} - Badge de période
+ * Détermine si une section est visible
+ * @param {string} sectionName - Nom de la section
+ * @param {Object} config - Configuration globale
+ * @returns {boolean} - True si la section est visible
  */
-export const renderPeriodBadge = (period, color) => {
+export const isSectionVisible = (sectionName, config) => {
+  const sectionConfig = getSectionConfig(sectionName, config);
+  return sectionConfig.visible !== false; // Par défaut, considéré comme visible
+};
+
+/**
+ * Génère un badge de période (intervalle de temps)
+ * @param {Object} period - Informations de période
+ * @param {Object} styles - Style de base du badge
+ * @param {Object} backgroundStyle - Style supplémentaire pour le fond
+ * @returns {React.Element} - Badge de période formaté
+ */
+export const renderPeriodBadge = (period, styles, backgroundStyle) => {
   if (!period) return null;
   
+  const startDate = period.start || '';
+  const endDate = period.end || 'Present';
+  
   return (
-    <Text style={{ 
-      fontSize: 6, 
-      backgroundColor: color,
-      color: 'white',
-      padding: '1 3',
-      borderRadius: 2,
-    }}>
-      {period}
+    <Text style={[styles, backgroundStyle]}>
+      {startDate} - {endDate}
     </Text>
   );
 };
 
 /**
- * Crée un rendu de badges pour les compétences/technologies
+ * Génère des badges pour technologies/compétences/outils
  * @param {Array} items - Liste des éléments à afficher
- * @param {string} secondaryColor - Couleur secondaire
- * @param {number} iconSize - Taille de l'icône
- * @returns {React.Component} - Composant de badges
+ * @param {Object} styles - Style de base des badges
+ * @param {Object} backgroundStyle - Style supplémentaire pour le fond
+ * @returns {React.Element} - Liste de badges formatés
  */
-export const renderBadges = (items, secondaryColor, iconSize = 9) => {
-  if (!items || items.length === 0) return null;
+export const renderBadges = (items, styles, backgroundStyle) => {
+  if (!items || !items.length) return null;
   
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 2, marginTop: 1 }}>
-      {items.map((item, i) => (
-        <View key={i} style={{ 
-          flexDirection: 'row', 
-          alignItems: 'center',
-          backgroundColor: '#f5f5f5',
-          padding: '1 3',
-          borderRadius: 3
-        }}>
-          {renderSkillIcon(item, iconSize, secondaryColor)}
-          <Text style={{ fontSize: 6, marginLeft: 1 }}>{item}</Text>
-        </View>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+      {items.map((item, index) => (
+        <Text key={index} style={[styles, backgroundStyle]}>
+          {typeof item === 'string' ? item : item.name}
+        </Text>
       ))}
     </View>
   );
 };
 
 /**
- * Crée un rendu d'icône pour une compétence
- * @param {string} name - Nom de la compétence
- * @param {number} iconSize - Taille de l'icône
- * @param {string} color - Couleur de l'icône
- * @returns {React.Component} - Composant d'icône
+ * Répartit des éléments équitablement en deux colonnes
+ * @param {Array} items - Liste des éléments à répartir
+ * @returns {Array} - Tableau de deux tableaux (colonnes gauche et droite)
  */
-export const renderSkillIcon = (name, iconSize, color) => {
-  try {
-    return <SkillIconColored name={name} size={iconSize} color={color} />;
-  } catch (error) {
-    return <View style={{ width: iconSize, height: iconSize }} />;
-  }
+export const createBalancedColumns = (items) => {
+  if (!items || !items.length) return [[], []];
+  
+  const itemsCopy = [...items];
+  const leftColumn = [];
+  const rightColumn = [];
+  
+  // Pour une répartition équilibrée, on alterne l'ajout dans les colonnes
+  itemsCopy.forEach((item, index) => {
+    if (index % 2 === 0) {
+      leftColumn.push(item);
+    } else {
+      rightColumn.push(item);
+    }
+  });
+  
+  return [leftColumn, rightColumn];
 };
 
 /**
- * Distribue les éléments en colonnes équilibrées
- * @param {Array} items - Liste des éléments
- * @returns {Array} - Tableau de colonnes
+ * Tronque un texte à une longueur maximale
+ * @param {string} text - Texte à tronquer
+ * @param {number} maxLength - Longueur maximale
+ * @returns {string} - Texte tronqué avec ellipse si nécessaire
  */
-export const createBalancedColumns = (items) => {
-  if (!items || !Array.isArray(items) || items.length === 0) return [[], []];
-  const midpoint = Math.ceil(items.length / 2);
-  return [items.slice(0, midpoint), items.slice(midpoint)];
+export const truncateText = (text, maxLength) => {
+  if (!text || text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
+};
+
+/**
+ * Formate une date selon le format souhaité
+ * @param {string} dateStr - Chaîne de date à formater
+ * @param {string} format - Format souhaité (par défaut: 'MM/YYYY')
+ * @returns {string} - Date formatée
+ */
+export const formatDate = (dateStr, format = 'MM/YYYY') => {
+  if (!dateStr) return '';
+  
+  try {
+    const date = new Date(dateStr);
+    
+    if (isNaN(date.getTime())) return dateStr; // Si la date est invalide, retourner la chaîne originale
+    
+    // Mois au format 2 chiffres
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    
+    if (format === 'MM/YYYY') {
+      return `${month}/${year}`;
+    } else if (format === 'YYYY') {
+      return `${year}`;
+    } else if (format === 'MM/DD/YYYY') {
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${month}/${day}/${year}`;
+    }
+    
+    return dateStr; // Format non pris en charge
+  } catch (error) {
+    return dateStr; // En cas d'erreur, retourner la chaîne originale
+  }
 };

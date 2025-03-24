@@ -43,43 +43,43 @@ export const HobbiesSection = ({ userData, styles, dynamicStyles, translations, 
       dynamicStyles={dynamicStyles}
     >
       <View style={{ 
-        marginTop: 4,
+        marginTop: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        gap: 4
+        gap: 2
       }}>
         {hobbies.map((hobby, index) => (
           <View 
             key={`hobby-${index}`} 
             style={{ 
               backgroundColor: '#f5f5f5',
-              padding: '3 8',
-              borderRadius: 5,
+              padding: '2 5',
+              borderRadius: 3,
               flexDirection: 'row',
               alignItems: 'center',
-              borderWidth: 0.5,
+              borderWidth: 0.3,
               borderColor: '#e0e0e0'
             }}
           >
             {/* Icône du hobby depuis SkillIcons */}
             <View style={{
-              width: 16,
-              height: 16,
-              marginRight: 4,
+              width: 12,
+              height: 12,
+              marginRight: 2,
               alignItems: 'center',
               justifyContent: 'center'
             }}>
               <SkillIconColored 
                 name={hobby.icon} 
-                size={14} 
+                size={10} 
                 color={secondaryColor}
               />
             </View>
             
             {/* Nom du hobby */}
             <Text style={{ 
-              fontSize: 8, 
+              fontSize: 9, 
               color: '#444444'
             }}>
               {hobby.name}

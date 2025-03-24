@@ -78,7 +78,7 @@ export const EducationSection = ({ userData, styles, dynamicStyles, translations
 
 
       {/* Description */}
-      <Text style={{ fontSize: 7, lineHeight: 1.2, color: '#555555' }}>
+      <Text style={{ fontSize: 8, lineHeight: 1.2, color: '#555555' }}>
         {edu[language]?.explanation || ""}
       </Text>
 

@@ -88,13 +88,13 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
       </Text>
       
       {/* Description très compacte */}
-      <Text style={{ fontSize: 7, lineHeight: 1.2, color: '#555555' }}>
+      <Text style={{ fontSize: 8, lineHeight: 1.2, color: '#555555' }}>
         {exp[language]?.explanation || ""}
       </Text>
       
       {/* Détails en liste très compacte */}
       {exp[language]?.details && exp[language].details.length > 0 && (
-        <View style={{ marginTop: 1 }}>
+        <View style={{ marginTop: 3 }}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {exp[language].details.map((detail, idx) => (
               <Text key={idx} style={{

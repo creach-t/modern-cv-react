@@ -10,57 +10,44 @@ import { renderBadges, createBalancedColumns, getSectionConfig, renderPeriodBadg
  */
 export const ExperienceSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   const experiences = userData?.experiences || [];
-  const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
   const sectionConfig = getSectionConfig('experience', config);
+  const options = sectionConfig?.options || {};
+  
+  // Déterminer si on affiche les expériences sur deux colonnes
+  const twoColumns = options.twoColumns !== undefined ? options.twoColumns : true;
   
   // Rendu d'une expérience en format carte
   const renderExperience = (exp) => (
-    <View style={{ 
-      marginBottom: 3,
-      border: '0.5pt solid #e0e0e0',
-      borderRadius: 3,
-      padding: 3,
-      backgroundColor: 'white'
-    }}>
+    <View style={styles.experienceItem}>
       {/* Entreprise et période */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Text style={{ 
-          fontSize: 9, 
-          fontWeight: 700, 
-          color: secondaryColor 
-        }}>
+      <View style={styles.experienceHeader}>
+        <Text style={styles.companyName}>
           {exp.company?.name || ""}
         </Text>
         
-        {renderPeriodBadge(exp.period, secondaryColor)}
+        {renderPeriodBadge(exp.period, styles.period, dynamicStyles.periodBackground)}
       </View>
       
       {/* Titre du poste */}
-      <Text style={{ 
-        fontSize: 8, 
-        fontWeight: 600,
-        marginBottom: 2,
-        color: '#444444'
-      }}>
-        {exp[language]?.label || ""}
-      </Text>
+      {options.showJobTitle !== false && (
+        <Text style={styles.jobTitle}>
+          {exp[language]?.label || ""}
+        </Text>
+      )}
       
-      {/* Description très compacte */}
-      <Text style={{ fontSize: 7, lineHeight: 1.2, color: '#555555' }}>
-        {exp[language]?.explanation || ""}
-      </Text>
+      {/* Explication */}
+      {options.showExplanation !== false && exp[language]?.explanation && (
+        <Text style={styles.explanation}>
+          {exp[language]?.explanation || ""}
+        </Text>
+      )}
       
-      {/* Détails en liste très compacte */}
-      {exp[language]?.details && exp[language].details.length > 0 && (
+      {/* Détails en liste */}
+      {options.showDetails !== false && exp[language]?.details && exp[language].details.length > 0 && (
         <View style={{ marginTop: 1 }}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {exp[language].details.map((detail, idx) => (
-              <Text key={idx} style={{ 
-                fontSize: 6.5, 
-                lineHeight: 1.2,
-                width: '100%',
-                marginBottom: 1
-              }}>
+              <Text key={idx} style={styles.bulletPoint}>
                 • {detail}
               </Text>
             ))}
@@ -68,31 +55,57 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
         </View>
       )}
       
-      {/* Section technique compacte */}
-      <View style={{ marginTop: 2, borderTop: '0.5pt dotted #e0e0e0', paddingTop: 2 }}>
-        {exp.technologies && exp.technologies.length > 0 && (
-          <View style={{ marginBottom: 1 }}>
-            <Text style={{ fontSize: 6, fontWeight: 600, color: '#555555', marginBottom: 1 }}>
-              {translations.technologies}:
-            </Text>
-            {renderBadges(exp.technologies, secondaryColor)}
-          </View>
-        )}
-        
-        {exp.tools && exp.tools.length > 0 && (
-          <View>
-            <Text style={{ fontSize: 6, fontWeight: 600, color: '#555555', marginBottom: 1 }}>
-              {translations.tools}:
-            </Text>
-            {renderBadges(exp.tools, secondaryColor)}
-          </View>
-        )}
-      </View>
+      {/* Section technique */}
+      {(options.showTechnologies !== false || options.showTools !== false) && 
+       ((exp.technologies && exp.technologies.length > 0) || (exp.tools && exp.tools.length > 0)) && (
+        <View style={styles.technicalSection}>
+          {options.showTechnologies !== false && exp.technologies && exp.technologies.length > 0 && (
+            <View style={{ marginBottom: 1 }}>
+              <Text style={styles.techLabel}>
+                {translations.technologies}:
+              </Text>
+              {renderBadges(exp.technologies, styles.technologyBadge, dynamicStyles.technologyBackground)}
+            </View>
+          )}
+          
+          {options.showTools !== false && exp.tools && exp.tools.length > 0 && (
+            <View>
+              <Text style={styles.techLabel}>
+                {translations.tools}:
+              </Text>
+              {renderBadges(exp.tools, styles.technologyBadge, dynamicStyles.technologyBackground)}
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
   
-  // Diviser les expériences en colonnes
-  const [leftColumn, rightColumn] = createBalancedColumns(experiences);
+  // Si deux colonnes, diviser les expériences équitablement
+  const renderExperiences = () => {
+    if (twoColumns) {
+      const [leftColumn, rightColumn] = createBalancedColumns(experiences);
+      return (
+        <View style={{ flexDirection: 'row', width: '100%', gap: 4 }}>
+          <View style={{ width: '49%' }}>
+            {leftColumn.map((exp, i) => (
+              <View key={`left-${i}`}>{renderExperience(exp)}</View>
+            ))}
+          </View>
+          <View style={{ width: '49%' }}>
+            {rightColumn.map((exp, i) => (
+              <View key={`right-${i}`}>{renderExperience(exp)}</View>
+            ))}
+          </View>
+        </View>
+      );
+    } else {
+      // Une seule colonne
+      return experiences.map((exp, i) => (
+        <View key={i}>{renderExperience(exp)}</View>
+      ));
+    }
+  };
   
   return (
     <BaseSection
@@ -101,20 +114,8 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
       config={config}
       styles={styles}
       dynamicStyles={dynamicStyles}
-      customStyle={{ padding: 4, backgroundColor: '#f8f8f8' }}
     >
-      <View style={{ flexDirection: 'row', width: '100%', gap: 4 }}>
-        <View style={{ width: '49%' }}>
-          {leftColumn.map((exp, i) => (
-            <View key={`left-${i}`}>{renderExperience(exp)}</View>
-          ))}
-        </View>
-        <View style={{ width: '49%' }}>
-          {rightColumn.map((exp, i) => (
-            <View key={`right-${i}`}>{renderExperience(exp)}</View>
-          ))}
-        </View>
-      </View>
+      {renderExperiences()}
     </BaseSection>
   );
 };

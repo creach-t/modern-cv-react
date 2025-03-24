@@ -1,9 +1,7 @@
-// src/services/PDFService/sections/HeaderSection.jsx
-
 import React from 'react';
 import { Text, View, Image, Link } from '@react-pdf/renderer';
 import { getContactIcon } from '../icons/ContactIcons';
-import { getSectionConfig } from './sectionUtils';
+import { getTextColor } from '../../../utils/color';
 
 export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
   // Configuration et données
@@ -14,7 +12,7 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
   const iconSize = headerOptions.contactIconSize || 12; // Taille réduite
   const iconColor = getTextColor(secondaryColor);
   
-  // Filtrer les contacts (exclure téléphone si demandé)
+  // Filtrer les contacts (exclure téléphone)
   const contacts = userData.contacts?.filter(c => c.type !== 'phone') || [];
   
   // Fonctions utilitaires

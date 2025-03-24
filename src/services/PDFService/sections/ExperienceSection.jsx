@@ -1,52 +1,17 @@
+// src/services/PDFService/sections/ExperienceSection.jsx
+
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { SkillIconColored } from '../icons/SkillIcons';
+import { BaseSection } from './BaseSection';
+import { renderBadges, createBalancedColumns, getSectionConfig, renderPeriodBadge } from './sectionUtils';
 
 /**
- * Section des expériences professionnelles (style cartes)
+ * Section des expériences professionnelles
  */
 export const ExperienceSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   const experiences = userData?.experiences || [];
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
-  const iconSize = 9;
-  
-  // Distribution des expériences en colonnes
-  const createBalancedColumns = (items) => {
-    if (!items || !Array.isArray(items) || items.length === 0) return [[], []];
-    const midpoint = Math.ceil(items.length / 2);
-    return [items.slice(0, midpoint), items.slice(midpoint)];
-  };
-  
-  // Rendu d'icône avec gestion d'erreur
-  const renderSkillIcon = (name) => {
-    try {
-      return <SkillIconColored name={name} size={iconSize} color={secondaryColor} />;
-    } catch (error) {
-      return <View style={{ width: iconSize, height: iconSize }} />;
-    }
-  };
-  
-  // Rendu des badges de compétences
-  const renderBadges = (items) => {
-    if (!items || items.length === 0) return null;
-    
-    return (
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 2, marginTop: 1 }}>
-        {items.map((item, i) => (
-          <View key={i} style={{ 
-            flexDirection: 'row', 
-            alignItems: 'center',
-            backgroundColor: '#f5f5f5',
-            padding: '1 3',
-            borderRadius: 3
-          }}>
-            {renderSkillIcon(item)}
-            <Text style={{ fontSize: 6, marginLeft: 1 }}>{item}</Text>
-          </View>
-        ))}
-      </View>
-    );
-  };
+  const sectionConfig = getSectionConfig('experience', config);
   
   // Rendu d'une expérience en format carte
   const renderExperience = (exp) => (
@@ -57,7 +22,7 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
       padding: 3,
       backgroundColor: 'white'
     }}>
-      {/* Période en haut à droite comme badge */}
+      {/* Entreprise et période */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text style={{ 
           fontSize: 9, 
@@ -67,15 +32,7 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
           {exp.company?.name || ""}
         </Text>
         
-        <Text style={{ 
-          fontSize: 6, 
-          backgroundColor: secondaryColor,
-          color: 'white',
-          padding: '1 3',
-          borderRadius: 2,
-        }}>
-          {exp.period || ""}
-        </Text>
+        {renderPeriodBadge(exp.period, secondaryColor)}
       </View>
       
       {/* Titre du poste */}
@@ -118,7 +75,7 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
             <Text style={{ fontSize: 6, fontWeight: 600, color: '#555555', marginBottom: 1 }}>
               {translations.technologies}:
             </Text>
-            {renderBadges(exp.technologies)}
+            {renderBadges(exp.technologies, secondaryColor)}
           </View>
         )}
         
@@ -127,7 +84,7 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
             <Text style={{ fontSize: 6, fontWeight: 600, color: '#555555', marginBottom: 1 }}>
               {translations.tools}:
             </Text>
-            {renderBadges(exp.tools)}
+            {renderBadges(exp.tools, secondaryColor)}
           </View>
         )}
       </View>
@@ -138,19 +95,14 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
   const [leftColumn, rightColumn] = createBalancedColumns(experiences);
   
   return (
-    <View style={[styles.section, { padding: 4, backgroundColor: '#f8f8f8' }]}>
-      <Text style={[styles.sectionTitle, { 
-        fontSize: 10, 
-        fontWeight: 700, 
-        marginBottom: 4,
-        color: secondaryColor,
-        textAlign: 'center',
-        padding: 2,
-        textTransform: 'uppercase'
-      }]}>
-        {translations.experience}
-      </Text>
-      
+    <BaseSection
+      title={translations.experience}
+      sectionName="experience"
+      config={config}
+      styles={styles}
+      dynamicStyles={dynamicStyles}
+      customStyle={{ padding: 4, backgroundColor: '#f8f8f8' }}
+    >
       <View style={{ flexDirection: 'row', width: '100%', gap: 4 }}>
         <View style={{ width: '49%' }}>
           {leftColumn.map((exp, i) => (
@@ -163,6 +115,6 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
           ))}
         </View>
       </View>
-    </View>
+    </BaseSection>
   );
 };

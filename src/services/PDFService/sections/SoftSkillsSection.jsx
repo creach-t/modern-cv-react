@@ -1,7 +1,12 @@
+// src/services/PDFService/sections/SoftSkillsSection.jsx
+
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { SkillIconColored } from '../icons/SkillIcons';
 import { getTextColor } from '../../../utils/color';
+import { BaseSection } from './BaseSection';
+import { getSectionConfig } from './sectionUtils';
+
 /**
  * Section des soft skills avec icônes
  * @param {Object} userData - Données utilisateur formatées
@@ -9,17 +14,17 @@ import { getTextColor } from '../../../utils/color';
  * @param {Object} dynamicStyles - Styles dynamiques basés sur la couleur
  * @param {Object} translations - Traductions
  * @param {string} language - Langue actuelle ('fr' ou 'en')
+ * @param {Object} config - Configuration complète
  * @returns {React.Component} - Section des soft skills
  */
-export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translations, language }) => {
+export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   // Vérifier si userData.softSkills existe, sinon utiliser un tableau vide
   const softSkills = userData?.softSkills || [];
+  const secondaryColor = config?.style?.colors?.secondary || '#0077cc'; 
+  const sectionConfig = getSectionConfig('softSkills', config);
   
-  // Utiliser la couleur d'accent depuis les styles dynamiques
-  // On s'assure que c'est une chaîne de caractères de couleur valide
-  const circleColor = typeof dynamicStyles.colorAccent === 'string' ? 
-    dynamicStyles.colorAccent : 
-    (dynamicStyles.colorAccent?.color || '#000000');
+  // Utiliser la couleur d'accent pour le cercle
+  const circleColor = secondaryColor;
   
   // Styles locaux pour la section
   const localStyles = {
@@ -46,7 +51,7 @@ export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translation
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 7, // La moitié de la largeur/hauteur pour un cercle parfait
-      backgroundColor: circleColor, // Appliquer la couleur d'accent au cercle en s'assurant qu'elle est valide
+      backgroundColor: circleColor, // Appliquer la couleur d'accent au cercle
     },
     softSkillContent: {
       flex: 1,
@@ -63,10 +68,13 @@ export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translation
   };
   
   return (
-    <View style={styles.section}>
-      <Text style={[styles.sectionTitle, dynamicStyles.borderColorAccent, dynamicStyles.colorAccent]}>
-        {translations.softSkills}
-      </Text>
+    <BaseSection
+      title={translations.softSkills}
+      sectionName="softSkills"
+      config={config}
+      styles={styles}
+      dynamicStyles={dynamicStyles}
+    >
       <View style={localStyles.skillsGrid}>
         {softSkills
           .filter(skill => skill.id !== "hobbies")
@@ -92,6 +100,6 @@ export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translation
             </View>
           ))}
       </View>
-    </View>
+    </BaseSection>
   );
 };

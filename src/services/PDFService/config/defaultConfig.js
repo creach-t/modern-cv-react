@@ -9,12 +9,9 @@ const defaultConfig = {
     // Configuration générale du document
     document: {
       size: 'A4',
-      padding: 30,
+      padding: 12,
       footer: {
-        enabled: true,
-        position: 'bottom',
-        fontSize: 8,
-        color: 'grey'
+        enabled: false,
       }
     },
     
@@ -23,16 +20,16 @@ const defaultConfig = {
       type: 'multi-column', // 'single-column', 'multi-column', 'grid'
       columns: [
         {
-          width: '30%',
+          width: '28%',
           sections: ['skills', 'softSkills']
         },
         {
-          width: '70%',
+          width: '72%',
           sections: ['experience', 'education', 'projects']
         }
       ],
       commonSections: ['header'], // Sections qui s'étalent sur toutes les colonnes
-      spaceBetweenColumns: 15
+      spaceBetweenColumns: 8
     },
     
     // Configuration des sections individuelles
@@ -169,13 +166,13 @@ const defaultConfig = {
         secondary: 'Roboto',
         heading: 'Roboto',
         sizes: {
-          sectionTitle: 13,
-          name: 24,
-          title: 14,
-          companyName: 14,
-          jobTitle: 12,
-          normal: 10,
-          small: 9
+          sectionTitle: 14,
+          name: 20,
+          title: 11,
+          companyName: 10,
+          jobTitle: 9,
+          normal: 9,
+          small: 8
         }
       },
       sectionTitle: {
@@ -183,8 +180,8 @@ const defaultConfig = {
         letterSpacing: 1,
         borderBottom: true,
         borderBottomWidth: 1,
-        paddingBottom: 5,
-        marginBottom: 10
+        paddingBottom: 3,
+        marginBottom: 5
       }
     },
     

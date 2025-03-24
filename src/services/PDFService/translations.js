@@ -9,7 +9,7 @@ export const getTranslations = (language) => {
     return {
       experience: language === 'fr' ? 'Expérience professionnelle' : 'Professional Experience',
       education: language === 'fr' ? 'Formation' : 'Education',
-      skills: language === 'fr' ? 'Compétences techniques' : 'Technical Skills',
+      skills: language === 'fr' ? 'Hard Skills' : 'Hard Skills',
       softSkills: language === 'fr' ? 'Soft Skills' : 'Soft Skills',
       projects: language === 'fr' ? 'Projets' : 'Projects',
       contact: language === 'fr' ? 'Contact' : 'Contact',

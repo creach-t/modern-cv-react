@@ -36,6 +36,24 @@ export const deepMerge = (target, source) => {
   
     return output;
   };
+
+  // Ajouter à src/services/PDFService/utils.js
+
+/**
+ * Récupère la configuration d'une section spécifique avec valeurs par défaut
+ * @param {string} sectionName - Nom de la section
+ * @param {Object} config - Configuration globale
+ * @returns {Object} - Configuration de la section
+ */
+export const getSectionConfig = (sectionName, config) => {
+  const sectionConfig = config?.sections?.[sectionName] || {};
+  return {
+    style: sectionConfig.style || {},
+    options: sectionConfig.options || {},
+    visible: sectionConfig.visible !== false,
+    order: sectionConfig.order || 0
+  };
+};
   
   /**
    * Génère un identifiant unique

@@ -3,6 +3,8 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { SkillIconColored } from '../icons/SkillIcons';
+import { BaseSection } from './BaseSection';
+import { getSectionConfig } from './sectionUtils';
 
 /**
  * Section des compétences techniques
@@ -16,11 +18,12 @@ import { SkillIconColored } from '../icons/SkillIcons';
 export const SkillsSection = ({ userData, styles, dynamicStyles, translations, config }) => {
   // Vérifier si userData.skills existe, sinon utiliser un tableau vide
   const skills = userData?.skills || [];
+  const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
   
   // Options de la section skills
-  const skillsOptions = config?.sections?.skills?.options || {};
-  const showIcons = skillsOptions.showIcons !== false; // Par défaut true
-  const iconSize = skillsOptions.iconSize || 16;
+  const sectionConfig = getSectionConfig('skills', config);
+  const showIcons = sectionConfig.options?.showIcons !== false; // Par défaut true
+  const iconSize = sectionConfig.options?.iconSize || 16;
 
   // Fonction pour grouper les compétences par paires
   const createSkillPairs = (skills) => {
@@ -32,10 +35,13 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
   };
 
   return (
-    <View style={[styles.section, styles.skillsSection]}>
-      <Text style={[styles.sectionTitle, dynamicStyles.sectionTitleBorder, dynamicStyles.colorAccent]}>
-        {translations.skills}
-      </Text>
+    <BaseSection
+      title={translations.skills}
+      sectionName="skills"
+      config={config}
+      styles={styles}
+      dynamicStyles={dynamicStyles}
+    >
       {skills
         .filter(category => category.skills && category.skills.some(skill => skill.level > 2))
         .map((category, index) => (
@@ -66,12 +72,13 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
                       <SkillIconColored 
                         name={skill.name} 
                         size={iconSize}
+                        color={secondaryColor}
                       />
                     </View>
                   )}
                   <Text style={[
                     styles.skillItem,
-                    { maxWidth: '80%', fontSize: 9 }  // Réduire légèrement la taille de police
+                    { maxWidth: '80%', fontSize: 9 }
                   ]}>
                     {skill.name}
                   </Text>
@@ -81,6 +88,6 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
           ))}
         </View>
       ))}
-    </View>
+    </BaseSection>
   );
 };

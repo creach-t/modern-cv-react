@@ -7,8 +7,11 @@ import { renderBadges, createBalancedColumns, getSectionConfig, renderPeriodBadg
  */
 export const ExperienceSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   const experiences = userData?.experiences || [];
-  const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
   const sectionConfig = getSectionConfig('experience', config);
+  const options = sectionConfig?.options || {};
+  
+  // Déterminer si on affiche les expériences sur deux colonnes
+  const twoColumns = options.twoColumns !== undefined ? options.twoColumns : true;
   
   // Estimez la hauteur maximale potentielle
   const calculateContentHeight = (exp) => {
@@ -87,13 +90,15 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
         {exp.company?.name || ""}
       </Text>
       
-      {/* Description très compacte */}
-      <Text style={{ fontSize: 7, lineHeight: 1.2, color: '#555555' }}>
-        {exp[language]?.explanation || ""}
-      </Text>
+      {/* Explication */}
+      {options.showExplanation !== false && exp[language]?.explanation && (
+        <Text style={styles.explanation}>
+          {exp[language]?.explanation || ""}
+        </Text>
+      )}
       
-      {/* Détails en liste très compacte */}
-      {exp[language]?.details && exp[language].details.length > 0 && (
+      {/* Détails en liste */}
+      {options.showDetails !== false && exp[language]?.details && exp[language].details.length > 0 && (
         <View style={{ marginTop: 1 }}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {exp[language].details.map((detail, idx) => (

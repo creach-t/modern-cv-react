@@ -2,7 +2,7 @@
 
 /**
  * Configuration par défaut pour le CV PDF
- * Ce fichier définit la structure et les paramètres par défaut
+ * Ce fichier centralise toute la configuration de style et de structure
  */
 
 const defaultConfig = {

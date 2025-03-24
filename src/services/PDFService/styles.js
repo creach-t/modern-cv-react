@@ -4,67 +4,94 @@ import { StyleSheet } from '@react-pdf/renderer';
 import { getTextColor } from '../../utils/color';
 
 /**
- * Calcule l'espacement en fonction de la densité
+ * Calcule l'espacement en fonction de la densité depuis la configuration
  * @param {string} density - Densité (compact, normal, spacious)
+ * @param {Object} theme - Configuration du thème
  * @returns {number} - Valeur d'espacement
  */
-const getDensitySpacing = (density) => {
-  switch (density) {
-    case 'compact':
-      return 5;
-    case 'spacious':
-      return 20;
-    case 'normal':
-    default:
-      return 10;
+const getDensitySpacing = (density, theme) => {
+  if (!density || !theme?.density) return 10; // Valeur par défaut
+  
+  return theme.density[density] || theme.density.normal || 10;
+};
+
+/**
+ * Traite la couleur avec l'opacité si spécifiée
+ * @param {string} color - Couleur de base
+ * @param {string} opacity - Opacité en pourcentage
+ * @returns {string} - Couleur avec opacité appliquée
+ */
+const processColorWithOpacity = (color, opacity) => {
+  if (!opacity) return color;
+  
+  // Si l'opacité est en pourcentage, la convertir en valeur hexadécimale
+  if (opacity.endsWith('%')) {
+    const percentage = parseInt(opacity.replace('%', ''), 10);
+    const opacityHex = Math.round((percentage / 100) * 255).toString(16).padStart(2, '0');
+    return `${color}${opacityHex}`;
   }
+  
+  return color + opacity;
+};
+
+/**
+ * Applique les réglages de couleur du thème aux styles de section
+ * @param {Object} style - Style à traiter
+ * @param {Object} colors - Couleurs du thème
+ * @returns {Object} - Style avec couleurs appliquées
+ */
+const applyThemeColors = (style, colors) => {
+  const result = { ...style };
+  
+  // Remplacer les références aux couleurs thématiques
+  Object.keys(result).forEach(key => {
+    // Traiter les propriétés qui ont une référence de couleur et d'opacité
+    if (key.includes('Color') && result[key] === 'primary') {
+      result[key] = colors.primary;
+    } else if (key.includes('Color') && result[key] === 'secondary') {
+      result[key] = colors.secondary;
+    } else if (key.includes('Color') && result[key] === 'auto') {
+      // Pour 'auto', déterminer la meilleure couleur de texte en fonction du fond
+      // Si aucun fond n'est spécifié, utiliser la couleur de texte primaire
+      const background = result.backgroundColor || colors.background.page;
+      result[key] = getTextColor(background);
+    }
+    
+    // Traiter les propriétés de fond avec opacité
+    const opacityKey = key + 'Opacity';
+    if (key === 'backgroundColor' && result[opacityKey]) {
+      result[key] = processColorWithOpacity(result[key], result[opacityKey]);
+      delete result[opacityKey]; // Supprimer la propriété d'opacité traitée
+    }
+    
+    // Traiter les bordures avec couleur et opacité
+    if (key.startsWith('border') && key.endsWith('Color') && result[key]) {
+      const opacityKey = key + 'Opacity';
+      if (result[opacityKey]) {
+        result[key] = processColorWithOpacity(result[key], result[opacityKey]);
+        delete result[opacityKey];
+      }
+    }
+  });
+  
+  return result;
 };
 
 /**
  * Construit les styles de base et dynamiques à partir de la configuration
- * @param {Object} config - Configuration de styles
+ * @param {Object} config - Configuration complète
  * @returns {Object} - Styles de base et dynamiques
  */
 export const buildStylesFromConfig = (config) => {
-  const { style, sections } = config;
-  const { colors, fonts, sectionTitle } = style;
+  const { theme, sections } = config;
+  const { colors, fonts, sectionTitle } = theme;
   
-  // Options du header
-  const headerOptions = sections.header?.options || {};
+  // Styles pour le header avec traitement des couleurs
+  const headerConfig = sections.header || {};
+  const headerStyle = applyThemeColors({ ...headerConfig.style }, colors);
   
-  // Déterminer la couleur de texte pour le header
-  let headerTextColor = headerOptions.contactTextColor || 'auto';
-  if (headerTextColor === 'auto') {
-    headerTextColor = getTextColor(colors.secondary);
-  }
-  
-  // Définir les styles de contact selon le style choisi
-  let contactItemStyles = {};
-  switch (headerOptions.contactItemStyle || 'pill') {
-    case 'flat':
-      contactItemStyles = {
-        backgroundColor: 'transparent',
-        padding: headerOptions.contactItemPadding || 3,
-      };
-      break;
-    case 'underline':
-      contactItemStyles = {
-        backgroundColor: 'transparent',
-        padding: headerOptions.contactItemPadding || 3,
-        borderBottom: `1pt solid ${colors.secondary}`,
-      };
-      break;
-    case 'pill':
-    default:
-      contactItemStyles = {
-        backgroundColor: colors.secondary + '15',
-        padding: headerOptions.contactItemPadding || 3,
-        borderRadius: 3,
-      };
-  }
-  
-  // Construire les styles de base
-  const baseStyles = StyleSheet.create({
+  // Styles pour les différentes sections avec leurs spécificités
+  const stylesObj = {
     // Styles généraux de la page
     page: {
       flexDirection: 'column',
@@ -108,16 +135,13 @@ export const buildStylesFromConfig = (config) => {
       borderRadius: 4,
     },
     
-    // Styles d'en-tête (header)
-    header: {
-      ...(sections.header?.style || {}),
-    },
+    // Styles d'en-tête (header) en utilisant les styles de la section header
+    header: headerStyle,
     headerContent: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       flexWrap: 'wrap',
-      padding: 10,
     },
     profileSection: {
       flexDirection: 'row',
@@ -125,33 +149,34 @@ export const buildStylesFromConfig = (config) => {
       gap: 15,
     },
     profilePicture: {
-      width: headerOptions.profilePictureSize || 70,
-      height: headerOptions.profilePictureSize || 70,
-      borderRadius: (headerOptions.profilePictureSize || 70) / 2,
-      border: `${headerOptions.profilePictureBorderWidth || 2}pt solid ${headerTextColor}`,
+      width: headerConfig.profile?.size || 70,
+      height: headerConfig.profile?.size || 70,
+      borderRadius: (headerConfig.profile?.size || 70) / 2,
+      border: `${headerConfig.profile?.borderWidth || 2}pt solid ${headerConfig.profile?.borderColor || colors.secondary}`,
       objectFit: 'cover',
+      margin: headerConfig.profile?.margin || 2,
     },
     nameSection: {
       gap: 5,
     },
     name: {
-      fontSize: fonts.sizes.name,
-      fontWeight: 'bold',
-      color: headerTextColor,
+      fontSize: headerConfig.name?.fontSize || fonts.sizes.name,
+      fontWeight: headerConfig.name?.fontWeight || 'bold',
+      color: headerConfig.name?.color === 'auto' ? getTextColor(headerStyle.backgroundColor) : (headerConfig.name?.color || colors.text.primary),
+      marginBottom: headerConfig.name?.marginBottom || 0,
     },
     titleContainer: {
       flexDirection: 'row',
       gap: 3,
     },
     title: {
-      fontSize: fonts.sizes.title,
-      opacity: 0.85,
-      color: headerTextColor,
+      fontSize: headerConfig.title?.fontSize || fonts.sizes.title,
+      color: headerConfig.title?.color === 'auto' ? getTextColor(headerStyle.backgroundColor) : (headerConfig.title?.color || colors.text.primary),
     },
     titleHighlight: {
-      fontSize: fonts.sizes.title,
-      fontWeight: 'medium',
-      color: headerTextColor,
+      fontSize: headerConfig.title?.fontSize || fonts.sizes.title,
+      fontWeight: headerConfig.title?.highlight?.fontWeight || 'medium',
+      color: headerConfig.title?.highlight?.color || colors.secondary,
     },
     contactsContainer: {
       flexDirection: 'row',
@@ -163,26 +188,18 @@ export const buildStylesFromConfig = (config) => {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 5,
-      ...contactItemStyles,
+      marginBottom: headerConfig.contact?.itemSpacing || 4,
     },
     contactIcon: {
-      width: headerOptions.contactIconSize || 16,
-      height: headerOptions.contactIconSize || 16,
+      width: headerConfig.contact?.iconSize || 16,
+      height: headerConfig.contact?.iconSize || 16,
+      marginRight: headerConfig.contact?.iconMargin || 6,
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    contactIconCircle: {
-      width: (headerOptions.contactIconSize || 16) - 2,
-      height: (headerOptions.contactIconSize || 16) - 2,
-      borderRadius: ((headerOptions.contactIconSize || 16) - 2) / 2,
-      backgroundColor: colors.secondary,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
     },
     contactText: {
-      fontSize: fonts.sizes.small,
-      color: headerTextColor,
+      fontSize: headerConfig.contact?.textSize || fonts.sizes.small,
+      color: headerConfig.contact?.color === 'auto' ? getTextColor(headerStyle.backgroundColor) : (headerConfig.contact?.color || colors.text.primary),
     },
     contactLink: {
       textDecoration: 'none',
@@ -191,198 +208,154 @@ export const buildStylesFromConfig = (config) => {
     // Styles de titres de section
     sectionTitle: {
       fontSize: sectionTitle.fontSize || fonts.sizes.sectionTitle,
-      fontWeight: 700,
+      fontWeight: sectionTitle.fontWeight || 700,
       marginBottom: sectionTitle.marginBottom || 10,
       paddingBottom: sectionTitle.paddingBottom || 5,
       borderBottomWidth: sectionTitle.borderBottom ? (sectionTitle.borderBottomWidth || 1) : 0,
-      borderBottomColor: colors.secondary,
+      borderBottomColor: sectionTitle.borderBottomColor || colors.secondary,
       textTransform: sectionTitle.uppercase ? 'uppercase' : 'none',
       letterSpacing: sectionTitle.letterSpacing || 1,
+      textAlign: sectionTitle.textAlign || 'left',
+      padding: sectionTitle.padding || 0,
+      color: sectionTitle.color || colors.text.primary,
     },
-    
-    // Styles spécifiques pour la section Expérience
-    experienceSection: {
-      ...(sections.experience?.style || {}),
-    },
-    experienceItem: {
-      marginBottom: getDensitySpacing(sections.experience?.options?.density),
-      padding: 5,
-      borderBottom: '1pt dotted #eeeeee',
-    },
-    experienceHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 5,
-      alignItems: 'flex-start',
-    },
-    companyName: {
-      fontSize: fonts.sizes.companyName,
-      fontWeight: 500,
-    },
-    jobTitle: {
-      fontSize: fonts.sizes.jobTitle,
-      fontWeight: 400,
-      fontStyle: 'italic',
-    },
-    period: {
-      fontSize: fonts.sizes.small,
-      fontStyle: 'normal',
-      backgroundColor: '#f0f0f0',
-      padding: 3,
-      borderRadius: 2,
-    },
-    description: {
-      fontSize: fonts.sizes.normal,
-      marginTop: 5,
-      lineHeight: 1.4,
-    },
-    bulletPoint: {
-      fontSize: fonts.sizes.normal,
-      marginLeft: 10,
-      marginTop: 2,
-    },
-    
-    // Styles spécifiques pour la section Éducation
-    educationSection: {
-      ...(sections.education?.style || {}),
-    },
-    educationItem: {
-      marginBottom: getDensitySpacing(sections.education?.options?.density),
-      padding: 5,
-    },
-    schoolName: {
-      fontSize: fonts.sizes.normal + 2,
-      fontWeight: 500,
-    },
-    degree: {
-      fontSize: fonts.sizes.normal,
-      fontStyle: 'italic',
-    },
-    
-    // Styles spécifiques pour la section Skills
-    skillsSection: {
-      ...(sections.skills?.style || {}),
-    },
-    skillCategory: {
-      width: '100%',
-      marginBottom: 10,
-    },
-    skillCategoryTitle: {
-      fontSize: fonts.sizes.normal,
-      fontWeight: 500,
-      marginBottom: 5,
-      backgroundColor: '#f0f0f0',
-      padding: 3,
-      borderRadius: 3,
-    },
-    skillItemContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 4,
-      marginLeft: 5,
-    },
-    skillIconContainer: {
-      width: (sections.skills?.options?.iconSize || 16) + 2,
-      height: (sections.skills?.options?.iconSize || 16) + 2,
-      marginRight: 5,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    skillItem: {
-      fontSize: fonts.sizes.normal,
-    },
-    
-    // Styles spécifiques pour la section Soft Skills
-    softSkillsSection: {
-      ...(sections.softSkills?.style || {}),
-    },
-    softSkillItem: {
-      marginBottom: getDensitySpacing(sections.softSkills?.options?.density),
-      padding: 3,
-      borderLeft: '2pt solid #e0e0e0',
-    },
-    softSkillTitle: {
-      fontSize: fonts.sizes.normal + 1,
-      fontWeight: 500,
-    },
-    
-    // Styles spécifiques pour la section Projets
-    projectsSection: {
-      ...(sections.projects?.style || {}),
-    },
-    projectItem: {
-      marginBottom: getDensitySpacing(sections.projects?.options?.density),
-      padding: 4,
-      border: '1pt solid #eeeeee',
-      borderRadius: 3,
-    },
-    projectTitle: {
-      fontSize: fonts.sizes.normal + 2,
-      fontWeight: 500,
-    },
-    projectDescription: {
-      fontSize: fonts.sizes.normal,
-      marginTop: 2,
-    },
-    technologyTag: {
-      fontSize: fonts.sizes.small,
-      backgroundColor: '#eaeaea',
-      padding: '2 4',
-      borderRadius: 2,
-      marginRight: 4,
-      marginTop: 3,
-      display: 'inline-block',
-    },
-    technologiesContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      marginTop: 3,
-    }
-  });
+  };
   
-  // Construire les styles dynamiques
-  const dynamicStyles = StyleSheet.create({
+  // Ajouter les styles spécifiques pour chaque section
+  // Pour chaque section définir son style général et les styles de ses éléments
+  
+  // Expérience
+  const expConfig = sections.experience || {};
+  const expStyle = applyThemeColors({ ...expConfig.style }, colors);
+  stylesObj.experienceSection = expStyle;
+  stylesObj.experienceItem = applyThemeColors({ ...expConfig.item }, colors);
+  stylesObj.experienceHeader = {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+    alignItems: 'flex-start',
+  };
+  stylesObj.companyName = applyThemeColors({ ...expConfig.company }, colors);
+  stylesObj.jobTitle = applyThemeColors({ ...expConfig.jobTitle }, colors);
+  stylesObj.period = applyThemeColors({ ...expConfig.period }, colors);
+  stylesObj.explanation = applyThemeColors({ ...expConfig.explanation }, colors);
+  stylesObj.bulletPoint = applyThemeColors({ ...expConfig.detail }, colors);
+  stylesObj.technicalSection = applyThemeColors({ ...expConfig.technical }, colors);
+  stylesObj.techLabel = applyThemeColors({ ...expConfig.techLabel }, colors);
+  stylesObj.technologyBadge = applyThemeColors({ ...expConfig.technology }, colors);
+  
+  // Éducation
+  const eduConfig = sections.education || {};
+  const eduStyle = applyThemeColors({ ...eduConfig.style }, colors);
+  stylesObj.educationSection = eduStyle;
+  stylesObj.educationItem = {
+    ...applyThemeColors({ ...eduConfig.item }, colors),
+    marginBottom: getDensitySpacing(eduConfig.options?.density, theme),
+  };
+  stylesObj.schoolName = applyThemeColors({ ...eduConfig.schoolName }, colors);
+  stylesObj.degree = applyThemeColors({ ...eduConfig.degree }, colors);
+  stylesObj.eduPeriod = applyThemeColors({ ...eduConfig.period }, colors);
+  stylesObj.location = applyThemeColors({ ...eduConfig.location }, colors);
+  
+  // Compétences (Skills)
+  const skillsConfig = sections.skills || {};
+  const skillsStyle = applyThemeColors({ ...skillsConfig.style }, colors);
+  stylesObj.skillsSection = skillsStyle;
+  stylesObj.skillCategory = {
+    width: '100%',
+    marginBottom: 10,
+  };
+  stylesObj.skillCategoryTitle = applyThemeColors({ ...skillsConfig.category }, colors);
+  stylesObj.skillItemContainer = {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    marginLeft: 5,
+  };
+  stylesObj.skillIconContainer = {
+    width: (skillsConfig.icon?.size || 16) + 2,
+    height: (skillsConfig.icon?.size || 16) + 2,
+    marginRight: skillsConfig.icon?.margin || 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
+  stylesObj.skillItem = applyThemeColors({ ...skillsConfig.item }, colors);
+  
+  // Soft Skills
+  const softSkillsConfig = sections.softSkills || {};
+  const softSkillsStyle = applyThemeColors({ ...softSkillsConfig.style }, colors);
+  stylesObj.softSkillsSection = softSkillsStyle;
+  stylesObj.softSkillItem = {
+    ...applyThemeColors({ ...softSkillsConfig.item }, colors),
+    marginBottom: getDensitySpacing(softSkillsConfig.options?.density, theme),
+  };
+  stylesObj.softSkillTitle = applyThemeColors({ ...softSkillsConfig.title }, colors);
+  stylesObj.softSkillDescription = applyThemeColors({ ...softSkillsConfig.description }, colors);
+  
+  // Projets
+  const projectsConfig = sections.projects || {};
+  const projectsStyle = applyThemeColors({ ...projectsConfig.style }, colors);
+  stylesObj.projectsSection = projectsStyle;
+  stylesObj.projectItem = {
+    ...applyThemeColors({ ...projectsConfig.item }, colors),
+    marginBottom: getDensitySpacing(projectsConfig.options?.density, theme),
+  };
+  stylesObj.projectTitle = applyThemeColors({ ...projectsConfig.title }, colors);
+  stylesObj.projectDescription = applyThemeColors({ ...projectsConfig.description }, colors);
+  stylesObj.technologyTag = applyThemeColors({ ...projectsConfig.technology }, colors);
+  stylesObj.technologiesContainer = {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 3,
+  };
+  
+  // Création des styles avec StyleSheet
+  const baseStyles = StyleSheet.create(stylesObj);
+  
+  // Styles dynamiques qui peuvent être combinés avec les styles de base
+  const dynamicStylesObj = {
     colorAccent: {
       color: colors.secondary,
     },
     borderColorAccent: {
-      borderBottomColor: colors.secondary,
+      borderColor: colors.secondary,
     },
     headerBackground: {
-      backgroundColor: headerOptions.useFullSecondaryColor ? colors.secondary : (colors.secondary + '15'),
+      backgroundColor: headerConfig.options?.useFullSecondaryColor ? colors.secondary : processColorWithOpacity(colors.secondary, '15%'),
     },
     headerTextColor: {
-      color: headerTextColor,
+      color: getTextColor(headerConfig.options?.useFullSecondaryColor ? colors.secondary : processColorWithOpacity(colors.secondary, '15%')),
     },
     leftColumnBorder: {
-      borderRightColor: colors.secondary + '30',
+      borderRightColor: processColorWithOpacity(colors.secondary, '30%'),
     },
     sectionTitleBorder: {
       borderBottomColor: colors.secondary,
-      borderBottomWidth: 2,
     },
     experienceSectionBorder: {
-      borderLeftColor: colors.secondary + '60',
+      borderLeftColor: processColorWithOpacity(colors.secondary, '60%'),
     },
     educationSectionBorder: {
-      borderLeftColor: colors.secondary + '40',
+      borderLeftColor: processColorWithOpacity(colors.secondary, '40%'),
     },
     skillCategoryBackground: {
-      backgroundColor: colors.secondary + '15',
+      backgroundColor: processColorWithOpacity(colors.secondary, '15%'),
     },
     softSkillBorder: {
-      borderLeftColor: colors.secondary + '50',
+      borderLeftColor: processColorWithOpacity(colors.secondary, '50%'),
     },
     projectItemBorder: {
-      borderColor: colors.secondary + '30',
+      borderColor: processColorWithOpacity(colors.secondary, '30%'),
     },
     periodBackground: {
-      backgroundColor: colors.secondary + '15',
+      backgroundColor: processColorWithOpacity(colors.secondary, '15%'),
     },
-    contactItemBackground: {
-      backgroundColor: colors.secondary + '10',
+    technologyBackground: {
+      backgroundColor: processColorWithOpacity(colors.secondary, '15%'),
     }
-  });
+  };
+  
+  const dynamicStyles = StyleSheet.create(dynamicStylesObj);
   
   return { baseStyles, dynamicStyles };
 };

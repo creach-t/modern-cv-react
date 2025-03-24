@@ -64,7 +64,7 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
                     flexDirection: 'row', 
                     alignItems: 'center',
                     width: '50%',
-                    paddingLeft: 5,
+                    paddingLeft: 3,
                   }}
                 >
                   {showIcons && (
@@ -78,7 +78,7 @@ export const SkillsSection = ({ userData, styles, dynamicStyles, translations, c
                   )}
                   <Text style={[
                     styles.skillItem,
-                    { maxWidth: '80%', fontSize: 9 }
+                    { maxWidth: '80%', fontSize: 8 }
                   ]}>
                     {skill.name}
                   </Text>

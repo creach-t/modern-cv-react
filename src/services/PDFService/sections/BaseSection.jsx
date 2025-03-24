@@ -26,12 +26,13 @@ export const BaseSection = ({
         dynamicStyles.sectionTitleBorder, 
         dynamicStyles.colorAccent,
         { 
-          fontSize: 13, 
+          fontSize: 12, 
           fontWeight: 700, 
-          marginBottom: 4,
+          marginBottom: 3,
           color: '#000',
           textAlign: 'center',
-          padding: 2,
+          padding: 1,
+          paddingTop: 1
         }
       ]}>
         {title}

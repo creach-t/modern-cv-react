@@ -1,12 +1,10 @@
 // src/services/PDFService/sections/SoftSkillsSection.jsx
-
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { SkillIconColored } from '../icons/SkillIcons';
 import { getTextColor } from '../../../utils/color';
 import { BaseSection } from './BaseSection';
 import { getSectionConfig } from './sectionUtils';
-
 /**
  * Section des soft skills avec icônes
  * @param {Object} userData - Données utilisateur formatées
@@ -30,12 +28,11 @@ export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translation
   const localStyles = {
     skillsGrid: {
       display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
+      flexDirection: 'column', // Changé de 'row' à 'column'
       marginTop: 5,
     },
     softSkillItem: {
-      width: '50%',
+      width: '100%', // Changé de '50%' à '100%'
       marginBottom: 4,
       display: 'flex',
       flexDirection: 'row',
@@ -57,12 +54,12 @@ export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translation
       flex: 1,
     },
     softSkillTitle: {
-      fontSize: 8,
+      fontSize: 10,
       fontWeight: 'bold',
       marginBottom: 1,
     },
     skillDescription: {
-      fontSize: 6,
+      fontSize: 8,
       lineHeight: 1.1,
     },
   };

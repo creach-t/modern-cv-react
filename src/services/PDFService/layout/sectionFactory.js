@@ -6,6 +6,7 @@ import { SoftSkillsSection } from '../sections/SoftSkillsSection';
 import { ProjectsSection } from '../sections/ProjectsSection';
 import { ExperienceSection } from '../sections/ExperienceSection';
 import { EducationSection } from '../sections/EducationSection';
+import { HobbiesSection } from '../sections/HobbiesSection';
 
 /**
  * Registre des sections disponibles dans l'application
@@ -17,6 +18,7 @@ const sectionsRegistry = {
   projects: ProjectsSection,
   experience: ExperienceSection,
   education: EducationSection,
+  hobbies: HobbiesSection,
 };
 
 /**

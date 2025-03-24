@@ -11,6 +11,7 @@ export const getTranslations = (language) => {
       education: language === 'fr' ? 'Formation' : 'Education',
       skills: language === 'fr' ? 'Hard Skills' : 'Hard Skills',
       softSkills: language === 'fr' ? 'Soft Skills' : 'Soft Skills',
+      hobbies: language === 'fr' ? 'Centres d\'intérêt' : 'Hobbies',
       projects: language === 'fr' ? 'Projets' : 'Projects',
       contact: language === 'fr' ? 'Contact' : 'Contact',
       tools: language === 'fr' ? 'Outils' : 'Tools',

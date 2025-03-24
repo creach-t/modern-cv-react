@@ -8,8 +8,8 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
   const profilePictureSource = userData.profilePicture || '/img/profil_picture.png';
   const headerOptions = config?.sections?.header?.options || {};
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
-  const profileSize = headerOptions.profilePictureSize || 70;
-  const iconSize = headerOptions.contactIconSize || 14;
+  const profileSize = headerOptions.profilePictureSize || 65; // Taille réduite
+  const iconSize = headerOptions.contactIconSize || 12; // Taille réduite
   const iconColor = getTextColor(secondaryColor);
   
   // Filtrer les contacts (exclure téléphone)
@@ -36,119 +36,159 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
   };
   
   return (
-    <View style={[styles.header, dynamicStyles.headerBackground, { padding: 10 }]}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        
-        {/* SECTION GAUCHE: PHOTO + NOM/TITRE */}
+    <View style={[styles.header, dynamicStyles.headerBackground, { padding: 8 }]}> {/* Padding réduit */}
+      <View style={{ flexDirection: 'row' }}>
+        {/* PHOTO DE PROFIL AVEC DOUBLE CERCLE */}
         <View style={{ 
-          width: '45%', 
-          flexDirection: 'row',
-          alignItems: 'center'
+          width: profileSize + 8, // Bordure réduite
+          height: profileSize + 8, // Bordure réduite
+          position: 'relative',
+          marginRight: 12 // Marge réduite
         }}>
-          {/* Container pour la photo et sa bordure */}
-          <View style={{ 
-            width: profileSize, 
-            height: profileSize,
-            marginRight: 15
-          }}>
-            {/* Image de profil */}
-            <Image
-              source={profilePictureSource}
-              style={{
-                width: profileSize - 4, 
-                height: profileSize - 4,
-                borderRadius: (profileSize - 4) / 2,
-                margin: 2  // Marge pour laisser de la place à la bordure
-              }}
-            />
-            
-            {/* Bordure stylisée */}
-            <View style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: profileSize / 2,
-              border: `2px solid ${secondaryColor}`
-            }} />
-          </View>
+          {/* Cercle extérieur coloré */}
+          <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: profileSize + 8, // Bordure réduite
+            height: profileSize + 8, // Bordure réduite
+            borderRadius: (profileSize + 8) / 2,
+            backgroundColor: secondaryColor
+          }} />
           
-          {/* Nom et titre */}
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.name, { fontSize: 18, marginBottom: 4 }]}>
+          {/* Cercle blanc intermédiaire */}
+          <View style={{
+            position: 'absolute',
+            top: 2,
+            left: 2,
+            width: profileSize + 4, // Bordure réduite
+            height: profileSize + 4, // Bordure réduite
+            borderRadius: (profileSize + 4) / 2,
+            backgroundColor: 'white'
+          }} />
+          
+          {/* Image de profil */}
+          <Image
+            source={profilePictureSource}
+            style={{
+              position: 'absolute',
+              top: 4,
+              left: 4,
+              width: profileSize,
+              height: profileSize,
+              borderRadius: profileSize / 2
+            }}
+          />
+        </View>
+        
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          {/* NOM ET TITRE */}
+          <View>
+            <Text style={[styles.name, { 
+              fontSize: 16, // Taille réduite
+              fontWeight: 'bold',
+              marginBottom: 3 // Marge réduite
+            }]}>
               {userData.name}
             </Text>
             
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-              <Text style={[styles.title, { fontSize: 12 }]}>
+            <View style={{ 
+              flexDirection: 'row', 
+              flexWrap: 'wrap', 
+              backgroundColor: secondaryColor,
+              padding: '1 5', // Padding réduit
+              borderRadius: 3,
+              alignSelf: 'flex-start'
+            }}>
+              <Text style={[styles.title, { 
+                fontSize: 10, // Taille réduite
+                color: getTextColor(secondaryColor)
+              }]}>
                 {userData.title.prefix}
               </Text>
-              <Text style={[styles.title, { fontSize: 12 }]}> </Text>
+              <Text style={[styles.title, { 
+                fontSize: 10, // Taille réduite
+                color: getTextColor(secondaryColor)
+              }]}> </Text>
               <Text style={[styles.titleHighlight, { 
-                fontSize: 12, 
-                color: secondaryColor,
-                fontWeight: 'bold'
+                fontSize: 10, // Taille réduite
+                fontWeight: 'bold',
+                color: getTextColor(secondaryColor)
               }]}>
                 {userData.title.highlight}
               </Text>
-              <Text style={[styles.title, { fontSize: 12 }]}>
+              <Text style={[styles.title, { 
+                fontSize: 10, // Taille réduite
+                color: getTextColor(secondaryColor)
+              }]}>
                 {userData.title.suffix}
               </Text>
             </View>
           </View>
-        </View>
-        
-        {/* SECTION DROITE: CONTACTS */}
-        <View style={{ 
-          width: '45%',
-          alignItems: 'flex-end',
-          justifyContent: 'center'
-        }}>
-          {contacts.map((contact, index) => {
-            const iconType = contact.type || 'document';
-            const formattedUrl = contact.url && !contact.url.startsWith('http') 
-              ? `https://${contact.url}` 
-              : contact.url;
-            const displayValue = getContactDisplayValue(contact);
-            
-            const contactItem = (
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: 4
-              }}>
-                <View style={{ marginRight: 6 }}>
-                  {getContactIcon(iconType, {
-                    color: iconColor,
-                    size: iconSize
-                  })}
+          
+          {/* CONTACTS - STYLE HORIZONTAL */}
+          <View style={{ 
+            flexDirection: 'row', 
+            flexWrap: 'wrap',
+            marginTop: 6 // Marge réduite
+          }}>
+            {contacts.map((contact, index) => {
+              const iconType = contact.type || 'document';
+              const formattedUrl = contact.url && !contact.url.startsWith('http') 
+                ? `https://${contact.url}` 
+                : contact.url;
+              const displayValue = getContactDisplayValue(contact);
+              
+              const contactItem = (
+                <View style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginRight: 3,
+                  marginBottom: 3, // Marge réduite
+                  backgroundColor: 'rgba(0,0,0,0.1)',
+                  padding: '1 4', // Padding réduit
+                  borderRadius: 3
+                }}>
+                  <View style={{ 
+                    marginRight: 4, // Marge réduite
+                    width: iconSize + 2,
+                    height: iconSize + 2,
+                    borderRadius: (iconSize + 2) / 2,
+                    backgroundColor: secondaryColor,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {getContactIcon(iconType, {
+                      color: getTextColor(secondaryColor),
+                      size: iconSize - 2
+                    })}
+                  </View>
+                  
+                  <Text style={[
+                    styles.contactText, 
+                    dynamicStyles.headerTextColor,
+                    { fontSize: 7.5 } // Taille réduite
+                  ]}>
+                    {displayValue}
+                  </Text>
                 </View>
-                
-                <Text style={[
-                  styles.contactText, 
-                  dynamicStyles.headerTextColor,
-                  { fontSize: 9 }
-                ]}>
-                  {displayValue}
-                </Text>
-              </View>
-            );
-            
-            return contact.url ? (
-              <Link 
-                key={`contact-${index}`} 
-                src={formattedUrl} 
-                style={{ textDecoration: 'none' }}
-              >
-                {contactItem}
-              </Link>
-            ) : (
-              <View key={`contact-${index}`}>
-                {contactItem}
-              </View>
-            );
-          })}
+              );
+              
+              return contact.url ? (
+                <Link 
+                  key={`contact-${index}`} 
+                  src={formattedUrl} 
+                  style={{ textDecoration: 'none' }}
+                >
+                  {contactItem}
+                </Link>
+              ) : (
+                <View key={`contact-${index}`}>
+                  {contactItem}
+                </View>
+              );
+            })}
+          </View>
         </View>
       </View>
     </View>

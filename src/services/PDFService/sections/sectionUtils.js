@@ -25,7 +25,7 @@ export const renderPeriodBadge = (period, color) => {
   
   return (
     <Text style={{ 
-      fontSize: 6, 
+      fontSize: 7, 
       backgroundColor: color,
       color: 'white',
       padding: '1 3',
@@ -43,7 +43,7 @@ export const renderPeriodBadge = (period, color) => {
  * @param {number} iconSize - Taille de l'icône
  * @returns {React.Component} - Composant de badges
  */
-export const renderBadges = (items, secondaryColor, iconSize = 9) => {
+export const renderBadges = (items, secondaryColor, iconSize = 11) => {
   if (!items || items.length === 0) return null;
   
   return (
@@ -57,7 +57,7 @@ export const renderBadges = (items, secondaryColor, iconSize = 9) => {
           borderRadius: 3
         }}>
           {renderSkillIcon(item, iconSize, secondaryColor)}
-          <Text style={{ fontSize: 6, marginLeft: 1 }}>{item}</Text>
+          <Text style={{ fontSize: 7, marginLeft: 1 }}>{item}</Text>
         </View>
       ))}
     </View>

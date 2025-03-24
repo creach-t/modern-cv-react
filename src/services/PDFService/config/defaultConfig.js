@@ -21,7 +21,7 @@ const defaultConfig = {
       columns: [
         {
           width: '28%',
-          sections: ['skills', 'softSkills']
+          sections: ['skills', 'softSkills', 'hobbies']
         },
         {
           width: '72%',
@@ -38,7 +38,6 @@ const defaultConfig = {
         visible: true,
         order: 0,
         style: {
-          padding: 5,
           backgroundColor: '#f5f5f5'
         },
         options: {
@@ -59,8 +58,8 @@ const defaultConfig = {
         order: 1,
         style: {
           backgroundColor: '#f8f8f8',
-          padding: 8,
-          marginBottom: 15,
+          padding: 5,
+          marginBottom: 5,
           borderRadius: 4
         },
         options: {
@@ -77,8 +76,8 @@ const defaultConfig = {
         order: 2,
         style: {
           backgroundColor: '#f9f9f9',
-          padding: 8,
-          marginBottom: 15,
+          padding: 5,
+          marginBottom: 5,
           borderRadius: 4
         },
         options: {
@@ -91,8 +90,8 @@ const defaultConfig = {
         order: 3,
         style: {
           backgroundColor: '#f7f7f7',
-          padding: 8,
-          marginBottom: 15,
+          padding: 5,
+          marginBottom: 5,
           borderRadius: 4
         },
         options: {
@@ -107,8 +106,8 @@ const defaultConfig = {
         order: 4,
         style: {
           backgroundColor: '#fcfcfc',
-          padding: 8,
-          marginBottom: 15,
+          padding: 5,
+          marginBottom: 5,
           borderRadius: 4,
           borderLeft: '3pt solid #e0e0e0'
         },
@@ -123,13 +122,26 @@ const defaultConfig = {
           density: 'normal'
         }
       },
+      hobbies: {
+        visible: true,
+        order: 6, // Ou l'ordre souhaité
+        style: {
+          backgroundColor: '#f9f9f9',
+          padding: 5,
+          marginBottom: 5,
+          borderRadius: 4
+        },
+        options: {
+          density: 'normal'
+        }
+      },
       education: {
         visible: true,
         order: 5,
         style: {
           backgroundColor: '#fafafa',
-          padding: 8,
-          marginBottom: 15,
+          padding: 5,
+          marginBottom: 5,
           borderRadius: 4,
           borderLeft: '3pt solid #e8e8e8'
         },

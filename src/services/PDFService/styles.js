@@ -196,7 +196,6 @@ export const buildStylesFromConfig = (config) => {
       paddingBottom: sectionTitle.paddingBottom || 5,
       borderBottomWidth: sectionTitle.borderBottom ? (sectionTitle.borderBottomWidth || 1) : 0,
       borderBottomColor: colors.secondary,
-      textTransform: sectionTitle.uppercase ? 'uppercase' : 'none',
       letterSpacing: sectionTitle.letterSpacing || 1,
     },
     

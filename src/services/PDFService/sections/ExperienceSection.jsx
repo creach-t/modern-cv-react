@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { BaseSection } from './BaseSection';
 import { renderBadges, createBalancedColumns, getSectionConfig, renderPeriodBadge } from './sectionUtils';
+
 /**
  * Section des expériences professionnelles
  */
@@ -32,8 +33,9 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
       height += 12 + (techLines * 12); // Titre + badges
     }
     // Hauteur des outils
-    if (exp.tools && exp.tools.length > 0) {
-      const toolLines = Math.ceil(exp.tools.length / 3); // Environ 3 badges par ligne
+    // Utiliser les outils traduits depuis l'objet de langue
+    if (exp[language]?.tools && exp[language].tools.length > 0) {
+      const toolLines = Math.ceil(exp[language].tools.length / 3); // Environ 3 badges par ligne
       height += 12 + (toolLines * 12); // Titre + badges
     }
     
@@ -120,12 +122,13 @@ export const ExperienceSection = ({ userData, styles, dynamicStyles, translation
             {renderBadges(exp.technologies, secondaryColor)}
           </View>
         )}
-        {exp.tools && exp.tools.length > 0 && (
+        {/* Utiliser les outils traduits depuis l'objet de langue */}
+        {exp[language]?.tools && exp[language].tools.length > 0 && (
           <View>
             <Text style={{ fontSize: 8, fontWeight: 600, color: '#555555', marginBottom: 1 }}>
               {translations.tools}:
             </Text>
-            {renderBadges(exp.tools, secondaryColor)}
+            {renderBadges(exp[language].tools, secondaryColor)}
           </View>
         )}
       </View>

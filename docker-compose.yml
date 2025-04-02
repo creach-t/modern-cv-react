@@ -6,23 +6,43 @@ services:
     ports:
       - "2585:2585"
     restart: unless-stopped
-    
-  nginx:
-    image: nginx:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cv.rule=Host(`creachtheo.fr`) || Host(`www.creachtheo.fr`)"
+      - "traefik.http.routers.cv.entrypoints=websecure"
+      - "traefik.http.routers.cv.tls.certresolver=myresolver"
+      - "traefik.http.services.cv.loadbalancer.server.port=2585"
+
+  ocoffee:
+    image: traefik/whoami  # À remplacer par votre image réelle pour ocoffee
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ocoffee.rule=Host(`ocoffee.creachtheo.fr`)"
+      - "traefik.http.routers.ocoffee.entrypoints=websecure"
+      - "traefik.http.routers.ocoffee.tls.certresolver=myresolver"
+      - "traefik.http.services.ocoffee.loadbalancer.server.port=80"
+
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=creach.t@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      # Redirection HTTP vers HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt
-      - ./react-build:/var/www/react-app
-    depends_on:
-      - modern-cv-react  # Changé de 'app' vers 'modern-cv-react'
-      
-  certbot:  # Correctement indenté
-    image: certbot/certbot
-    volumes:
-      - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/var/www/certbot --email creach.t@gmail.com --agree-tos --no-eff-email -d ocoffee.creachtheo.fr -d creachtheo.fr -d www.creachtheo.fr
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+    restart: unless-stopped
+
+volumes:
+  traefik-certificates:

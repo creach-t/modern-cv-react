@@ -10,17 +10,11 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.cv.rule=Host(`creachtheo.fr`) || Host(`www.creachtheo.fr`)"
       - "traefik.http.routers.cv.entrypoints=websecure"
+      - "traefik.http.routers.cv.tls=true"
       - "traefik.http.routers.cv.tls.certresolver=myresolver"
       - "traefik.http.services.cv.loadbalancer.server.port=2585"
-
-  ocoffee:
-    image: traefik/whoami  # À remplacer par votre image réelle pour ocoffee
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ocoffee.rule=Host(`ocoffee.creachtheo.fr`)"
-      - "traefik.http.routers.ocoffee.entrypoints=websecure"
-      - "traefik.http.routers.ocoffee.tls.certresolver=myresolver"
-      - "traefik.http.services.ocoffee.loadbalancer.server.port=80"
+    networks:
+      - traefik-public
 
   traefik:
     image: traefik:v2.10
@@ -29,8 +23,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=creach.t@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       # Redirection HTTP vers HTTPS
@@ -43,6 +36,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certificates:/letsencrypt
     restart: unless-stopped
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: false
 
 volumes:
   traefik-certificates:

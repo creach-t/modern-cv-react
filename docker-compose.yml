@@ -10,14 +10,11 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.cv.rule=Host(`creachtheo.fr`) || Host(`www.creachtheo.fr`)"
       - "traefik.http.routers.cv.entrypoints=websecure"
-      - "traefik.http.routers.cv.tls=true"
       - "traefik.http.routers.cv.tls.certresolver=myresolver"
       - "traefik.http.services.cv.loadbalancer.server.port=2585"
     networks:
-      - default
       - traefik-public
 
 networks:
-  default:
   traefik-public:
     external: true

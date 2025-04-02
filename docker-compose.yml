@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "2585:2585"
+    expose:
+      - "2585"
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -14,34 +14,10 @@ services:
       - "traefik.http.routers.cv.tls.certresolver=myresolver"
       - "traefik.http.services.cv.loadbalancer.server.port=2585"
     networks:
-      - traefik-public
-
-  traefik:
-    image: traefik:v2.10
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=creach.t@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      # Redirection HTTP vers HTTPS
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik-certificates:/letsencrypt
-    restart: unless-stopped
-    networks:
+      - default
       - traefik-public
 
 networks:
+  default:
   traefik-public:
-    external: false
-
-volumes:
-  traefik-certificates:
+    external: true

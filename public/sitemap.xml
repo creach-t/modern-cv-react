@@ -70,7 +70,7 @@
     </image:image>
   </url>
 
-  <!-- URLs des projets -->
+  <!-- URLs des projets hébergés -->
 
   <!-- DevJobs -->
   <url>
@@ -94,7 +94,7 @@
     <image:image>
       <image:loc>https://creachtheo.fr/img/projects/queensgame.jpg</image:loc>
       <image:title>Queens Game Web - Puzzle de reines responsive</image:title>
-      <image:caption>Interface Clone du jeu Queens Linkedin</image:caption>
+      <image:caption>Interface du jeu Queens Game Web</image:caption>
     </image:image>
   </url>
 
@@ -121,18 +121,6 @@
       <image:loc>https://creachtheo.fr/img/projects/zombieland.jpg</image:loc>
       <image:title>ZombieLand - Plateforme de parc d'attractions à thème</image:title>
       <image:caption>Interface de la plateforme ZombieLand</image:caption>
-    </image:image>
-  </url>
-
-  <!-- Premier Portfolio -->
-  <url>
-    <lastmod>2025-06-25</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://creachtheo.fr/img/projects/oldportfolio.jpg</image:loc>
-      <image:title>Premier Portfolio - Site web personnel statique</image:title>
-      <image:caption>Interface du premier portfolio</image:caption>
     </image:image>
   </url>
 

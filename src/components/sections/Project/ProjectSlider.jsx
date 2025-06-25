@@ -1,4 +1,3 @@
-import React from "react";
 import ProjectCard from "./ProjectCard";
 
 const ProjectSlider = ({
@@ -18,15 +17,16 @@ const ProjectSlider = ({
 }) => {
   // Réorganisation des projets dans l'ordre spécifié
   const orderedProjects = [
+    projects.find(p => p.id === "queensgame"),
     projects.find(p => p.id === "devjobs"),
     projects.find(p => p.id === "zombieland"),
     projects.find(p => p.id === "ocoffee"),
     projects.find(p => p.id === "oldportfolio")
   ].filter(Boolean); // Filtre pour éliminer les undefined
-  
+
   // Génération des projets visibles actuellement
   const visibleProjects = orderedProjects.slice(
-    currentSlide, 
+    currentSlide,
     currentSlide + PROJECTS_PER_SLIDE
   );
 
@@ -37,7 +37,7 @@ const ProjectSlider = ({
         {visibleProjects.map((project, index) => {
           const absoluteIndex = currentSlide + index;
           const isExpanded = expandedProject === absoluteIndex;
-          
+
           return (
             <ProjectCard
               key={absoluteIndex}

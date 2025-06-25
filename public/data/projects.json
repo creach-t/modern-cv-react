@@ -30,12 +30,41 @@
       }
     },
     {
+      "id": "queensgame",
+      "icon": "Crown",
+      "image": "/img/projects/queensgame.JPG",
+      "link": "https://queens-game.creachtheo.fr",
+      "github": ["https://github.com/creach-t/queens-game-web"],
+      "technologies": ["React", "TypeScript", "Vite", "CSS Grid"],
+      "tools": ["Git", "VS Code", "Vite", "Netlify"],
+      "fr": {
+        "label": "Queens Game Web",
+        "value": "Version web responsive du puzzle Queens de LinkedIn",
+        "description": "Puzzle logique addictif où vous devez placer des reines sur un plateau en respectant des règles strictes",
+        "explanation": "Cette application reproduit fidèlement l'expérience du célèbre Queens Game de LinkedIn tout en étant parfaitement responsive pour tous les appareils. Le jeu consiste à placer exactement une reine dans chaque rangée, colonne ET région colorée, sans qu'elles puissent se toucher. L'interface moderne propose plusieurs tailles de grille (4x4 à 8x8), une validation en temps réel des règles avec feedback visuel, et un système de génération automatique de niveaux garantis solvables.",
+        "improvements": [
+          "Solveur automatique avec système d'indices",
+          "Système de sauvegarde et meilleurs scores"
+        ]
+      },
+      "en": {
+        "label": "Queens Game Web",
+        "value": "Responsive web version of LinkedIn's Queens puzzle",
+        "description": "Addictive logic puzzle where you must place queens on a board following strict rules",
+        "explanation": "This application faithfully reproduces the experience of LinkedIn's famous Queens Game while being perfectly responsive for all devices. The game consists of placing exactly one queen in each row, column AND colored region, without them being able to touch each other. The modern interface offers multiple grid sizes (4x4 to 8x8), real-time rule validation with visual feedback, and an automatic level generation system guaranteed to be solvable.",
+        "improvements": [
+          "Automatic solver with hint system",
+          "Save system and high scores"
+        ]
+      }
+    },
+    {
       "id": "ocoffee",
       "icon": "Coffee",
       "image": "/img/projects/ocoffee.JPG",
       "link": "https://ocoffee.creachtheo.fr",
       "github": ["https://github.com/creach-t/O-Coffee"],
-      "technologies": ["EJS", "Node.js", "Express.Js", "PostgreSQL", "Sequelize", "HTML/CSS" ],
+      "technologies": ["EJS", "Node.js", "Express.Js", "PostgreSQL", "Sequelize", "HTML/CSS"],
       "tools": ["Git", "VS Code", "Docker", "Figma", "Jest"],
       "fr": {
         "label": "O'Coffee",

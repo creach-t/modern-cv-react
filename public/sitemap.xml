@@ -9,56 +9,131 @@
   <!-- Page d'accueil en français (langue par défaut) -->
   <url>
     <loc>https://creachtheo.fr/</loc>
-    <lastmod>2025-03-27</lastmod>
+    <lastmod>2025-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="fr" href="https://creachtheo.fr/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://creachtheo.fr/?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://creachtheo.fr/"/>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/profile.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/profile_picture.png</image:loc>
       <image:title>Théo Créac'h - Développeur Web Fullstack</image:title>
       <image:caption>Photo professionnelle de Théo Créac'h</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/projects/devjobs-thumbnail.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/projects/devjobs.jpg</image:loc>
       <image:title>DevJobs - Plateforme de recherche d'emploi pour développeurs</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/projects/ocoffee-thumbnail.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/projects/queensgame.jpg</image:loc>
+      <image:title>Queens Game Web - Puzzle de reines responsive inspiré de LinkedIn</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://creachtheo.fr/img/projects/ocoffee.jpg</image:loc>
       <image:title>O'Coffee - Boutique en ligne de cafés de spécialité</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/projects/zombieland-thumbnail.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/projects/zombieland.jpg</image:loc>
       <image:title>ZombieLand - Plateforme immersive de parc à thème</image:title>
     </image:image>
   </url>
-  
+
   <!-- Page d'accueil en anglais -->
   <url>
     <loc>https://creachtheo.fr/?lang=en</loc>
-    <lastmod>2025-03-27</lastmod>
+    <lastmod>2025-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="fr" href="https://creachtheo.fr/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://creachtheo.fr/?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://creachtheo.fr/"/>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/profile.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/profile_picture.png</image:loc>
       <image:title>Théo Créac'h - Fullstack Web Developer</image:title>
       <image:caption>Professional photo of Théo Créac'h</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/projects/devjobs-thumbnail.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/projects/devjobs.jpg</image:loc>
       <image:title>DevJobs - Job search platform for developers</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/projects/ocoffee-thumbnail.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/projects/queensgame.jpg</image:loc>
+      <image:title>Queens Game Web - Responsive queens puzzle inspired by LinkedIn</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://creachtheo.fr/img/projects/ocoffee.jpg</image:loc>
       <image:title>O'Coffee - Online specialty coffee shop</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://creachtheo.fr/img/projects/zombieland-thumbnail.jpg</image:loc>
+      <image:loc>https://creachtheo.fr/img/projects/zombieland.jpg</image:loc>
       <image:title>ZombieLand - Immersive theme park platform</image:title>
+    </image:image>
+  </url>
+
+  <!-- URLs des projets -->
+
+  <!-- DevJobs -->
+  <url>
+    <loc>https://devjobs.creachtheo.fr/</loc>
+    <lastmod>2025-06-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://creachtheo.fr/img/projects/devjobs.jpg</image:loc>
+      <image:title>DevJobs - Application de recherche d'emploi pour développeurs</image:title>
+      <image:caption>Interface de l'application DevJobs</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Queens Game Web -->
+  <url>
+    <loc>https://queens-game.creachtheo.fr/</loc>
+    <lastmod>2025-06-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://creachtheo.fr/img/projects/queensgame.jpg</image:loc>
+      <image:title>Queens Game Web - Puzzle de reines responsive</image:title>
+      <image:caption>Interface Clone du jeu Queens Linkedin</image:caption>
+    </image:image>
+  </url>
+
+  <!-- O'Coffee -->
+  <url>
+    <loc>https://ocoffee.creachtheo.fr/</loc>
+    <lastmod>2025-06-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://creachtheo.fr/img/projects/ocoffee.jpg</image:loc>
+      <image:title>O'Coffee - Boutique en ligne de cafés de spécialité</image:title>
+      <image:caption>Interface de la boutique O'Coffee</image:caption>
+    </image:image>
+  </url>
+
+  <!-- ZombieLand -->
+  <url>
+    <loc>https://zombieland.creachtheo.fr/</loc>
+    <lastmod>2025-06-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://creachtheo.fr/img/projects/zombieland.jpg</image:loc>
+      <image:title>ZombieLand - Plateforme de parc d'attractions à thème</image:title>
+      <image:caption>Interface de la plateforme ZombieLand</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Premier Portfolio -->
+  <url>
+    <loc>https://creach-t.github.io/</loc>
+    <lastmod>2025-06-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://creachtheo.fr/img/projects/oldportfolio.jpg</image:loc>
+      <image:title>Premier Portfolio - Site web personnel statique</image:title>
+      <image:caption>Interface du premier portfolio</image:caption>
     </image:image>
   </url>
 

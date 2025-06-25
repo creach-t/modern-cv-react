@@ -32,7 +32,7 @@
     {
       "id": "queensgame",
       "icon": "Crown",
-      "image": "/img/projects/queensgame.JPG",
+      "image": "/img/projects/queensgame.jpg",
       "link": "https://queens-game.creachtheo.fr",
       "github": ["https://github.com/creach-t/queens-game-web"],
       "technologies": ["React", "TypeScript", "Vite", "CSS Grid"],

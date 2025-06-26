@@ -1,19 +1,22 @@
-import React, { useState, useRef, useEffect } from "react";
-import { 
-  Github, ExternalLink, 
-  ChevronDown, ChevronUp, 
-  Rocket, Wrench,
-  Code, Server
+import {
+  ChevronDown, ChevronUp,
+  Code,
+  ExternalLink,
+  Github,
+  Rocket,
+  Server,
+  Wrench
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import SkillBadge from "../../ui/SkillBadge";
 import { getTextColor } from "../../../utils/color";
+import SkillBadge from "../../ui/SkillBadge";
 
-const ProjectCard = ({ 
-  project, 
-  index, 
-  isExpanded, 
-  toggleExpansion, 
+const ProjectCard = ({
+  project,
+  index,
+  isExpanded,
+  toggleExpansion,
   secondaryColor,
   textColor,
   isDark,
@@ -26,11 +29,11 @@ const ProjectCard = ({
   const [githubMenuOpen, setGithubMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
-  
+
   // Fermer le menu si on clique ailleurs
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target) && 
+      if (menuRef.current && !menuRef.current.contains(event.target) &&
           buttonRef.current && !buttonRef.current.contains(event.target)) {
         setGithubMenuOpen(false);
       }
@@ -52,21 +55,21 @@ const ProjectCard = ({
             href={project.github[0]}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
+            className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200 text-sm"
           >
-            <Github size={18} />
+            <Github size={16} />
             <span>GitHub</span>
           </a>
         );
       }
-      
+
       // Si plusieurs liens dans le tableau
       if (project.github.length > 1) {
         return (
           <div className="relative inline-block" ref={buttonRef}>
             {/* Menu déroulant au-dessus du bouton quand il est ouvert */}
             {githubMenuOpen && (
-              <div 
+              <div
                 ref={menuRef}
                 className="absolute z-50 bottom-full left-0 mb-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 overflow-hidden"
               >
@@ -77,7 +80,7 @@ const ProjectCard = ({
                     const isBack = url.toLowerCase().includes('back');
                     let label = "GitHub";
                     let icon = <Github size={14} className="mr-2" />;
-                    
+
                     if (isFront) {
                       label = "Frontend";
                       icon = <Code size={14} className="mr-2" />;
@@ -85,7 +88,7 @@ const ProjectCard = ({
                       label = "Backend";
                       icon = <Server size={14} className="mr-2" />;
                     }
-                    
+
                     return (
                       <a
                         key={index}
@@ -105,7 +108,7 @@ const ProjectCard = ({
                   })}
                 </div>
                 {/* Flèche pointant vers le bouton */}
-                <div 
+                <div
                   className="absolute left-4 bottom-0 transform translate-y-full"
                   style={{
                     width: 0,
@@ -119,22 +122,22 @@ const ProjectCard = ({
             )}
 
             <button
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
+              className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200 text-sm"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setGithubMenuOpen(!githubMenuOpen);
               }}
             >
-              <Github size={18} />
+              <Github size={16} />
               <span>GitHub</span>
-              <ChevronDown size={16} className={`ml-1 transition-transform duration-200 ${githubMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown size={14} className={`ml-1 transition-transform duration-200 ${githubMenuOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>
         );
       }
     }
-    
+
     // Si le projet a un seul dépôt GitHub (format classique)
     if (project.github && typeof project.github === 'string' && !project.github.includes(',')) {
       return (
@@ -142,14 +145,14 @@ const ProjectCard = ({
           href={project.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200"
+          className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700 transition-colors duration-200 text-sm"
         >
-          <Github size={18} />
+          <Github size={16} />
           <span>GitHub</span>
         </a>
       );
     }
-    
+
     // Pas de dépôt GitHub
     return null;
   };
@@ -167,79 +170,100 @@ const ProjectCard = ({
     >
       <div className="flex flex-col">
         {/* En-tête du projet (toujours visible) */}
-        <div 
-          className="flex justify-between items-center p-5 cursor-pointer"
+        <div
+          className="flex justify-between items-start p-5 cursor-pointer"
           onClick={() => toggleExpansion(index)}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-4 flex-1">
             <div
               className="rounded-full p-3 transition-colors duration-200 flex-shrink-0"
               style={{ backgroundColor: secondaryColor }}
             >
               <IconComponent color={getTextColor(secondaryColor)} size={22} />
             </div>
-            <div className="min-w-0">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="min-w-0 flex-1">
+              <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
                 {project.label}
               </div>
-              <div 
-                className="font-medium text-lg" 
+              <div
+                className="font-bold text-xl mb-2 leading-tight"
                 style={{ color: isDark ? "white" : "black" }}
               >
                 {project.value}
               </div>
+              {/* Description courte - toujours visible */}
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-3">
+                {project.description}
+              </p>
+              {/* Boutons - toujours visibles */}
+              <div className="flex gap-2 flex-wrap">
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm"
+                    style={{
+                      backgroundColor: secondaryColor,
+                      color: getTextColor(secondaryColor)
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink size={16} />
+                    <span>{language === "fr" ? "Visiter" : "Visit"}</span>
+                  </a>
+                )}
+
+                {/* Rendu des boutons GitHub */}
+                <div onClick={(e) => e.stopPropagation()}>
+                  {renderGithubButtons()}
+                </div>
+              </div>
             </div>
           </div>
-          
+
           {/* Icône d'expansion */}
-          <div className="text-gray-500 dark:text-gray-400 flex-shrink-0">
+          <div className="text-gray-500 dark:text-gray-400 flex-shrink-0 ml-4">
             {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
           </div>
         </div>
-        
+
         {/* Aperçu du projet (visible seulement quand le projet n'est pas développé) */}
         {!isExpanded && (
           <div className="px-5 pb-5 w-full">
-            <div 
+            <div
               className="relative rounded-md overflow-hidden w-full cursor-pointer"
-              style={{ 
-                maxWidth: "100%", 
-                height: "0", 
+              style={{
+                maxWidth: "100%",
+                height: "0",
                 paddingBottom: "56.25%" // Ratio 16:9
               }}
               onClick={() => toggleExpansion(index)}
             >
               {/* Image de prévisualisation du projet */}
-              <img 
+              <img
                 src={project.image}
                 alt={project.label}
                 className="absolute inset-0 w-full h-full object-cover"
               />
-              
+
               {/* Overlay discret avec dégradé pour une transition douce */}
-              <div 
+              <div
                 className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-                style={{ 
-                  background: `linear-gradient(to bottom, rgba(0,0,0,0), ${isDark ? 'rgba(30,30,30,0.9)' : 'rgba(255,255,255,0.9)'})` 
+                style={{
+                  background: `linear-gradient(to bottom, rgba(0,0,0,0), ${isDark ? 'rgba(30,30,30,0.9)' : 'rgba(255,255,255,0.9)'})`
                 }}
               ></div>
             </div>
           </div>
         )}
-        
+
         {/* Contenu détaillé (visible uniquement si développé) */}
         {isExpanded && (
           <div className="p-5 pt-0 border-t border-gray-200 dark:border-gray-700">
-            {/* Pas d'image en haut quand le projet est déployé */}
-            
-            {/* Description courte */}
-            <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
-              {project.description}
-            </p>
-            
             {/* Description détaillée */}
             <div className="mt-5 mb-6">
-              <h4 
+              <h4
                 className="text-md font-semibold mb-2"
                 style={{ color: isDark ? "white" : "black" }}
               >
@@ -249,10 +273,10 @@ const ProjectCard = ({
                 {project.explanation}
               </p>
             </div>
-            
+
             {/* Technologies utilisées */}
             <div className="mb-5">
-              <h4 
+              <h4
                 className="text-md font-semibold mb-2 flex items-center gap-2"
                 style={{ color: isDark ? "white" : "black" }}
               >
@@ -273,10 +297,10 @@ const ProjectCard = ({
                       textColor={isDark ? "white" : "black"}
                     />
                   ) : (
-                    <span 
+                    <span
                       key={techIndex}
                       className="px-3 py-1 text-xs rounded-full"
-                      style={{ 
+                      style={{
                         backgroundColor: secondaryColor,
                         color: textColor,
                         opacity: 0.8
@@ -288,10 +312,10 @@ const ProjectCard = ({
                 })}
               </div>
             </div>
-            
+
             {/* Outils utilisés */}
             <div className="mb-5">
-              <h4 
+              <h4
                 className="text-md font-semibold mb-2 flex items-center gap-2"
                 style={{ color: isDark ? "white" : "black" }}
               >
@@ -312,10 +336,10 @@ const ProjectCard = ({
                       textColor={isDark ? "white" : "black"}
                     />
                   ) : (
-                    <span 
+                    <span
                       key={toolIndex}
                       className="px-3 py-1 text-xs rounded-full"
-                      style={{ 
+                      style={{
                         backgroundColor: 'rgba(100, 100, 100, 0.2)',
                         color: isDark ? 'white' : 'black',
                       }}
@@ -326,10 +350,10 @@ const ProjectCard = ({
                 })}
               </div>
             </div>
-            
+
             {/* Améliorations futures */}
             <div className="mb-6">
-              <h4 
+              <h4
                 className="text-md font-semibold mb-2 flex items-center gap-2"
                 style={{ color: isDark ? "white" : "black" }}
               >
@@ -338,7 +362,7 @@ const ProjectCard = ({
               </h4>
               <ul className="list-disc pl-5 space-y-1">
                 {project.improvements && project.improvements.map((improvement, index) => (
-                  <li 
+                  <li
                     key={index}
                     className="text-gray-600 dark:text-gray-300"
                   >
@@ -346,28 +370,6 @@ const ProjectCard = ({
                   </li>
                 ))}
               </ul>
-            </div>
-            
-            {/* Liens vers le projet et GitHub */}
-            <div className="flex gap-4 flex-wrap">
-              {project.link && (
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors duration-200"
-                  style={{ 
-                    backgroundColor: secondaryColor,
-                    color: getTextColor(secondaryColor)
-                  }}
-                >
-                  <ExternalLink size={18} />
-                  <span>{language === "fr" ? "Visiter" : "Visit"}</span>
-                </a>
-              )}
-              
-              {/* Rendu des boutons GitHub */}
-              {renderGithubButtons()}
             </div>
           </div>
         )}

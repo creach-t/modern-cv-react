@@ -35,8 +35,8 @@
       "image": "/img/projects/queensgame.jpg",
       "link": "https://queens-game.creachtheo.fr",
       "github": ["https://github.com/creach-t/queens-game-web"],
-      "technologies": ["React", "TypeScript", "Vite", "CSS Grid"],
-      "tools": ["Git", "VS Code", "Vite", "Netlify"],
+      "technologies": ["React", "TypeScript"],
+      "tools": ["Git", "VS Code", "Docker"],
       "fr": {
         "label": "Queens Game Web",
         "value": "Version web responsive du puzzle Queens de LinkedIn",

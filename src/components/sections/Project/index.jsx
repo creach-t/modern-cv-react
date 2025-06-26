@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import { ChevronLeft, ChevronRight, Code, Coffee, FileCode, Skull } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useColor } from "../../../contexts/ColorContext";
 import { useLanguage } from "../../../contexts/LanguageContext";
-import { Code, Coffee, Skull, FileCode, ChevronLeft, ChevronRight } from "lucide-react";
 import ProjectSlider from "./ProjectSlider";
 
 // Nombre de projets visibles par slide
@@ -18,6 +18,7 @@ const Project = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [navHovered, setNavHovered] = useState(false);
+  const [isAutoPlayPaused, setIsAutoPlayPaused] = useState(false);
   const sliderRef = useRef(null);
   const autoSlideTimerRef = useRef(null);
   const userInteractionTimerRef = useRef(null);
@@ -38,7 +39,10 @@ const Project = () => {
       if (autoSlideTimerRef.current) {
         clearTimeout(autoSlideTimerRef.current);
       }
-      
+
+      // Ne pas configurer un nouveau timer si l'auto-play est en pause
+      if (isAutoPlayPaused) return;
+
       // Configurer un nouveau timer
       autoSlideTimerRef.current = setTimeout(() => {
         // Passer à la slide suivante et fermer la carte développée
@@ -47,11 +51,26 @@ const Project = () => {
       }, AUTO_SLIDE_DELAY);
     };
 
+    // Pause l'auto-play
+    const pauseAutoPlay = () => {
+      setIsAutoPlayPaused(true);
+      if (autoSlideTimerRef.current) {
+        clearTimeout(autoSlideTimerRef.current);
+        autoSlideTimerRef.current = null;
+      }
+    };
+
+    // Reprend l'auto-play
+    const resumeAutoPlay = () => {
+      setIsAutoPlayPaused(false);
+      resetAutoSlideTimer();
+    };
+
     // Navigation dans le slider
     const navigateSlider = (direction) => {
       let newSlide;
       const totalProjects = projects.length;
-      
+
       if (direction === 'next') {
         newSlide = currentSlide + PROJECTS_PER_SLIDE;
         if (newSlide >= totalProjects) {
@@ -63,7 +82,7 @@ const Project = () => {
           newSlide = Math.floor((totalProjects - 1) / PROJECTS_PER_SLIDE) * PROJECTS_PER_SLIDE;
         }
       }
-      
+
       setCurrentSlide(newSlide);
       setExpandedProject(null); // Fermer la carte lors du changement de slide
       resetAutoSlideTimer();
@@ -77,8 +96,8 @@ const Project = () => {
       resetAutoSlideTimer();
     };
 
-    return { navigateSlider, goToSlide, resetAutoSlideTimer };
-  }, [currentSlide, projects.length]);
+    return { navigateSlider, goToSlide, resetAutoSlideTimer, pauseAutoPlay, resumeAutoPlay };
+  }, [currentSlide, projects.length, isAutoPlayPaused]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -88,14 +107,14 @@ const Project = () => {
           fetch("/data/projects.json"),
           fetch("/data/skills.json")
         ]);
-        
+
         // Traitement des données de projets
         try {
           const projectsData = await projectsResponse.json();
-          
+
           // Vérifier si projectsData a une propriété 'projects'
           const projectsList = projectsData.projects || projectsData;
-          
+
           // Transformation des données de projet pour compatibilité avec l'interface
           const formattedProjects = projectsList.map(project => {
             return {
@@ -113,20 +132,20 @@ const Project = () => {
               github: project.github || ""
             };
           });
-          
+
           setProjects(formattedProjects);
         } catch (error) {
           console.error("Erreur lors du traitement des projets:", error);
           setProjects([]);
         }
-        
+
         // Traitement des données de compétences
         try {
           const skillsData = await skillsResponse.json();
-          
+
           // Détermine si le skillsData est un tableau ou un objet avec une propriété "skills"
           const skillsArray = Array.isArray(skillsData) ? skillsData : skillsData.skills || [];
-          
+
           // Traitement des compétences
           const skillsMap = {};
           skillsArray.forEach(category => {
@@ -138,7 +157,7 @@ const Project = () => {
               });
             }
           });
-          
+
           setSkills(skillsMap);
         } catch (error) {
           console.error("Erreur lors du traitement des compétences:", error);
@@ -150,23 +169,25 @@ const Project = () => {
         setIsLoading(false);
       }
     };
-    
+
     loadData();
   }, [language]);
 
   // Configuration de l'auto-slide
   useEffect(() => {
-    // Initialiser le timer d'auto-slide
-    sliderMethods.resetAutoSlideTimer();
-    
+    // Initialiser le timer d'auto-slide seulement si pas en pause
+    if (!isAutoPlayPaused) {
+      sliderMethods.resetAutoSlideTimer();
+    }
+
     // Fonction de nettoyage pour annuler le timer lors du démontage
     return () => {
       if (autoSlideTimerRef.current) {
         clearTimeout(autoSlideTimerRef.current);
       }
     };
-  }, [projects, currentSlide, sliderMethods]);
-  
+  }, [projects, currentSlide, sliderMethods, isAutoPlayPaused]);
+
   // Détecteurs d'activité utilisateur pour gérer le timer
   useEffect(() => {
     const handleUserActivity = () => {
@@ -174,20 +195,22 @@ const Project = () => {
       if (userInteractionTimerRef.current) {
         clearTimeout(userInteractionTimerRef.current);
       }
-      
+
       // Définir un nouveau timer pour réinitialiser l'auto-slide
       userInteractionTimerRef.current = setTimeout(() => {
-        sliderMethods.resetAutoSlideTimer();
+        if (!isAutoPlayPaused) {
+          sliderMethods.resetAutoSlideTimer();
+        }
       }, 500); // Délai court pour "debouncer" les événements
     };
-    
+
     // Ajouter des écouteurs pour détecter l'activité
     window.addEventListener('mousemove', handleUserActivity);
     window.addEventListener('mousedown', handleUserActivity);
     window.addEventListener('touchstart', handleUserActivity);
     window.addEventListener('keydown', handleUserActivity);
     window.addEventListener('scroll', handleUserActivity);
-    
+
     // Nettoyage des écouteurs d'événements
     return () => {
       window.removeEventListener('mousemove', handleUserActivity);
@@ -195,12 +218,12 @@ const Project = () => {
       window.removeEventListener('touchstart', handleUserActivity);
       window.removeEventListener('keydown', handleUserActivity);
       window.removeEventListener('scroll', handleUserActivity);
-      
+
       if (userInteractionTimerRef.current) {
         clearTimeout(userInteractionTimerRef.current);
       }
     };
-  }, [sliderMethods]);
+  }, [sliderMethods, isAutoPlayPaused]);
 
   // Fonction pour basculer l'état d'expansion d'un projet
   const toggleProjectExpansion = (index) => {
@@ -218,19 +241,19 @@ const Project = () => {
   if (isLoading) {
     return (
       <section className="mb-8">
-        <h2 
+        <h2
           className="text-2xl font-bold mb-6 pb-2 relative"
           style={{ color: textColor }}
         >
           {language === "fr" ? "Projets" : "Projects"}
-          <div 
-            className="absolute bottom-0 left-0 h-1 rounded-full w-14" 
+          <div
+            className="absolute bottom-0 left-0 h-1 rounded-full w-14"
             style={{ backgroundColor: secondaryColor }}
           />
         </h2>
         <div className="flex justify-center items-center p-12">
-          <div 
-            className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary" 
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary"
             style={{ borderColor: secondaryColor }}
           ></div>
         </div>
@@ -245,17 +268,17 @@ const Project = () => {
         onMouseEnter={() => setNavHovered(true)}
         onMouseLeave={() => setNavHovered(false)}
       >
-        <h2 
+        <h2
           className="text-2xl font-bold pb-2 relative flex-grow"
           style={{ color: textColor }}
         >
           {language === "fr" ? "Projets" : "Projects"}
-          <div 
-            className="absolute bottom-0 left-0 h-1 rounded-full w-14" 
+          <div
+            className="absolute bottom-0 left-0 h-1 rounded-full w-14"
             style={{ backgroundColor: secondaryColor }}
           />
         </h2>
-        
+
         {/* Contrôles de navigation intégrés au titre */}
         {totalSlides > 1 && (
           <div className="flex items-center space-x-4">
@@ -263,17 +286,17 @@ const Project = () => {
             <div className="flex space-x-1.5">
               {Array.from({ length: totalSlides }).map((_, i) => {
                 const isActive = i === currentIndex;
-                
+
                 return (
                   <button
                     key={i}
                     onClick={() => sliderMethods.goToSlide(i)}
                     className="transition-all duration-300 rounded-full"
-                    style={{ 
+                    style={{
                       width: isActive ? '8px' : '6px',
                       height: isActive ? '8px' : '6px',
-                      backgroundColor: isActive 
-                        ? secondaryColor 
+                      backgroundColor: isActive
+                        ? secondaryColor
                         : isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)',
                       transform: navHovered && isActive ? 'scale(1.2)' : 'scale(1)',
                     }}
@@ -282,13 +305,13 @@ const Project = () => {
                 );
               })}
             </div>
-            
+
             {/* Boutons de navigation */}
             <div className="flex items-center">
-              <button 
+              <button
                 onClick={() => sliderMethods.navigateSlider('prev')}
                 className="p-1 rounded-full transition-transform duration-300 mr-1"
-                style={{ 
+                style={{
                   color: textColor,
                   opacity: navHovered ? 1 : 0.7,
                   transform: navHovered ? 'scale(1.1)' : 'scale(1)'
@@ -297,11 +320,11 @@ const Project = () => {
               >
                 <ChevronLeft size={20} />
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => sliderMethods.navigateSlider('next')}
                 className="p-1 rounded-full transition-transform duration-300"
-                style={{ 
+                style={{
                   color: textColor,
                   opacity: navHovered ? 1 : 0.7,
                   transform: navHovered ? 'scale(1.1)' : 'scale(1)'
@@ -314,7 +337,7 @@ const Project = () => {
           </div>
         )}
       </div>
-      
+
       <div ref={sliderRef}>
         {projects.length > 0 ? (
           <ProjectSlider
@@ -331,11 +354,13 @@ const Project = () => {
             language={language}
             badgeBgColor={badgeBgColor}
             iconMap={iconMap}
+            onPauseAutoPlay={sliderMethods.pauseAutoPlay}
+            onResumeAutoPlay={sliderMethods.resumeAutoPlay}
           />
         ) : (
           <div className="text-center p-8">
             <p style={{ color: textColor }}>
-              {language === "fr" 
+              {language === "fr"
                 ? "Aucun projet trouvé. Veuillez vérifier le fichier de données."
                 : "No projects found. Please check the data file."}
             </p>

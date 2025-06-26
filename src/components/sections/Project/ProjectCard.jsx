@@ -196,7 +196,7 @@ const ProjectCard = ({
                 {project.description}
               </p>
               {/* Boutons - toujours visibles */}
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2">
                 {project.link && (
                   <a
                     href={project.link}

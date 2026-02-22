@@ -11,6 +11,9 @@ RUN npm ci
 
 # Build production bundle
 COPY . .
+# SHA du commit injecté au build (ex: --build-arg GIT_SHA=abc1234)
+ARG GIT_SHA=dev
+ENV REACT_APP_VERSION=$GIT_SHA
 RUN npm run build
 
 # ─────────────────────────────────────────────

@@ -40,9 +40,10 @@ git pull origin main
 ok "Code à jour"
 
 # ── 2. Build de la nouvelle image Docker ──────────────────────
-log "🐳 Build de l'image Docker..."
-docker build -t "${IMAGE_NAME}:new" .
-ok "Image construite"
+GIT_SHA=$(git rev-parse --short HEAD)
+log "🐳 Build de l'image Docker (version: ${GIT_SHA})..."
+docker build --build-arg GIT_SHA="${GIT_SHA}" -t "${IMAGE_NAME}:new" .
+ok "Image construite — version ${GIT_SHA}"
 
 # ── 3. Nettoyage d'un éventuel conteneur candidat résiduel ────
 if docker ps -aq --filter "name=^${CONTAINER_NEW}$" | grep -q .; then

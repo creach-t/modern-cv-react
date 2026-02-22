@@ -21,6 +21,9 @@ RUN npm run build
 # ─────────────────────────────────────────────
 FROM nginx:1.25-alpine AS production
 
+# curl pour le healthcheck (wget BusyBox ne fonctionne pas bien dans ce contexte)
+RUN apk add --no-cache curl
+
 # Copy built assets
 COPY --from=builder /app/build /usr/share/nginx/html
 
@@ -29,8 +32,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 2585
 
-# Built-in healthcheck used by Docker & the deploy script
 HEALTHCHECK --interval=15s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -q -O /dev/null http://localhost:2585/health || exit 1
+  CMD curl -f http://localhost:2585/health || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

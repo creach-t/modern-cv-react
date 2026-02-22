@@ -1,0 +1,24 @@
+services:
+  modern-cv-react:
+    image: ghcr.io/creach-t/modern-cv-react:${IMAGE_TAG:-latest}
+    expose:
+      - "2585"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2585/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cv.rule=Host(`creachtheo.fr`) || Host(`www.creachtheo.fr`)"
+      - "traefik.http.routers.cv.entrypoints=websecure"
+      - "traefik.http.routers.cv.tls.certresolver=myresolver"
+      - "traefik.http.services.cv.loadbalancer.server.port=2585"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true

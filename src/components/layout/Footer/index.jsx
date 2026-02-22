@@ -2,7 +2,7 @@ import React from 'react';
 import { Github } from 'lucide-react';
 
 const Footer = () => {
-  const version = process.env.REACT_APP_VERSION || 'dev';
+  const version = (process.env.REACT_APP_VERSION || 'dev').substring(0, 7);
 
   return (
     <footer className="container mx-auto px-4 py-4 text-center">

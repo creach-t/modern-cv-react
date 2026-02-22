@@ -1,11 +1,17 @@
 services:
   modern-cv-react:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # En production : l'image est tirée du registry GHCR
+    # En développement local : remplacer par `build: .`
+    image: ghcr.io/creach-t/modern-cv-react:latest
     expose:
       - "2585"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2585/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.cv.rule=Host(`creachtheo.fr`) || Host(`www.creachtheo.fr`)"

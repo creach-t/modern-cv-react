@@ -1,25 +1,33 @@
-FROM node:18-alpine as build
+# ─────────────────────────────────────────────
+# Stage 1 — Build React app
+# ─────────────────────────────────────────────
+FROM node:18-alpine AS builder
 
-# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers package.json et package-lock.json
+# Install deps first (layer cache optimisation)
 COPY package*.json ./
+RUN npm ci
 
-# Installer les dépendances
-RUN npm install
-
-# Copier les fichiers du projet
+# Build production bundle
 COPY . .
-
-# Construire l'application pour la production
 RUN npm run build
 
-# Installer serve
-RUN npm install -g serve
+# ─────────────────────────────────────────────
+# Stage 2 — Serve with Nginx (lightweight)
+# ─────────────────────────────────────────────
+FROM nginx:1.25-alpine AS production
 
-# Exposer le port 2585
+# Copy built assets
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Custom Nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 2585
 
-# Démarrer serve sur le port 2585
-CMD ["serve", "-s", "build", "-l", "2585"]
+# Built-in healthcheck used by Docker & the deploy script
+HEALTHCHECK --interval=15s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget -q --spider http://localhost:2585/health || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]

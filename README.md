@@ -32,90 +32,103 @@ Ce projet intègre des fonctionnalités SEO avancées pour une meilleure visibil
 - **Optimisations Open Graph et Twitter Cards** - Pour un partage optimal sur les réseaux sociaux
 - **Balisage sémantique** - Structure HTML optimisée pour l'accessibilité et le référencement
 
-## 🛠️ Installation
+## 🛠️ Installation locale
 
-### Option 1: Installation locale
-
-1. Clonez le repository
 ```bash
 git clone https://github.com/creach-t/modern-cv-react.git
 cd modern-cv-react
-```
-
-2. Installez les dépendances
-```bash
 npm install
+npm start        # http://localhost:3000
 ```
 
-3. Lancez le projet
+### Avec Docker (dev)
+
 ```bash
-npm start
+docker compose build --no-cache
+docker compose up -d   # http://localhost:2585
 ```
-
-Le site sera accessible à l'adresse http://localhost:3000
-
-### Option 2: Installation avec Docker
-
-1. Clonez le repository
-```bash
-git clone https://github.com/creach-t/modern-cv-react.git
-cd modern-cv-react
-```
-
-2. Construisez et lancez les conteneurs Docker
-```bash
-docker compose build --no-cache modern-cv-react
-docker compose up -d
-```
-
-Le site sera accessible à l'adresse http://localhost:2585
 
 ## 📁 Structure du projet
 
 ```
 modern-cv-react/
-├── public/            # Ressources statiques et fichiers de données JSON
-│   ├── data/          # Données JSON pour les compétences, expériences, etc.
-│   ├── img/           # Images et ressources graphiques
-│   └── index.html     # Point d'entrée HTML avec optimisations SEO
+├── public/                    # Ressources statiques
+│   ├── data/                  # Données JSON (compétences, expériences…)
+│   ├── img/                   # Images
+│   └── index.html
 ├── src/
-│   ├── components/    # Composants React réutilisables
-│   ├── config/        # Configurations d'animation et autres
-│   ├── constants/     # Constantes et traductions
-│   ├── contexts/      # Contextes React (couleur, langue, modal)
-│   ├── hooks/         # Hooks personnalisés
-│   ├── utils/         # Fonctions utilitaires
-│   ├── App.jsx        # Composant principal de l'application
-│   └── index.js       # Point d'entrée JavaScript
-├── docker-compose.yml # Configuration Docker Compose
-├── Dockerfile         # Configuration Docker
-└── tailwind.config.js # Configuration Tailwind CSS
+│   ├── components/            # Composants React
+│   ├── services/PDFService/   # Génération PDF du CV
+│   ├── contexts/              # Contextes React (couleur, langue, modal)
+│   ├── hooks/                 # Hooks personnalisés
+│   └── utils/
+├── .github/workflows/
+│   └── ci-cd.yml              # Pipeline CI/CD GitHub Actions
+├── scripts/
+│   └── deploy.sh              # Script de déploiement blue-green (manuel)
+├── Dockerfile                 # Multi-stage: node:18 builder + nginx:alpine
+├── nginx.conf                 # Config Nginx (SPA, gzip, /health, cache)
+├── docker-compose.yml         # Dev local
+├── docker-compose.prod.yml    # Production (image GHCR + Traefik labels)
+└── tailwind.config.js
 ```
 
 ## 🎨 Personnalisation
 
-Le CV est facilement personnalisable en modifiant les fichiers JSON dans le dossier `public/data/`. Vous pouvez :
+Modifiez les fichiers JSON dans `public/data/` :
 
-- Modifier vos informations personnelles (`contacts.json`)
-- Mettre à jour votre expérience professionnelle (`experiences.json`)
-- Ajuster vos formations (`education.json`)
-- Personnaliser vos compétences (`skills.json` et `softSkills.json`)
-- Ajouter vos projets (`projects.json`)
-- Changer les couleurs disponibles (`colors.json`)
+| Fichier | Contenu |
+|---|---|
+| `contacts.json` | Informations personnelles et liens |
+| `experiences.json` | Expériences professionnelles |
+| `education.json` | Formations |
+| `skills.json` | Compétences techniques |
+| `softSkills.json` | Compétences transverses |
+| `projects.json` | Projets |
+| `colors.json` | Palette de couleurs disponibles |
 
-Tous les aspects visuels peuvent être personnalisés en modifiant les styles dans les composants React ou via Tailwind CSS.
+## 🚀 CI/CD — Déploiement automatique
 
-## 🌐 Déploiement
+Chaque `push` sur `main` déclenche automatiquement le pipeline GitHub Actions :
 
-Ce projet est configuré pour être déployé avec:
-- Docker pour la conteneurisation
-- Nginx comme serveur web
-- Certbot pour les certificats SSL
+```
+push → main
+    │
+    ├─ 🧪 Tests & Build check (npm ci + npm test + npm run build)
+    │
+    ├─ 🐳 Build image Docker → push vers GHCR
+    │       ghcr.io/creach-t/modern-cv-react:latest
+    │       ghcr.io/creach-t/modern-cv-react:sha-<7chars>
+    │
+    └─ 🌐 Deploy sur VPS
+            scp docker-compose.prod.yml → /root/projects/modern-cv-react
+            docker compose pull + up --force-recreate
+```
 
-Le déploiement comprend:
-- Un conteneur React pour l'application
-- Un conteneur Nginx pour servir l'application et gérer SSL
-- Un conteneur Certbot pour la génération et le renouvellement des certificats SSL
+### Secrets GitHub requis
+
+| Secret | Description |
+|---|---|
+| `SSH_HOST` | IP/domaine du VPS |
+| `SSH_USER` | Utilisateur SSH (`root`) |
+| `SSH_PRIVATE_KEY` | Clé privée SSH (contenu de `~/.ssh/github_actions_deploy`) |
+| `SSH_PORT` | Port SSH (ex: `22`) |
+| `GHCR_PAT` | GitHub PAT avec scope `read:packages` (pour que le VPS pull l'image) |
+
+### Architecture serveur
+
+- **Traefik** (`traefik-central`) — reverse proxy + TLS automatique (Let's Encrypt)
+- **nginx:1.25-alpine** — sert le bundle React sur le port `2585`
+- **Réseau Docker** `traefik-public` — réseau externe partagé entre Traefik et les apps
+- **Healthcheck** — `curl -f http://localhost:2585/health` (endpoint `/health` → 200 OK)
+- **Version affichée** — SHA git baked dans le bundle via `REACT_APP_VERSION` (visible dans le footer)
+
+### Dossier de déploiement sur le VPS
+
+```
+/root/projects/modern-cv-react/
+└── docker-compose.prod.yml    # Copié automatiquement par le CI
+```
 
 ## ⚙️ Fonctionnalités techniques avancées
 

@@ -31,6 +31,6 @@ EXPOSE 2585
 
 # Built-in healthcheck used by Docker & the deploy script
 HEALTHCHECK --interval=15s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -q --spider http://localhost:2585/health || exit 1
+  CMD wget -q -O /dev/null http://localhost:2585/health || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

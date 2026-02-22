@@ -1,11 +1,12 @@
 services:
   modern-cv-react:
     image: ghcr.io/creach-t/modern-cv-react:${IMAGE_TAG:-latest}
+    container_name: modern-cv-react
     expose:
       - "2585"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2585/health"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:2585/health"]
       interval: 15s
       timeout: 5s
       retries: 3

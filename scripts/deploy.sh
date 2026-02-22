@@ -15,7 +15,7 @@ warn() { echo -e "${YELLOW}[$(date '+%H:%M:%S')] ⚠️  $*${NC}"; }
 err()  { echo -e "${RED}[$(date '+%H:%M:%S')] ❌ $*${NC}" >&2; }
 
 # ── Configuration — adapte ces variables à ton serveur ────────
-REPO_DIR="${REPO_DIR:-/opt/modern-cv-react}"   # dossier du dépôt git sur le serveur
+REPO_DIR="${REPO_DIR:-/root/projects/modern-cv-react}"
 IMAGE_NAME="modern-cv-react"
 CONTAINER_PROD="${IMAGE_NAME}"
 CONTAINER_NEW="${IMAGE_NAME}-new"

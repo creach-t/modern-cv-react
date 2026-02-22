@@ -92,9 +92,10 @@ const Experience = () => {
     fetchData();
 
     // Nettoyage des timers lors du démontage du composant
+    // Capture de la ref avant le return (pattern React recommandé)
+    const timeouts = timeoutRefs.current;
     return () => {
-      const currentTimeouts = timeoutRefs.current;
-      Object.values(currentTimeouts).forEach(timeout => {
+      Object.values(timeouts).forEach(timeout => {
         if (timeout) clearTimeout(timeout);
       });
     };

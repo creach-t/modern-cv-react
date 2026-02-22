@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { BaseSection } from './BaseSection';
-import { getSectionConfig } from './sectionUtils';
 import { SkillIconColored } from '../icons/SkillIcons';
 
 /**
@@ -16,7 +15,6 @@ import { SkillIconColored } from '../icons/SkillIcons';
  */
 export const HobbiesSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
-  const sectionConfig = getSectionConfig('hobbies', config);
   
   // Hobbies avec leurs noms et icônes correspondantes
   const hobbies = [

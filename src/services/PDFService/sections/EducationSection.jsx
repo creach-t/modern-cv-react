@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { BaseSection } from './BaseSection';
-import { renderBadges, createBalancedColumns, getSectionConfig, renderPeriodBadge } from './sectionUtils';
+import { renderBadges, createBalancedColumns, renderPeriodBadge } from './sectionUtils';
 /**
  * Section de formation (style cartes)
  */
@@ -9,7 +9,6 @@ export const EducationSection = ({ userData, styles, dynamicStyles, translations
   // Vérifier si userData.education existe, sinon utiliser un tableau vide
   const education = userData?.education || [];
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
-  const sectionConfig = getSectionConfig('education', config);
 
   // Estimez la hauteur maximale potentielle avec une estimation plus serrée
   const calculateContentHeight = (edu) => {

@@ -10,8 +10,6 @@ export const HeaderSection = ({ userData, styles, dynamicStyles, config }) => {
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
   const profileSize = headerOptions.profilePictureSize || 65; // Taille réduite
   const iconSize = headerOptions.contactIconSize || 12; // Taille réduite
-  const iconColor = getTextColor(secondaryColor);
-  
   // Filtrer les contacts (exclure téléphone)
   const contacts = userData.contacts?.filter(c => c.type !== 'phone') || [];
   

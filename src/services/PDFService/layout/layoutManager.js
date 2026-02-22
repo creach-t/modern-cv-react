@@ -102,7 +102,6 @@ class LayoutManager {
       <View style={this.styles.singleColumn}>
         {allSections.map(sectionName => {
           const SectionComponent = createSectionComponent(sectionName);
-          const sectionConfig = this.configManager.getSectionConfig(sectionName);
           
           if (!SectionComponent) {
             return null;
@@ -153,8 +152,7 @@ class LayoutManager {
           >
             {columnSections.map(sectionName => {
               const SectionComponent = createSectionComponent(sectionName);
-              const sectionConfig = this.configManager.getSectionConfig(sectionName);
-              
+                  
               if (!SectionComponent) {
                 return null;
               }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { BaseSection } from './BaseSection';
-import { createBalancedColumns, getSectionConfig } from './sectionUtils';
+import { createBalancedColumns } from './sectionUtils';
 import { SkillIconColored, getTechnologyIconName } from '../icons/SkillIcons';
 
 /**
@@ -17,7 +17,6 @@ import { SkillIconColored, getTechnologyIconName } from '../icons/SkillIcons';
 export const ProjectsSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   const projects = userData?.projects || [];
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
-  const sectionConfig = getSectionConfig('projects', config);
   
   // Rendu d'un projet en format carte avec exactement 4 lignes compactes
   const renderProject = (project) => (

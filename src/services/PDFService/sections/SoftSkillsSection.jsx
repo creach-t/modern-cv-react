@@ -4,7 +4,6 @@ import { Text, View } from '@react-pdf/renderer';
 import { SkillIconColored } from '../icons/SkillIcons';
 import { getTextColor } from '../../../utils/color';
 import { BaseSection } from './BaseSection';
-import { getSectionConfig } from './sectionUtils';
 /**
  * Section des soft skills avec icônes
  * @param {Object} userData - Données utilisateur formatées
@@ -18,8 +17,7 @@ import { getSectionConfig } from './sectionUtils';
 export const SoftSkillsSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   // Vérifier si userData.softSkills existe, sinon utiliser un tableau vide
   const softSkills = userData?.softSkills || [];
-  const secondaryColor = config?.style?.colors?.secondary || '#0077cc'; 
-  const sectionConfig = getSectionConfig('softSkills', config);
+  const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
   
   // Utiliser la couleur d'accent pour le cercle
   const circleColor = secondaryColor;

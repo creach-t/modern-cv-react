@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { BaseSection } from './BaseSection';
-import { renderBadges, createBalancedColumns, getSectionConfig, renderPeriodBadge } from './sectionUtils';
+import { renderBadges, createBalancedColumns, renderPeriodBadge } from './sectionUtils';
 
 /**
  * Section des expériences professionnelles
@@ -9,7 +9,6 @@ import { renderBadges, createBalancedColumns, getSectionConfig, renderPeriodBadg
 export const ExperienceSection = ({ userData, styles, dynamicStyles, translations, language, config }) => {
   const experiences = userData?.experiences || [];
   const secondaryColor = config?.style?.colors?.secondary || '#0077cc';
-  const sectionConfig = getSectionConfig('experience', config);
   
   // Estimez la hauteur maximale potentielle
   const calculateContentHeight = (exp) => {

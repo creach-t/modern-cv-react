@@ -16,6 +16,27 @@
 body {
   margin: 0;
   min-height: 100vh;
+  /* Premier paint sombre : creachOS démarre en sombre, évite le flash blanc */
+  background-color: #0a0b10;
+}
+
+/* Scrollbars discrètes dans les fenêtres de creachOS */
+.overflow-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.overflow-auto::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+.overflow-auto::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* Style pour le color picker */

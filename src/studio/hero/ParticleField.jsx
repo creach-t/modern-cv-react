@@ -69,7 +69,8 @@ const ParticleField = ({ color = "#e2603f" }) => {
 
     let width = mount.clientWidth;
     let height = mount.clientHeight;
-    const COUNT = 3200;
+    const isSmall = window.innerWidth < 768;
+    const COUNT = isSmall ? 1600 : 3200;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
@@ -81,7 +82,13 @@ const ParticleField = ({ color = "#e2603f" }) => {
     mount.appendChild(renderer.domElement);
 
     // Formation cible (monogramme), positions vivantes, vitesses.
-    const home = sampleText("TC", COUNT, 11, 5.5, 2.4);
+    const home = sampleText(
+      "TC",
+      COUNT,
+      isSmall ? 7 : 11,
+      isSmall ? 3.5 : 5.5,
+      isSmall ? 0 : 2.4
+    );
     const pos = new Float32Array(COUNT * 3);
     const vel = new Float32Array(COUNT * 3);
     for (let i = 0; i < COUNT; i++) {
@@ -147,10 +154,15 @@ const ParticleField = ({ color = "#e2603f" }) => {
         const iy = ix + 1;
         const iz = ix + 2;
 
-        // ressort vers la formation
-        vel[ix] += (home[ix] - arr[ix]) * 0.012;
-        vel[iy] += (home[iy] - arr[iy]) * 0.012;
-        vel[iz] += (home[iz] - arr[iz]) * 0.012;
+        // mouvement ambiant permanent (vivant même sans curseur, ex. mobile)
+        const ax = Math.sin(t * 0.8 + i * 0.35) * 0.07;
+        const ay = Math.cos(t * 0.65 + i * 0.27) * 0.07;
+        const az = Math.sin(t * 0.5 + i * 0.5) * 0.12;
+
+        // ressort vers la formation (+ ondulation)
+        vel[ix] += (home[ix] + ax - arr[ix]) * 0.012;
+        vel[iy] += (home[iy] + ay - arr[iy]) * 0.012;
+        vel[iz] += (home[iz] + az - arr[iz]) * 0.012;
 
         // répulsion curseur (plan XY)
         if (hasMouse) {

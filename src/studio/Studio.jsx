@@ -5,6 +5,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useOS } from "../os/osContext";
 import Nav from "./components/Nav";
 import ScrollProgress from "./components/ScrollProgress";
+import Ambiance from "./components/Ambiance";
 import Hero from "./hero/Hero";
 import About from "./sections/About";
 import Projects from "./sections/Projects";
@@ -39,11 +40,24 @@ const Studio = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [setMode]);
 
+  // Clin d'œil aux dev qui ouvrent la console
+  useEffect(() => {
+    console.log(
+      "%c👋 Salut, curieux·se !",
+      `color:${secondaryColor};font-size:16px;font-weight:bold`
+    );
+    console.log(
+      "%cTu inspectes le code ? On devrait se parler → creach.t@gmail.com\nPsst : tape le Konami code (↑↑↓↓←→←→ B A) pour lancer creachOS 🖥️",
+      "color:#94a3b8"
+    );
+  }, [secondaryColor]);
+
   return (
-    <div className="min-h-screen bg-[#05060a] text-gray-100">
+    <div className="relative min-h-screen overflow-hidden bg-[#05060a] text-gray-100">
+      <Ambiance />
       <ScrollProgress />
       <Nav />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <About />
         <Projects />
@@ -52,7 +66,7 @@ const Studio = () => {
         <Contact />
       </main>
 
-      <footer className="border-t border-white/10 px-6 py-10">
+      <footer className="relative z-10 border-t border-white/10 px-6 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="text-center sm:text-left">
             <div className="flex items-center justify-center gap-2 sm:justify-start">

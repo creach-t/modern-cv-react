@@ -1,6 +1,64 @@
 {
   "projects": [
     {
+      "id": "vectokid",
+      "icon": "Palette",
+      "image": "/img/projects/vectokid.jpg",
+      "link": "https://vectokid.fr",
+      "github": [],
+      "technologies": ["React", "TypeScript", "Node.js", "PostgreSQL"],
+      "tools": ["Git", "VS Code", "Docker", "Playwright"],
+      "fr": {
+        "label": "VectoKid",
+        "value": "Éditeur de dessin vectoriel pour enfants",
+        "description": "Application de dessin vectoriel pensée pour les enfants : calques, formes, couleurs, sauvegarde en ligne et comptes utilisateurs.",
+        "explanation": "VectoKid est une application de dessin vectoriel conçue pour être simple et amusante pour les enfants, tout en reposant sur une architecture solide. Elle propose un véritable moteur d'édition avec gestion des calques, des formes et des couleurs, une sauvegarde des dessins dans le cloud et des comptes utilisateurs synchronisés. Le projet est entièrement typé en TypeScript et couvert par des tests unitaires et end-to-end.",
+        "improvements": [
+          "Partage et galerie publique de dessins",
+          "Outils de dessin avancés (courbes, dégradés)"
+        ]
+      },
+      "en": {
+        "label": "VectoKid",
+        "value": "Vector drawing editor for kids",
+        "description": "A vector drawing app designed for kids: layers, shapes, colors, cloud saving and user accounts.",
+        "explanation": "VectoKid is a vector drawing application designed to be simple and fun for children, while running on a solid architecture. It offers a real editing engine with layer, shape and color management, cloud drawing storage and synced user accounts. The project is fully typed in TypeScript and covered by unit and end-to-end tests.",
+        "improvements": [
+          "Sharing and public drawing gallery",
+          "Advanced drawing tools (curves, gradients)"
+        ]
+      }
+    },
+    {
+      "id": "parade",
+      "icon": "Swords",
+      "image": "/img/projects/parade.jpg",
+      "link": "https://parade.creachtheo.fr",
+      "github": [],
+      "technologies": ["React", "TypeScript", "Canvas", "Web Audio API"],
+      "tools": ["Git", "VS Code", "Docker"],
+      "fr": {
+        "label": "PARADE",
+        "value": "Jeu de combat rythmique",
+        "description": "Jeu de combat au rythme de la musique : parez et frappez en cadence, dans un univers d'ombres, avec comptes joueurs.",
+        "explanation": "PARADE est un jeu de combat rythmique où l'action se joue au tempo de la musique : il faut parer et attaquer en cadence pour vaincre son adversaire, dans une direction artistique en ombres. Le jeu repose sur un moteur de rythme maison (Canvas + Web Audio API) et propose des comptes joueurs pour sauvegarder la progression.",
+        "improvements": [
+          "Éditeur de niveaux et partage de morceaux",
+          "Classements en ligne et mode multijoueur"
+        ]
+      },
+      "en": {
+        "label": "PARADE",
+        "value": "Rhythmic combat game",
+        "description": "A music-timed fighting game: parry and strike on the beat, in a world of shadows, with player accounts.",
+        "explanation": "PARADE is a rhythm-based fighting game where the action follows the beat of the music: parry and attack in time to defeat your opponent, in a shadow-themed art direction. It runs on a custom rhythm engine (Canvas + Web Audio API) and offers player accounts to save progress.",
+        "improvements": [
+          "Level editor and track sharing",
+          "Online leaderboards and multiplayer mode"
+        ]
+      }
+    },
+    {
       "id": "devjobs",
       "icon": "Code",
       "image": "/img/projects/devjobs.jpg",

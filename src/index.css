@@ -59,6 +59,22 @@ input[type="color"]::-moz-color-swatch {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Aurores animées du site immersif (studio) */
+@keyframes studio-aurora-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8%, 6%) scale(1.12); }
+}
+@keyframes studio-aurora-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-7%, -5%) scale(1.1); }
+}
+.studio-aurora-a { animation: studio-aurora-a 18s ease-in-out infinite; }
+.studio-aurora-b { animation: studio-aurora-b 22s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-aurora-a, .studio-aurora-b { animation: none; }
+}
+
 /* Dark mode styles */
 .dark {
   color-scheme: dark;

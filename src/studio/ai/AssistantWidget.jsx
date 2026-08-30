@@ -22,6 +22,8 @@ const ACTION_RE = /\[\[do:([a-z_]+)(?::([a-z]+))?\]\]/gi;
 const PLAN_RE = /\[\[plan:([^\]]+)\]\]/i;
 const TOUR_RE = /\[\[do:tour\]\]/i;
 const KNOWN = ["launch_os", "goto", "color", "download_cv", "lang", "email"];
+// Non invasives : exécutées directement si demandées seules (pas de bouton).
+const NON_INVASIVE = ["goto", "project", "color", "lang"];
 const ROLES = ["user", "assistant", "action"];
 
 // noms de couleurs → hex (mot unique, fr + en)
@@ -54,8 +56,8 @@ const TOUR_NOTES = {
 };
 
 const GENERIC_NOTES = {
-  fr: { goto: "Et voilà 👍", project: "Jette un œil 👀", color: "Nouvelle ambiance 🎨", launch_os: "Bienvenue côté dev 🖥️", download_cv: "C'est parti pour le PDF 📄", lang: "Langue changée 🌐", email: "À toi de jouer ✉️" },
-  en: { goto: "There we go 👍", project: "Have a look 👀", color: "New vibe 🎨", launch_os: "Welcome to dev side 🖥️", download_cv: "PDF on its way 📄", lang: "Language switched 🌐", email: "Over to you ✉️" },
+  fr: { goto: "Et voilà 👍", project: "Jette un œil 👀", visit: "Ça s'ouvre dans un onglet 🔗", color: "Nouvelle ambiance 🎨", launch_os: "Bienvenue côté dev 🖥️", download_cv: "C'est parti pour le PDF 📄", lang: "Langue changée 🌐", email: "À toi de jouer ✉️" },
+  en: { goto: "There we go 👍", project: "Have a look 👀", visit: "Opening in a tab 🔗", color: "New vibe 🎨", launch_os: "Welcome to dev side 🖥️", download_cv: "PDF on its way 📄", lang: "Language switched 🌐", email: "Over to you ✉️" },
 };
 
 const stripActions = (text = "") =>
@@ -84,7 +86,7 @@ const parseSteps = (full, projectIds = []) => {
       return { name, arg, note };
     })
     .filter((s) =>
-      s.name === "project"
+      s.name === "project" || s.name === "visit"
         ? projectIds.includes(s.arg)
         : KNOWN.includes(s.name) &&
           (s.name !== "goto" || ACTION_SECTIONS.includes(s.arg)) &&
@@ -237,6 +239,7 @@ const AssistantWidget = () => {
       case "launch_os": return language === "fr" ? "🖥️ creachOS lancé" : "🖥️ creachOS launched";
       case "goto": return `🧭 ${t.sections[arg] || arg}`;
       case "project": return `🔎 ${projectLabel(arg)}`;
+      case "visit": return `🔗 ${projectLabel(arg)}`;
       case "color": return language === "fr" ? "🎨 Couleur mise à jour" : "🎨 Color updated";
       case "download_cv": return language === "fr" ? "📄 CV téléchargé" : "📄 CV downloaded";
       case "lang": return `🌐 ${(arg || "").toUpperCase()}`;
@@ -250,6 +253,7 @@ const AssistantWidget = () => {
       case "launch_os": return language === "fr" ? "Lancer creachOS" : "Launch creachOS";
       case "goto": return (language === "fr" ? "Aller à " : "Go to ") + (t.sections[s.arg] || s.arg);
       case "project": return (language === "fr" ? "Voir " : "See ") + projectLabel(s.arg);
+      case "visit": return (language === "fr" ? "Ouvrir le site de " : "Open ") + projectLabel(s.arg);
       case "color": return language === "fr" ? "Changer la couleur" : "Change the color";
       case "download_cv": return language === "fr" ? "Télécharger le CV" : "Download the CV";
       case "lang": return (language === "fr" ? "Passer en " : "Switch to ") + (s.arg || "").toUpperCase();
@@ -268,6 +272,11 @@ const AssistantWidget = () => {
       case "project":
         document.getElementById(`project-${arg}`)?.scrollIntoView({ behavior: "smooth" });
         break;
+      case "visit": {
+        const p = (data?.projects || []).find((x) => x.id === arg);
+        if (p?.link) window.open(p.link, "_blank", "noopener,noreferrer");
+        break;
+      }
       case "color": {
         const hex = arg && COLOR_NAMES[arg];
         if (hex) { setSecondaryColor(hex); saveUserColor(hex); }
@@ -376,11 +385,12 @@ const AssistantWidget = () => {
       } else {
         const steps = parseSteps(full, projectIds);
         const notes = GENERIC_NOTES[language] || GENERIC_NOTES.fr;
-        if (steps.length === 1 && !steps[0].note) {
+        if (steps.length === 1) {
           const s = steps[0];
-          if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
-          else runAction(s.name, s.arg);
-        } else if (steps.length >= 1) {
+          if (NON_INVASIVE.includes(s.name)) runAction(s.name, s.arg); // directe, sans bouton
+          else if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
+          else setFlow({ steps: [{ ...s, note: s.note || notes[s.name] || notes.goto }], index: 0 });
+        } else if (steps.length > 1) {
           setFlow({
             steps: steps.map((s) => ({ ...s, note: s.note || notes[s.name] || notes.goto })),
             index: 0,
@@ -409,6 +419,15 @@ const AssistantWidget = () => {
     setFlow(null);
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
     refresh();
+  };
+
+  const confirmMessage = () => {
+    if (!pending) return "";
+    if (pending.name === "visit")
+      return language === "fr"
+        ? `Ouvrir le site de ${projectLabel(pending.arg)} dans un nouvel onglet ?`
+        : `Open ${projectLabel(pending.arg)}'s site in a new tab?`;
+    return t.confirmText[pending.name] || "?";
   };
 
   const showSuggestions = !hasChat && !flow && !pending;
@@ -502,7 +521,7 @@ const AssistantWidget = () => {
             {/* confirmation (action sensible) */}
             {pending && (
               <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                <div className="mb-2 text-sm text-gray-200">{t.confirmText[pending.name] || "?"}</div>
+                <div className="mb-2 text-sm text-gray-200">{confirmMessage()}</div>
                 <div className="flex gap-2">
                   <button onClick={confirmPending} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-black" style={{ backgroundColor: secondaryColor }}>
                     <Check className="h-3.5 w-3.5" />

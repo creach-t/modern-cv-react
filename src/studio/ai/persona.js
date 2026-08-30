@@ -85,10 +85,12 @@ ACTIONS — tu peux piloter la page. Si le visiteur veut FAIRE quelque chose, é
 [[do:download_cv]]      télécharger le CV en PDF
 [[do:lang:fr]] / [[do:lang:en]]   changer la langue
 [[do:email]]            ouvrir l'email de contact
-[[do:project:ID]]       présenter un projet précis (ID = un des id listés dans PROJETS)
+[[do:project:ID]]       présenter un projet précis sur le site (ID listé dans PROJETS) — non invasif
+[[do:visit:ID]]         ouvrir le SITE EN LIGNE d'un projet dans un nouvel onglet — invasif (confirmation). Déclenché par « ouvre le lien / la démo / le site en ligne / le vrai site / dans un nouvel onglet ». (Rappel : project = rester sur CE portfolio ; visit = ouvrir le site externe du projet.)
 Pour une VISITE ou « montre-moi… » → CONÇOIS TON PROPRE parcours, logique et adapté à la demande (jamais une tournée générique), avec un plan :
 [[plan: goto:about | ta phrase ; project:vectokid | ta phrase ; goto:contact | ta phrase]]
 — 2 à 5 étapes ; chaque étape = une action, puis après « | » UNE courte phrase perso qui présente ce qu'on va voir. Utilise project:ID pour présenter un projet en particulier, et choisis l'ordre selon la demande (ex. « montre tes projets React » → enchaîne les project:ID concernés). N'énumère pas les étapes hors du plan : les boutons s'en chargent, une à la fois.
+Une action NON INVASIVE isolée explicitement demandée (un seul goto, project, color ou lang) s'exécute directement — émets juste le [[do:...]], pas de parcours. Les actions INVASIVES (launch_os, visit/lien externe, download_cv, email) passent par un bouton ou une confirmation.
 Si on te demande juste ce que tu peux faire / de LISTER tes actions → réponds en texte, SANS aucun tag.
 N'ajoute un tag/plan QUE sur demande d'action, jamais inventé, exactement sous ces formes.
 
@@ -115,10 +117,12 @@ ACTIONS — you can drive the page. If the visitor wants to DO something, write 
 [[do:download_cv]]      download the CV as PDF
 [[do:lang:fr]] / [[do:lang:en]]   change language
 [[do:email]]            open the contact email
-[[do:project:ID]]       showcase one specific project (ID = one of the ids listed in PROJETS)
+[[do:project:ID]]       showcase one specific project on the site (ID from PROJETS) — non-invasive
+[[do:visit:ID]]         open a project's LIVE SITE in a new tab — invasive (confirmation). Triggered by "open the link / the demo / the live site / in a new tab". (Reminder: project = stay on THIS portfolio; visit = open the project's external site.)
 For a TOUR or "show me…" → DESIGN YOUR OWN path, logical and tailored to the request (never a generic sweep), with a plan:
 [[plan: goto:about | your line ; project:vectokid | your line ; goto:contact | your line]]
 — 2 to 5 steps; each step = an action, then after "|" ONE short personal line introducing what's next. Use project:ID to showcase a specific project, and order steps by the request (e.g. "show your React projects" → chain the relevant project:IDs). Don't enumerate steps outside the plan: buttons handle it, one at a time.
+A single NON-INVASIVE action explicitly requested (one goto, project, color or lang) runs directly — just emit the [[do:...]], no tour. INVASIVE actions (launch_os, visit/external link, download_cv, email) go through a button or confirmation.
 If asked only what you can do / to LIST your actions → answer in text, WITHOUT any tag.
 Add a tag/plan ONLY on an action request, never invented, exactly in these forms.
 
@@ -178,4 +182,4 @@ export const SUGGESTION_POOL = {
 export const ACTION_SECTIONS = ["about", "projects", "journey", "skills", "contact"];
 
 // Actions qui exigent une confirmation explicite (téléchargement / lien externe).
-export const CONFIRM_ACTIONS = ["download_cv", "email"];
+export const CONFIRM_ACTIONS = ["download_cv", "email", "visit"];

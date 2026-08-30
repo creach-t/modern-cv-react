@@ -43,14 +43,12 @@ const buildGear = (radius, teeth, depth, color) => {
     bevelSegments: 1,
     curveSegments: 4,
   });
-  geo.center(); // rotation autour du centre du volume
+  geo.center();
 
   const edges = new THREE.EdgesGeometry(geo, 18);
   const mat = new THREE.LineBasicMaterial({
     color: new THREE.Color(color),
-    transparent: true,
-    opacity: 0.3,
-    blending: THREE.AdditiveBlending,
+    transparent: false, // rouages opaques
     depthWrite: false,
   });
   const lines = new THREE.LineSegments(edges, mat);
@@ -60,9 +58,9 @@ const buildGear = (radius, teeth, depth, color) => {
 };
 
 /**
- * Rouages 3D wireframe connectés, descendant la page.
- * Position, lueurs et rotation suivent le scroll (vitesse + position).
- * Fond fixe plein écran, pause hors-écran, fallback prefers-reduced-motion.
+ * Rouages 3D wireframe opaques, connectés, descendant la page.
+ * Position, luminosité (lueur) et rotation suivent le scroll (vitesse + position).
+ * Le 1er rouage est placé haut/à droite (desktop) pour côtoyer le texte du hero.
  */
 const GearField = ({ color = "#e2603f" }) => {
   const mountRef = useRef(null);
@@ -76,6 +74,8 @@ const GearField = ({ color = "#e2603f" }) => {
     const isSmall = width < 768;
     const N = isSmall ? 5 : 8;
     const SPACING = 5.2;
+    const BASE_Y = isSmall ? 0.5 : 3.2; // remonte la chaîne (1er rouage plus haut)
+    const X = isSmall ? 2 : 3.6;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
@@ -89,25 +89,27 @@ const GearField = ({ color = "#e2603f" }) => {
     const groupRoot = new THREE.Group();
     scene.add(groupRoot);
 
+    const span = (N - 1) * SPACING;
     const gears = [];
     const centers = [];
     for (let i = 0; i < N; i++) {
-      const radius = 1.5 + ((i * 37) % 10) / 10; // 1.5..2.4 stable
+      const radius = 1.5 + ((i * 37) % 10) / 10;
       const teeth = 12 + (i % 4) * 2;
       const g = buildGear(radius, teeth, radius * 0.55, color);
-      const x = (i % 2 === 0 ? -1 : 1) * (isSmall ? 2 : 3.2);
+      const x = (i % 2 === 0 ? 1 : -1) * X; // 1er rouage à droite (côté texte)
       const y = -i * SPACING;
       const z = (i % 3) - 1;
       g.position.set(x, y, z);
-      g.rotation.x = -0.6; // inclinaison → on voit le volume
+      g.rotation.x = -0.6;
       g.rotation.y = (i % 2 ? 1 : -1) * 0.28;
       groupRoot.add(g);
       gears.push({
         obj: g,
         mat: g.userData.mat,
+        base: new THREE.Color(color),
         dir: i % 2 ? 1 : -1,
         speed: 0.003 + (i % 3) * 0.001,
-        centerP: N > 1 ? i / (N - 1) : 0,
+        centerP: (i * SPACING - BASE_Y) / span, // progression où le rouage est centré
       });
       centers.push(new THREE.Vector3(x, y, z));
     }
@@ -115,11 +117,10 @@ const GearField = ({ color = "#e2603f" }) => {
     const connPts = [];
     for (let i = 0; i < centers.length - 1; i++)
       connPts.push(centers[i], centers[i + 1]);
+    const connBase = new THREE.Color(color);
     const connMat = new THREE.LineBasicMaterial({
-      color: new THREE.Color(color),
-      transparent: true,
-      opacity: 0.12,
-      blending: THREE.AdditiveBlending,
+      color: connBase.clone(),
+      transparent: false,
       depthWrite: false,
     });
     const connections = new THREE.LineSegments(
@@ -128,9 +129,7 @@ const GearField = ({ color = "#e2603f" }) => {
     );
     groupRoot.add(connections);
 
-    const span = (N - 1) * SPACING;
     const isReduced = reduced();
-
     let targetP = 0;
     let curP = 0;
     let vel = 0;
@@ -152,15 +151,17 @@ const GearField = ({ color = "#e2603f" }) => {
     const frame = () => {
       curP += (targetP - curP) * 0.08;
       vel *= 0.92;
-      groupRoot.position.y = curP * span;
+      groupRoot.position.y = BASE_Y + curP * span;
 
       gears.forEach((g) => {
         if (!isReduced) g.obj.rotation.z += g.dir * g.speed * (1 + vel * 6);
         const d = curP - g.centerP;
-        const centered = Math.exp(-(d * d) / 0.01);
-        g.mat.opacity = 0.16 + centered * 0.6 + vel * 0.25;
+        const centered = Math.exp(-(d * d) / 0.012);
+        // lueur = luminosité (les rouages restent opaques)
+        const bright = Math.min(1.7, 0.6 + centered * 0.7 + vel * 0.4);
+        g.mat.color.copy(g.base).multiplyScalar(bright);
       });
-      connMat.opacity = 0.1 + vel * 0.5;
+      connMat.color.copy(connBase).multiplyScalar(0.45 + vel * 0.6);
       groupRoot.rotation.y = (curP - 0.5) * 0.25;
 
       renderer.render(scene, camera);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Sparkles, X, Send, Bot, Trash2, Check } from "lucide-react";
+import { Sparkles, X, Send, Bot, Trash2, Check, Play } from "lucide-react";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { useOS } from "../../os/osContext";
@@ -14,14 +14,49 @@ import {
 } from "./persona";
 import { downloadCV } from "../pdf";
 
-const MAX_INPUT = 500; // anti-abus : longueur max d'un message
-const MAX_HISTORY = 8; // messages de contexte envoyés à l'API
-const STORE_MAX = 40; // messages conservés en localStorage
+const MAX_INPUT = 500;
+const MAX_HISTORY = 8;
+const STORE_MAX = 40;
 const STORAGE_KEY = "studio_chat_v1";
 const ACTION_RE = /\[\[do:([a-z_]+)(?::([a-z]+))?\]\]/gi;
 const PLAN_RE = /\[\[plan:([^\]]+)\]\]/i;
+const TOUR_RE = /\[\[do:tour\]\]/i;
 const KNOWN = ["launch_os", "goto", "color", "download_cv", "lang", "email"];
 const ROLES = ["user", "assistant", "action"];
+
+// noms de couleurs → hex (mot unique, fr + en)
+const COLOR_NAMES = {
+  mauve: "#B57EDC", violet: "#7C3AED", purple: "#7C3AED",
+  bleu: "#2563EB", blue: "#2563EB", ciel: "#38BDF8", sky: "#38BDF8",
+  rouge: "#DC2626", red: "#DC2626", vert: "#16A34A", green: "#16A34A",
+  orange: "#F97316", rose: "#EC4899", pink: "#EC4899",
+  jaune: "#EAB308", yellow: "#EAB308", cyan: "#06B6D4", turquoise: "#06B6D4",
+  indigo: "#6366F1", corail: "#FF6F61", coral: "#FF6F61",
+  magenta: "#D946EF", or: "#D4AF37", gold: "#D4AF37",
+  emeraude: "#10B981", emerald: "#10B981",
+};
+
+const TOUR_NOTES = {
+  fr: {
+    about: "Voici son histoire — une reconversion peu banale, du commerce au code.",
+    projects: "Ses projets, tous en ligne et cliquables. Jette un œil à VectoKid.",
+    journey: "Son parcours et sa formation, étape par étape.",
+    skills: "Les technos qu'il manie au quotidien.",
+    contact: "Et si le profil te parle, c'est ici qu'on se rencontre 👇",
+  },
+  en: {
+    about: "Here's his story — an unusual switch, from retail to code.",
+    projects: "His projects, all live and clickable. Check out VectoKid.",
+    journey: "His path and training, step by step.",
+    skills: "The tech he uses day to day.",
+    contact: "And if the profile clicks, this is where we meet 👇",
+  },
+};
+
+const GENERIC_NOTES = {
+  fr: { goto: "Et voilà 👍", color: "Nouvelle ambiance 🎨", launch_os: "Bienvenue côté dev 🖥️", download_cv: "C'est parti pour le PDF 📄", lang: "Langue changée 🌐", email: "À toi de jouer ✉️" },
+  en: { goto: "There we go 👍", color: "New vibe 🎨", launch_os: "Welcome to dev side 🖥️", download_cv: "PDF on its way 📄", lang: "Language switched 🌐", email: "Over to you ✉️" },
+};
 
 const stripActions = (text = "") =>
   text
@@ -31,17 +66,14 @@ const stripActions = (text = "") =>
     .replace(/[ \t]+\n/g, "\n")
     .trim();
 
-// Extrait une liste ordonnée d'étapes (plan multi-actions ou action unique).
 const parseSteps = (full) => {
   let raw = [];
   const pm = full.match(PLAN_RE);
-  if (pm) {
-    raw = pm[1].split(/[;|]/);
-  } else {
+  if (pm) raw = pm[1].split(/[;|]/);
+  else {
     ACTION_RE.lastIndex = 0;
     let m;
-    while ((m = ACTION_RE.exec(full)))
-      raw.push(m[1] + (m[2] ? ":" + m[2] : ""));
+    while ((m = ACTION_RE.exec(full))) raw.push(m[1] + (m[2] ? ":" + m[2] : ""));
   }
   return raw
     .map((s) => {
@@ -57,18 +89,26 @@ const parseSteps = (full) => {
     .slice(0, 5);
 };
 
+// section actuellement à l'écran (pour un tour qui part de la position réelle)
+const currentSectionId = () => {
+  const mid = window.innerHeight / 2;
+  let cur = null;
+  for (const id of ACTION_SECTIONS) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= mid) cur = id;
+  }
+  return cur;
+};
+
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const pickN = (arr, n) => [...arr].sort(() => Math.random() - 0.5).slice(0, n);
 
-// --- persistance locale (défensive) ---
 const loadHistory = () => {
   try {
     const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!Array.isArray(raw)) return [];
     return raw
-      .filter(
-        (m) => m && ROLES.includes(m.role) && typeof m.content === "string"
-      )
+      .filter((m) => m && ROLES.includes(m.role) && typeof m.content === "string")
       .map((m) => ({ role: m.role, content: m.content.slice(0, 2000) }))
       .slice(-STORE_MAX);
   } catch {
@@ -83,7 +123,7 @@ const saveHistory = (messages) => {
       .map((m) => ({ role: m.role, content: String(m.content).slice(0, 2000) }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
   } catch {
-    /* stockage indisponible : on ignore */
+    /* ignore */
   }
 };
 
@@ -94,23 +134,16 @@ const COPY = {
     subtitle: "Malin, concis — et il pilote la page",
     placeholder: "Votre question…",
     clear: "Effacer la discussion",
-    tour: "Parcours guidé",
     confirm: "Confirmer",
     cancel: "Annuler",
     cancelled: "✖️ Annulé",
-    offline:
-      "Assistant hors-ligne pour l'instant. Le plus simple : creach.t@gmail.com — Théo répond vite !",
+    stop: "arrêter le parcours",
+    offline: "Assistant hors-ligne. Le plus simple : creach.t@gmail.com — Théo répond vite !",
     confirmText: {
       download_cv: "Télécharger le CV de Théo en PDF ?",
       email: "Ouvrir votre messagerie pour écrire à Théo ?",
     },
-    sections: {
-      about: "À propos",
-      projects: "Projets",
-      journey: "Parcours",
-      skills: "Compétences",
-      contact: "Contact",
-    },
+    sections: { about: "À propos", projects: "Projets", journey: "Parcours", skills: "Compétences", contact: "Contact" },
     errors: {
       quota: "Beaucoup de monde là 😅 réessayez dans un instant.",
       auth: "Assistant indisponible. Contact direct : creach.t@gmail.com",
@@ -124,23 +157,16 @@ const COPY = {
     subtitle: "Sharp, concise — and it drives the page",
     placeholder: "Your question…",
     clear: "Clear conversation",
-    tour: "Guided tour",
     confirm: "Confirm",
     cancel: "Cancel",
     cancelled: "✖️ Cancelled",
-    offline:
-      "Assistant is offline right now. Easiest path: creach.t@gmail.com — Théo replies fast!",
+    stop: "stop the tour",
+    offline: "Assistant offline. Easiest: creach.t@gmail.com — Théo replies fast!",
     confirmText: {
       download_cv: "Download Théo's CV as PDF?",
       email: "Open your email app to write to Théo?",
     },
-    sections: {
-      about: "About",
-      projects: "Work",
-      journey: "Journey",
-      skills: "Skills",
-      contact: "Contact",
-    },
+    sections: { about: "About", projects: "Work", journey: "Journey", skills: "Skills", contact: "Contact" },
     errors: {
       quota: "Busy right now 😅 try again in a moment.",
       auth: "Assistant unavailable. Direct contact: creach.t@gmail.com",
@@ -151,7 +177,7 @@ const COPY = {
 };
 
 const AssistantWidget = () => {
-  const { secondaryColor, changeColor } = useColor();
+  const { secondaryColor, changeColor, setSecondaryColor, saveUserColor } = useColor();
   const { language, changeLanguage } = useLanguage();
   const { setMode } = useOS();
   const { data } = useData();
@@ -161,142 +187,123 @@ const AssistantWidget = () => {
   const [messages, setMessages] = useState(loadHistory);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pending, setPending] = useState(null); // { name, arg, plan? }
-  const [plan, setPlan] = useState(null); // { steps:[{name,arg}], index }
+  const [pending, setPending] = useState(null); // { name, arg, flow?, note? }
+  const [flow, setFlow] = useState(null); // { steps:[{name,arg,note}], index }
   const [intro, setIntro] = useState(() => pick(INTROS.fr));
   const [suggestions, setSuggestions] = useState(() => pickN(SUGGESTION_POOL.fr, 4));
   const abortRef = useRef(null);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
 
-  // messages "conversationnels" (hors notifications d'action)
   const hasChat = useMemo(
     () => messages.some((m) => m.role === "user" || m.role === "assistant"),
     [messages]
   );
 
-  // tirer un accueil + suggestions dans la bonne langue (change à chaque ouverture)
   const refresh = React.useCallback(() => {
     setIntro(pick(INTROS[language] || INTROS.fr));
     setSuggestions(pickN(SUGGESTION_POOL[language] || SUGGESTION_POOL.fr, 4));
   }, [language]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
-
+  useEffect(() => { refresh(); }, [refresh]);
   useEffect(() => {
     if (open && !hasChat) refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
-
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, open, pending]);
-
-  useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 150);
-  }, [open]);
-
+  }, [messages, open, pending, flow]);
+  useEffect(() => { if (open) setTimeout(() => inputRef.current?.focus(), 150); }, [open]);
   useEffect(() => saveHistory(messages), [messages]);
-
   useEffect(() => () => abortRef.current?.abort(), []);
 
   const pushAction = (label) =>
     label && setMessages((m) => [...m, { role: "action", content: label }]);
+  const pushNote = (text) =>
+    text && setMessages((m) => [...m, { role: "assistant", content: text }]);
 
   const actionLabel = (name, arg) => {
     switch (name) {
-      case "launch_os":
-        return language === "fr" ? "🖥️ creachOS lancé" : "🖥️ creachOS launched";
-      case "goto":
-        return `🧭 ${t.sections[arg] || arg}`;
-      case "color":
-        return language === "fr" ? "🎨 Couleur mise à jour" : "🎨 Color updated";
-      case "download_cv":
-        return language === "fr" ? "📄 CV téléchargé" : "📄 CV downloaded";
-      case "lang":
-        return `🌐 ${(arg || "").toUpperCase()}`;
-      case "email":
-        return language === "fr" ? "✉️ Email ouvert" : "✉️ Email opened";
-      default:
-        return null;
+      case "launch_os": return language === "fr" ? "🖥️ creachOS lancé" : "🖥️ creachOS launched";
+      case "goto": return `🧭 ${t.sections[arg] || arg}`;
+      case "color": return language === "fr" ? "🎨 Couleur mise à jour" : "🎨 Color updated";
+      case "download_cv": return language === "fr" ? "📄 CV téléchargé" : "📄 CV downloaded";
+      case "lang": return `🌐 ${(arg || "").toUpperCase()}`;
+      case "email": return language === "fr" ? "✉️ Email ouvert" : "✉️ Email opened";
+      default: return null;
     }
   };
 
-  const runAction = (name, arg) => {
+  const stepLabel = (s) => {
+    switch (s.name) {
+      case "launch_os": return language === "fr" ? "Lancer creachOS" : "Launch creachOS";
+      case "goto": return (language === "fr" ? "Aller à " : "Go to ") + (t.sections[s.arg] || s.arg);
+      case "color": return language === "fr" ? "Changer la couleur" : "Change the color";
+      case "download_cv": return language === "fr" ? "Télécharger le CV" : "Download the CV";
+      case "lang": return (language === "fr" ? "Passer en " : "Switch to ") + (s.arg || "").toUpperCase();
+      case "email": return language === "fr" ? "Ouvrir l'email" : "Open email";
+      default: return s.name;
+    }
+  };
+
+  const runAction = (name, arg, opts = {}) => {
     switch (name) {
-      case "launch_os":
-        setMode("os");
-        break;
+      case "launch_os": setMode("os"); break;
       case "goto":
         if (ACTION_SECTIONS.includes(arg))
           document.getElementById(arg)?.scrollIntoView({ behavior: "smooth" });
         break;
-      case "color":
-        changeColor();
+      case "color": {
+        const hex = arg && COLOR_NAMES[arg];
+        if (hex) { setSecondaryColor(hex); saveUserColor(hex); }
+        else changeColor();
         break;
-      case "download_cv":
-        downloadCV(language, secondaryColor);
-        break;
-      case "lang":
-        if (arg === "fr" || arg === "en") changeLanguage(arg);
-        break;
-      case "email":
-        window.location.href = "mailto:creach.t@gmail.com";
-        break;
-      default:
-        return; // action inconnue → ignorée
+      }
+      case "download_cv": downloadCV(language, secondaryColor); break;
+      case "lang": if (arg === "fr" || arg === "en") changeLanguage(arg); break;
+      case "email": window.location.href = "mailto:creach.t@gmail.com"; break;
+      default: return;
     }
-    pushAction(actionLabel(name, arg));
+    if (!opts.silent) pushAction(actionLabel(name, arg));
   };
 
-  // libellé impératif d'une étape (pour les boutons)
-  const stepLabel = (s) => {
-    switch (s.name) {
-      case "launch_os":
-        return language === "fr" ? "Lancer creachOS" : "Launch creachOS";
-      case "goto":
-        return (language === "fr" ? "Aller à " : "Go to ") + (t.sections[s.arg] || s.arg);
-      case "color":
-        return language === "fr" ? "Changer la couleur" : "Change the color";
-      case "download_cv":
-        return language === "fr" ? "Télécharger le CV" : "Download the CV";
-      case "lang":
-        return (language === "fr" ? "Passer en " : "Switch to ") + (s.arg || "").toUpperCase();
-      case "email":
-        return language === "fr" ? "Ouvrir l'email" : "Open email";
-      default:
-        return s.name;
-    }
+  const buildTour = () => {
+    const cur = currentSectionId();
+    const start = cur ? ACTION_SECTIONS.indexOf(cur) + 1 : 0;
+    let ids = ACTION_SECTIONS.slice(start);
+    if (ids.length === 0) ids = ACTION_SECTIONS.slice();
+    const notes = TOUR_NOTES[language] || TOUR_NOTES.fr;
+    return ids.map((id) => ({ name: "goto", arg: id, note: notes[id] }));
   };
 
-  const advancePlan = () =>
-    setPlan((p) => {
-      if (!p) return null;
-      const ni = p.index + 1;
-      return ni >= p.steps.length ? null : { ...p, index: ni };
+  const advanceFlow = () =>
+    setFlow((f) => {
+      if (!f) return null;
+      const ni = f.index + 1;
+      return ni >= f.steps.length ? null : { ...f, index: ni };
     });
 
-  const doCurrentStep = () => {
-    if (!plan) return;
-    const s = plan.steps[plan.index];
-    if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s, plan: true });
-    else {
-      runAction(s.name, s.arg);
-      advancePlan();
+  const doFlowStep = () => {
+    if (!flow) return;
+    const s = flow.steps[flow.index];
+    if (CONFIRM_ACTIONS.includes(s.name)) {
+      setPending({ ...s, flow: true });
+      return;
     }
+    runAction(s.name, s.arg, { silent: true });
+    pushNote(s.note);
+    advanceFlow();
   };
 
   const confirmPending = () => {
     if (!pending) return;
-    runAction(pending.name, pending.arg);
-    if (pending.plan) advancePlan();
+    runAction(pending.name, pending.arg, { silent: !!pending.flow });
+    if (pending.flow) { pushNote(pending.note); advanceFlow(); }
     setPending(null);
   };
   const cancelPending = () => {
     pushAction(t.cancelled);
-    if (pending?.plan) advancePlan();
+    if (pending?.flow) advanceFlow();
     setPending(null);
   };
 
@@ -305,14 +312,10 @@ const AssistantWidget = () => {
     if (!content || loading) return;
     setInput("");
     setPending(null);
-    setPlan(null);
+    setFlow(null);
 
     if (!isAIConfigured()) {
-      setMessages((m) => [
-        ...m,
-        { role: "user", content },
-        { role: "assistant", content: t.offline },
-      ]);
+      setMessages((m) => [...m, { role: "user", content }, { role: "assistant", content: t.offline }]);
       return;
     }
 
@@ -339,30 +342,32 @@ const AssistantWidget = () => {
           setMessages((m) => {
             const next = [...m];
             const last = next[next.length - 1];
-            if (last?.role === "assistant")
-              next[next.length - 1] = { ...last, content: last.content + tok };
+            if (last?.role === "assistant") next[next.length - 1] = { ...last, content: last.content + tok };
             return next;
           });
         },
       });
 
-      // message final nettoyé (sans tag)
       setMessages((m) => {
         const next = [...m];
         const last = next[next.length - 1];
-        if (last?.role === "assistant")
-          next[next.length - 1] = { ...last, content: stripActions(full) };
+        if (last?.role === "assistant") next[next.length - 1] = { ...last, content: stripActions(full) };
         return next;
       });
 
-      // 1 action → directe/confirmation ; plusieurs → parcours guidé (pas à pas)
-      const steps = parseSteps(full);
-      if (steps.length === 1) {
-        const s = steps[0];
-        if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
-        else runAction(s.name, s.arg);
-      } else if (steps.length > 1) {
-        setPlan({ steps, index: 0 });
+      if (TOUR_RE.test(full)) {
+        const steps = buildTour();
+        if (steps.length) setFlow({ steps, index: 0 });
+      } else {
+        const steps = parseSteps(full);
+        if (steps.length === 1) {
+          const s = steps[0];
+          if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
+          else runAction(s.name, s.arg);
+        } else if (steps.length > 1) {
+          const notes = GENERIC_NOTES[language] || GENERIC_NOTES.fr;
+          setFlow({ steps: steps.map((s) => ({ ...s, note: notes[s.name] })), index: 0 });
+        }
       }
     } catch (err) {
       if (err.name === "AbortError") return;
@@ -370,8 +375,7 @@ const AssistantWidget = () => {
       setMessages((m) => {
         const next = [...m];
         const last = next[next.length - 1];
-        if (last?.role === "assistant" && !last.content)
-          next[next.length - 1] = { ...last, content: msg };
+        if (last?.role === "assistant" && !last.content) next[next.length - 1] = { ...last, content: msg };
         else next.push({ role: "assistant", content: msg });
         return next;
       });
@@ -384,14 +388,12 @@ const AssistantWidget = () => {
     abortRef.current?.abort();
     setMessages([]);
     setPending(null);
-    setPlan(null);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
+    setFlow(null);
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
     refresh();
   };
+
+  const showSuggestions = !hasChat && !flow && !pending;
 
   return (
     <>
@@ -408,10 +410,7 @@ const AssistantWidget = () => {
       {open && (
         <div className="fixed bottom-20 right-5 z-[80] flex h-[min(560px,75vh)] w-[min(380px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0e1017] shadow-2xl">
           <div className="flex items-center gap-3 border-b border-white/10 p-4">
-            <span
-              className="grid h-9 w-9 place-items-center rounded-full"
-              style={{ backgroundColor: `${secondaryColor}22` }}
-            >
+            <span className="grid h-9 w-9 place-items-center rounded-full" style={{ backgroundColor: `${secondaryColor}22` }}>
               <Bot className="h-5 w-5" style={{ color: secondaryColor }} />
             </span>
             <div className="min-w-0 flex-1">
@@ -419,12 +418,7 @@ const AssistantWidget = () => {
               <div className="truncate text-xs text-gray-500">{t.subtitle}</div>
             </div>
             {hasChat && (
-              <button
-                onClick={clearChat}
-                className="grid h-8 w-8 place-items-center rounded-lg text-gray-500 hover:bg-white/5 hover:text-gray-300"
-                aria-label={t.clear}
-                title={t.clear}
-              >
+              <button onClick={clearChat} className="grid h-8 w-8 place-items-center rounded-lg text-gray-500 hover:bg-white/5 hover:text-gray-300" aria-label={t.clear} title={t.clear}>
                 <Trash2 className="h-4 w-4" />
               </button>
             )}
@@ -432,40 +426,27 @@ const AssistantWidget = () => {
 
           <div ref={scrollRef} className="flex-1 space-y-3 overflow-auto p-4">
             <div className="flex gap-2">
-              <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white/[0.06] px-3 py-2 text-sm text-gray-200">
-                {intro}
-              </div>
+              <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white/[0.06] px-3 py-2 text-sm text-gray-200">{intro}</div>
             </div>
 
             {messages.map((m, i) => {
               if (m.role === "action") {
                 return (
                   <div key={i} className="flex justify-center">
-                    <span
-                      className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-gray-400"
-                      style={{ color: secondaryColor }}
-                    >
+                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium" style={{ color: secondaryColor }}>
                       {m.content}
                     </span>
                   </div>
                 );
               }
-              const display =
-                m.role === "assistant" ? stripActions(m.content) : m.content;
+              const display = m.role === "assistant" ? stripActions(m.content) : m.content;
               return (
-                <div
-                  key={i}
-                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-                >
+                <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div
                     className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
-                      m.role === "user"
-                        ? "rounded-tr-sm text-black"
-                        : "rounded-tl-sm bg-white/[0.06] text-gray-200"
+                      m.role === "user" ? "rounded-tr-sm text-black" : "rounded-tl-sm bg-white/[0.06] text-gray-200"
                     }`}
-                    style={
-                      m.role === "user" ? { backgroundColor: secondaryColor } : undefined
-                    }
+                    style={m.role === "user" ? { backgroundColor: secondaryColor } : undefined}
                   >
                     {display ||
                       (loading && i === messages.length - 1 ? (
@@ -480,100 +461,46 @@ const AssistantWidget = () => {
               );
             })}
 
-            {/* parcours guidé (timeline pas à pas) */}
-            {plan && (
-              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-gray-300">
-                    {t.tour} · {plan.index + 1}/{plan.steps.length}
+            {/* parcours guidé : une action à la fois, derrière un bouton (non-intrusif) */}
+            {flow && !pending && flow.index < flow.steps.length && (
+              <div className="flex flex-col items-start gap-1.5">
+                <button
+                  onClick={doFlowStep}
+                  className="inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-semibold transition-transform hover:scale-[1.02]"
+                  style={{ color: secondaryColor, borderColor: `${secondaryColor}66`, backgroundColor: `${secondaryColor}14` }}
+                >
+                  <Play className="h-3.5 w-3.5" />
+                  {stepLabel(flow.steps[flow.index])}
+                  <span className="text-[11px] font-normal opacity-70">
+                    · {flow.index + 1}/{flow.steps.length}
                   </span>
-                  <button
-                    onClick={() => setPlan(null)}
-                    className="text-gray-500 hover:text-gray-300"
-                    aria-label={t.cancel}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                <ol className="space-y-1.5">
-                  {plan.steps.map((s, i) => {
-                    const state =
-                      i < plan.index ? "done" : i === plan.index ? "current" : "todo";
-                    return (
-                      <li key={i} className="flex items-center gap-2 text-sm">
-                        <span
-                          className="grid h-4 w-4 shrink-0 place-items-center rounded-full text-[10px] font-bold"
-                          style={{
-                            color: state === "todo" ? "#64748b" : secondaryColor,
-                            backgroundColor:
-                              state === "todo" ? "transparent" : `${secondaryColor}22`,
-                            border: `1px solid ${
-                              state === "todo" ? "rgba(255,255,255,0.15)" : secondaryColor + "66"
-                            }`,
-                          }}
-                        >
-                          {state === "done" ? "✓" : i + 1}
-                        </span>
-                        <span
-                          className={
-                            state === "done"
-                              ? "text-gray-500 line-through"
-                              : state === "current"
-                              ? "text-white"
-                              : "text-gray-500"
-                          }
-                        >
-                          {stepLabel(s)}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-                {!pending && plan.index < plan.steps.length && (
-                  <button
-                    onClick={doCurrentStep}
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-black transition-transform hover:scale-[1.03]"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    ▶ {stepLabel(plan.steps[plan.index])}
-                  </button>
-                )}
+                </button>
+                <button onClick={() => setFlow(null)} className="pl-1 text-[11px] text-gray-500 hover:text-gray-300">
+                  {t.stop}
+                </button>
               </div>
             )}
 
-            {/* carte de confirmation */}
+            {/* confirmation (action sensible) */}
             {pending && (
               <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                <div className="mb-2 text-sm text-gray-200">
-                  {t.confirmText[pending.name] || "?"}
-                </div>
+                <div className="mb-2 text-sm text-gray-200">{t.confirmText[pending.name] || "?"}</div>
                 <div className="flex gap-2">
-                  <button
-                    onClick={confirmPending}
-                    className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-black"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
+                  <button onClick={confirmPending} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-black" style={{ backgroundColor: secondaryColor }}>
                     <Check className="h-3.5 w-3.5" />
                     {t.confirm}
                   </button>
-                  <button
-                    onClick={cancelPending}
-                    className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-gray-300 hover:bg-white/5"
-                  >
+                  <button onClick={cancelPending} className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-gray-300 hover:bg-white/5">
                     {t.cancel}
                   </button>
                 </div>
               </div>
             )}
 
-            {!hasChat && (
+            {showSuggestions && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {suggestions.map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => send(q)}
-                    className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-gray-300 hover:bg-white/[0.08]"
-                  >
+                  <button key={q} onClick={() => send(q)} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-gray-300 hover:bg-white/[0.08]">
                     {q}
                   </button>
                 ))}

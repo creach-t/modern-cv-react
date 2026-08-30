@@ -106,11 +106,14 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           envs: IMAGE_TAG
           script: |
+            set -e
             cd /root/projects/modern-cv-react
-            echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin || echo "⚠️ GHCR login ignoré (image publique)"
             echo "📦 Deploying image tag: $IMAGE_TAG"
             export IMAGE_TAG
             docker compose -f docker-compose.prod.yml pull
+            # supprime un éventuel conteneur homonyme non géré par compose (conflit de nom)
+            docker rm -f modern-cv-react 2>/dev/null || true
             docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
             docker image prune -f
             echo "✅ Deployed!"

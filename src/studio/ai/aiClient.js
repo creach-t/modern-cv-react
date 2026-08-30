@@ -13,8 +13,9 @@ const BASE_URL = (
 ).replace(/\/$/, "");
 const API_KEY = process.env.REACT_APP_LLM_API_KEY || "";
 
-// Modèle par défaut : un modèle "malin" (configurable via .env).
-export const DEFAULT_MODEL = process.env.REACT_APP_LLM_MODEL || "llama-70b";
+// Modèle par défaut : léger pour ménager le quota du worker Cloudflare
+// (configurable via .env : "mistral", "llama-70b", etc.).
+export const DEFAULT_MODEL = process.env.REACT_APP_LLM_MODEL || "fast";
 
 export const isAIConfigured = () => Boolean(API_KEY);
 

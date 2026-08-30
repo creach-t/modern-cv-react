@@ -27,6 +27,21 @@ const KNOWN = ["launch_os", "goto", "color", "download_cv", "lang", "email"];
 const NON_INVASIVE = ["goto", "project", "color", "lang", "email"];
 const ROLES = ["user", "assistant", "action"];
 
+// --- Mode veille (worker IA Cloudflare limité) ---
+const SLEEP_KEY = "studio_ai_sleep";
+const QUOTA_COOLDOWN = 5 * 60 * 1000; // veille après un 429 (quota)
+const RATE_WINDOW = 60 * 1000; // fenêtre de comptage
+const RATE_MAX = 6; // messages max par fenêtre avant veille préventive
+const RATE_COOLDOWN = 90 * 1000; // veille préventive en cas de rafale
+const readSleep = () => {
+  try {
+    const v = parseInt(localStorage.getItem(SLEEP_KEY), 10);
+    return Number.isFinite(v) ? v : 0;
+  } catch {
+    return 0;
+  }
+};
+
 // noms de couleurs → hex (mot unique, fr + en)
 const COLOR_NAMES = {
   mauve: "#B57EDC", violet: "#7C3AED", purple: "#7C3AED",
@@ -152,6 +167,10 @@ const COPY = {
     cancel: "Annuler",
     cancelled: "✖️ Annulé",
     stop: "arrêter le parcours",
+    sleep: "😴 Je fais une petite sieste pour ménager le quota de l'IA. Je reviens vite — en attendant, écris-moi directement 👇",
+    sleepBanner: "En veille",
+    sleepPlaceholder: "IA en pause…",
+    contactCta: "Me contacter",
     offline: "Assistant hors-ligne. Le plus simple : creach.t@gmail.com — Théo répond vite !",
     confirmText: {
       download_cv: "Télécharger le CV de Théo en PDF ?",
@@ -175,6 +194,10 @@ const COPY = {
     cancel: "Cancel",
     cancelled: "✖️ Cancelled",
     stop: "stop the tour",
+    sleep: "😴 Taking a quick nap to spare the AI quota. Back soon — meanwhile, reach me directly 👇",
+    sleepBanner: "Resting",
+    sleepPlaceholder: "AI paused…",
+    contactCta: "Contact me",
     offline: "Assistant offline. Easiest: creach.t@gmail.com — Théo replies fast!",
     confirmText: {
       download_cv: "Download Théo's CV as PDF?",
@@ -217,7 +240,21 @@ const AssistantWidget = () => {
   const [flow, setFlow] = useState(null); // { steps:[{name,arg,note}], index }
   const [intro, setIntro] = useState(() => pick(INTROS.fr));
   const [suggestions, setSuggestions] = useState(() => pickN(SUGGESTION_POOL.fr, 4));
+  const [sleepUntil, setSleepUntil] = useState(readSleep);
+  const reqTimes = useRef([]);
   const abortRef = useRef(null);
+
+  const sleeping = sleepUntil > Date.now();
+  const sleepMins = Math.max(1, Math.ceil((sleepUntil - Date.now()) / 60000));
+  const enterSleep = (ms) => {
+    const until = Date.now() + ms;
+    setSleepUntil(until);
+    try {
+      localStorage.setItem(SLEEP_KEY, String(until));
+    } catch {
+      /* ignore */
+    }
+  };
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -242,6 +279,20 @@ const AssistantWidget = () => {
   useEffect(() => { if (open) setTimeout(() => inputRef.current?.focus(), 150); }, [open]);
   useEffect(() => saveHistory(messages), [messages]);
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // réveil automatique à la fin de la veille
+  useEffect(() => {
+    if (sleepUntil <= Date.now()) return undefined;
+    const id = setTimeout(() => {
+      setSleepUntil(0);
+      try {
+        localStorage.removeItem(SLEEP_KEY);
+      } catch {
+        /* ignore */
+      }
+    }, sleepUntil - Date.now() + 200);
+    return () => clearTimeout(id);
+  }, [sleepUntil]);
 
   const pushAction = (label) =>
     label && setMessages((m) => [...m, { role: "action", content: label }]);
@@ -347,7 +398,7 @@ const AssistantWidget = () => {
 
   const send = async (text) => {
     const content = (text ?? input).replace(ACTION_RE, "").trim().slice(0, MAX_INPUT);
-    if (!content || loading) return;
+    if (!content || loading || sleeping) return;
     setInput("");
     setPending(null);
     setFlow(null);
@@ -356,6 +407,20 @@ const AssistantWidget = () => {
       setMessages((m) => [...m, { role: "user", content }, { role: "assistant", content: t.offline }]);
       return;
     }
+
+    // garde-fou débit : trop de messages en peu de temps → veille préventive
+    const now = Date.now();
+    reqTimes.current = reqTimes.current.filter((ts) => now - ts < RATE_WINDOW);
+    if (reqTimes.current.length >= RATE_MAX) {
+      enterSleep(RATE_COOLDOWN);
+      setMessages((m) => [
+        ...m,
+        { role: "user", content },
+        { role: "assistant", content: t.sleep },
+      ]);
+      return;
+    }
+    reqTimes.current.push(now);
 
     const history = [...messages, { role: "user", content }];
     setMessages([...history, { role: "assistant", content: "" }]);
@@ -413,7 +478,8 @@ const AssistantWidget = () => {
       }
     } catch (err) {
       if (err.name === "AbortError") return;
-      const msg = t.errors[err.kind] || t.errors.error;
+      if (err.kind === "quota") enterSleep(QUOTA_COOLDOWN);
+      const msg = err.kind === "quota" ? t.sleep : t.errors[err.kind] || t.errors.error;
       setMessages((m) => {
         const next = [...m];
         const last = next[next.length - 1];
@@ -444,7 +510,7 @@ const AssistantWidget = () => {
     return t.confirmText[pending.name] || "?";
   };
 
-  const showSuggestions = !hasChat && !flow && !pending;
+  const showSuggestions = !hasChat && !flow && !pending && !sleeping;
 
   return (
     <>
@@ -559,20 +625,35 @@ const AssistantWidget = () => {
             )}
           </div>
 
+          {sleeping && (
+            <div className="flex items-center gap-2 border-t border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-gray-400">
+              <span>
+                😴 {t.sleepBanner} · ~{sleepMins} min
+              </span>
+              <button
+                onClick={openContact}
+                className="ml-auto rounded-md border border-white/10 px-2 py-1 text-gray-200 hover:bg-white/5"
+              >
+                {t.contactCta}
+              </button>
+            </div>
+          )}
+
           <div className="border-t border-white/10 p-3">
             <div className="flex items-center gap-2">
               <input
                 ref={inputRef}
                 value={input}
                 maxLength={MAX_INPUT}
+                disabled={sleeping}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
-                placeholder={t.placeholder}
-                className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-gray-100 outline-none placeholder:text-gray-600"
+                placeholder={sleeping ? t.sleepPlaceholder : t.placeholder}
+                className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-gray-100 outline-none placeholder:text-gray-600 disabled:opacity-50"
               />
               <button
                 onClick={() => send()}
-                disabled={loading || !input.trim()}
+                disabled={loading || sleeping || !input.trim()}
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-black transition-opacity disabled:opacity-40"
                 style={{ backgroundColor: secondaryColor }}
                 aria-label="Envoyer"

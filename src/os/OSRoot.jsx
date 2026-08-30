@@ -4,9 +4,10 @@ import { useIsMobile } from "./useIsMobile";
 import BootSequence from "./boot/BootSequence";
 import Desktop from "./desktop/Desktop";
 import MobileShell from "./mobile/MobileShell";
+import Studio from "../studio/Studio";
 
 // Mode CV chargé à la demande : il embarque les libs PDF lourdes
-// (@react-pdf/renderer, jspdf, html2canvas). L'OS par défaut reste léger.
+// (@react-pdf/renderer, jspdf, html2canvas). Le site par défaut reste léger.
 const CVMode = lazy(() => import("./CVMode"));
 
 const CVFallback = () => (
@@ -66,6 +67,15 @@ const OSRoot = () => {
   const { mode } = useOS();
   const isMobile = useIsMobile();
   const [booted, setBooted] = useState(wasBooted);
+
+  if (mode === "studio") {
+    return (
+      <>
+        <SeoContent />
+        <Studio />
+      </>
+    );
+  }
 
   if (mode === "cv") {
     return (

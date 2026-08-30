@@ -81,13 +81,13 @@ const Taskbar = () => {
             <div className="my-1 border-t border-white/10" />
             <button
               onClick={() => {
-                setMode("cv");
+                setMode("studio");
                 setMenu(false);
               }}
               className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm text-gray-300 hover:bg-white/10"
             >
               <FileText className="h-4 w-4 text-gray-400" />
-              {language === "fr" ? "Basculer en Mode CV" : "Switch to CV mode"}
+              {language === "fr" ? "Quitter creachOS" : "Exit creachOS"}
             </button>
           </div>
         )}
@@ -138,13 +138,13 @@ const Taskbar = () => {
           <Palette className="h-4 w-4" style={{ color: secondaryColor }} />
         </button>
         <button
-          onClick={() => setMode("cv")}
+          onClick={() => setMode("studio")}
           className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-black transition-transform hover:scale-[1.03]"
           style={{ backgroundColor: secondaryColor }}
         >
           <Power className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">
-            {language === "fr" ? "Mode CV" : "CV mode"}
+            {language === "fr" ? "Quitter" : "Exit"}
           </span>
         </button>
         <Clock />

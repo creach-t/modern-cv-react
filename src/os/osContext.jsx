@@ -16,12 +16,13 @@ export const useOS = () => {
 };
 
 const MODE_KEY = "creachos_mode";
+const VALID_MODES = ["studio", "os", "cv"];
 const readMode = () => {
   try {
     const m = localStorage.getItem(MODE_KEY);
-    return m === "cv" || m === "os" ? m : "os";
+    return VALID_MODES.includes(m) ? m : "studio";
   } catch {
-    return "os";
+    return "studio";
   }
 };
 

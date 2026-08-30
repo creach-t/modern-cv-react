@@ -26,12 +26,12 @@ const CVMode = () => {
     <div className={`min-h-screen ${isDark ? "dark" : ""}`}>
       <div className="bg-white transition-colors duration-200 dark:bg-gray-900">
         <button
-          onClick={() => setMode("os")}
+          onClick={() => setMode("studio")}
           className="fixed right-4 top-4 z-[70] flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-black shadow-lg transition-transform hover:scale-[1.03]"
           style={{ backgroundColor: secondaryColor }}
         >
           <MonitorPlay className="h-4 w-4" />
-          {language === "fr" ? "Ouvrir creachOS" : "Launch creachOS"}
+          {language === "fr" ? "Retour au site" : "Back to site"}
         </button>
 
         <Header />

@@ -109,12 +109,12 @@ const MobileShell = () => {
       {/* dock */}
       <div className="relative z-10 shrink-0 border-t border-white/10 p-3">
         <button
-          onClick={() => setMode("cv")}
+          onClick={() => setMode("studio")}
           className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium text-black"
           style={{ backgroundColor: secondaryColor }}
         >
           <FileText className="h-4 w-4" />
-          {language === "fr" ? "Voir le CV classique" : "View classic résumé"}
+          {language === "fr" ? "Quitter creachOS" : "Exit creachOS"}
         </button>
       </div>
     </div>

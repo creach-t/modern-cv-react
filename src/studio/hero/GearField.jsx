@@ -75,7 +75,7 @@ const GearField = ({ color = "#e2603f" }) => {
     const N = isSmall ? 5 : 8;
     const SPACING = 5.2;
     const BASE_Y = isSmall ? 0.5 : 3.2; // remonte la chaîne (1er rouage plus haut)
-    const X = isSmall ? 2 : 3.6;
+    const X = isSmall ? 2.4 : 4.6; // écartés vers les bords pour libérer le texte
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
@@ -157,11 +157,11 @@ const GearField = ({ color = "#e2603f" }) => {
         if (!isReduced) g.obj.rotation.z += g.dir * g.speed * (1 + vel * 6);
         const d = curP - g.centerP;
         const centered = Math.exp(-(d * d) / 0.012);
-        // lueur = luminosité (les rouages restent opaques)
-        const bright = Math.min(1.7, 0.6 + centered * 0.7 + vel * 0.4);
+        // discret : reste un décor, ne domine pas le texte (lueur au scroll)
+        const bright = Math.min(0.8, 0.24 + centered * 0.32 + vel * 0.32);
         g.mat.color.copy(g.base).multiplyScalar(bright);
       });
-      connMat.color.copy(connBase).multiplyScalar(0.45 + vel * 0.6);
+      connMat.color.copy(connBase).multiplyScalar(0.2 + vel * 0.4);
       groupRoot.rotation.y = (curP - 0.5) * 0.25;
 
       renderer.render(scene, camera);

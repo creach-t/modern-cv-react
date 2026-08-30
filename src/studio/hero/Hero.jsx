@@ -63,17 +63,11 @@ const Hero = () => {
       ref={rootRef}
       className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
-      {/* voile pour la lisibilité du texte par-dessus les rouages */}
+      {/* content (ombre portée sur le texte pour la lisibilité, sans voile noir) */}
       <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(130% 100% at 30% 45%, #05060a 30%, transparent 75%)",
-        }}
-      />
-
-      {/* content */}
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-6">
+        className="relative z-10 mx-auto w-full max-w-5xl px-6"
+        style={{ textShadow: "0 1px 24px rgba(5,6,10,0.9)" }}
+      >
         <p
           data-hero
           className="mb-3 font-mono text-sm tracking-wide"

@@ -290,14 +290,14 @@ const AssistantWidget = () => {
       setPending({ ...s, flow: true });
       return;
     }
-    runAction(s.name, s.arg, { silent: true });
+    runAction(s.name, s.arg); // laisse une pastille (trace de l'action)
     pushNote(s.note);
     advanceFlow();
   };
 
   const confirmPending = () => {
     if (!pending) return;
-    runAction(pending.name, pending.arg, { silent: !!pending.flow });
+    runAction(pending.name, pending.arg); // pastille = trace de l'action
     if (pending.flow) { pushNote(pending.note); advanceFlow(); }
     setPending(null);
   };

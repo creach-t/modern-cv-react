@@ -44,50 +44,33 @@ const About = () => {
 
   return (
     <Section id="about" index="01" title={t.title} subtitle={t.subtitle} doodle="spark">
-      <div className="grid gap-10 md:grid-cols-[280px_1fr] md:items-start">
-        <Reveal>
-          <div className="relative mx-auto w-56 md:w-full">
-            <div
-              className="absolute -inset-3 rounded-3xl opacity-30 blur-2xl"
-              style={{ backgroundColor: secondaryColor }}
-            />
-            <img
-              src="/img/profil_picture.png"
-              alt="Théo Créach"
-              loading="lazy"
-              className="relative aspect-square w-full rounded-3xl border border-white/10 object-cover"
-            />
-          </div>
+      <div className="max-w-3xl">
+        <Reveal stagger className="space-y-4 text-base leading-relaxed text-gray-300">
+          <p>{t.p1}</p>
+          <p>{t.p2}</p>
+          <p className="font-medium text-white">{t.p3}</p>
         </Reveal>
 
-        <div>
-          <Reveal stagger className="space-y-4 text-base leading-relaxed text-gray-300">
-            <p>{t.p1}</p>
-            <p>{t.p2}</p>
-            <p className="font-medium text-white">{t.p3}</p>
-          </Reveal>
-
-          <Reveal className="mt-8 grid grid-cols-3 gap-4">
-            {[
-              { v: projectCount, suffix: "", label: t.s1 },
-              { v: 100, suffix: "%", label: t.s2 },
-              { v: coreSkills, suffix: "", label: t.s3 },
-            ].map((s, i) => (
+        <Reveal className="mt-8 grid grid-cols-3 gap-4">
+          {[
+            { v: projectCount, suffix: "", label: t.s1 },
+            { v: 100, suffix: "%", label: t.s2 },
+            { v: coreSkills, suffix: "", label: t.s3 },
+          ].map((s, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center"
+            >
               <div
-                key={i}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center"
+                className="text-3xl font-black sm:text-4xl"
+                style={{ color: secondaryColor }}
               >
-                <div
-                  className="text-3xl font-black sm:text-4xl"
-                  style={{ color: secondaryColor }}
-                >
-                  <Counter value={s.v} suffix={s.suffix} />
-                </div>
-                <div className="mt-1 text-xs text-gray-400">{s.label}</div>
+                <Counter value={s.v} suffix={s.suffix} />
               </div>
-            ))}
-          </Reveal>
-        </div>
+              <div className="mt-1 text-xs text-gray-400">{s.label}</div>
+            </div>
+          ))}
+        </Reveal>
       </div>
     </Section>
   );

@@ -6,7 +6,9 @@ const reduced = () =>
   window.matchMedia &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// Rouage 3D : forme crénelée extrudée (volume), rendue en wireframe d'arêtes.
+// Rouage 3D : volume extrudé. Arêtes wireframe TRANSPARENTES + faces
+// invisibles mais occultantes (écrivent la profondeur → cachent les arêtes
+// situées derrière). Rendu "hidden-line".
 const buildGear = (radius, teeth, depth, color) => {
   const rOuter = radius;
   const rInner = radius * 0.78;
@@ -45,16 +47,35 @@ const buildGear = (radius, teeth, depth, color) => {
   });
   geo.center();
 
+  const group = new THREE.Group();
+
+  // faces invisibles (colorWrite off) mais qui écrivent la profondeur
+  const maskMat = new THREE.MeshBasicMaterial({
+    colorWrite: false,
+    depthWrite: true,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
+  const mask = new THREE.Mesh(geo, maskMat);
+  mask.renderOrder = 0;
+  group.add(mask);
+
+  // arêtes transparentes, testées contre la profondeur (donc occultées)
   const edges = new THREE.EdgesGeometry(geo, 18);
   const mat = new THREE.LineBasicMaterial({
     color: new THREE.Color(color),
-    transparent: false, // rouages opaques
+    transparent: true,
+    opacity: 0.4,
+    depthTest: true,
     depthWrite: false,
   });
   const lines = new THREE.LineSegments(edges, mat);
-  lines.userData.mat = mat;
-  geo.dispose();
-  return lines;
+  lines.renderOrder = 1;
+  group.add(lines);
+
+  group.userData.mat = mat;
+  return group;
 };
 
 /**
@@ -117,10 +138,10 @@ const GearField = ({ color = "#e2603f" }) => {
     const connPts = [];
     for (let i = 0; i < centers.length - 1; i++)
       connPts.push(centers[i], centers[i + 1]);
-    const connBase = new THREE.Color(color);
     const connMat = new THREE.LineBasicMaterial({
-      color: connBase.clone(),
-      transparent: false,
+      color: new THREE.Color(color),
+      transparent: true,
+      opacity: 0.14,
       depthWrite: false,
     });
     const connections = new THREE.LineSegments(
@@ -157,11 +178,10 @@ const GearField = ({ color = "#e2603f" }) => {
         if (!isReduced) g.obj.rotation.z += g.dir * g.speed * (1 + vel * 6);
         const d = curP - g.centerP;
         const centered = Math.exp(-(d * d) / 0.012);
-        // discret : reste un décor, ne domine pas le texte (lueur au scroll)
-        const bright = Math.min(0.8, 0.24 + centered * 0.32 + vel * 0.32);
-        g.mat.color.copy(g.base).multiplyScalar(bright);
+        // discret : lueur portée par l'opacité des arêtes (transparentes)
+        g.mat.opacity = Math.min(0.85, 0.2 + centered * 0.45 + vel * 0.35);
       });
-      connMat.color.copy(connBase).multiplyScalar(0.2 + vel * 0.4);
+      connMat.opacity = 0.1 + vel * 0.4;
       groupRoot.rotation.y = (curP - 0.5) * 0.25;
 
       renderer.render(scene, camera);

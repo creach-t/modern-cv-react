@@ -35,7 +35,7 @@
     {
       "id": "bricoman",
       "icon": "Wrench",
-      "period": "2020 - 2025",
+      "period": "2020 - 2026",
       "company": {
         "name": "Bricoman",
         "location": "Saint-Maur-des-Fossés, France"
@@ -131,6 +131,6 @@
         "tools": ["HTML/CSS"],
         "explanation": "During this internship, I designed and developed a complete website for a primary school. I worked closely with the teaching staff to understand their needs and train them on how to use the platform."
       }
-    }   
+    }
   ]
 }

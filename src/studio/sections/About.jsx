@@ -9,20 +9,22 @@ import Counter from "../components/Counter";
 const COPY = {
   fr: {
     title: "Mon histoire",
-    subtitle: "Un parcours atypique, un moteur simple : construire des choses utiles.",
-    p1: "J'ai passé plusieurs années à conseiller des clients et à manager des équipes dans le commerce. J'y ai appris l'écoute, la rigueur et le sens du concret — puis j'ai décidé d'en faire un métier de création.",
-    p2: "Aujourd'hui je développe des applications web complètes en React et Node.js. Ma particularité : je ne m'arrête pas au code. Je déploie et j'héberge moi-même mes projets sur mon propre serveur, avec des outils professionnels (Docker, intégration continue).",
-    p3: "Un vrai réflexe de bricoleur : comprendre toute la chaîne, de la première ligne de code jusqu'à la mise en ligne.",
+    subtitle: "Apprendre, construire, réparer, partager — depuis toujours.",
+    p1: "Depuis tout petit, j'ai ce besoin de comprendre comment les choses marchent. Une télécommande en panne, un vieux PC sous MS-DOS ? Je démontais tout — quitte à ne pas toujours réussir à remonter. Mais à chaque fois, j'apprenais.",
+    p2: "Bac électrotechnique, BTS informatique de gestion, puis un long détour par le commerce (vendeur, responsable, menuiserie). Sans jamais lâcher : je réparais tout ce qui me tombait sous la main, je bricolais avec Arduino et Raspberry Pi, je montais des sites et des petites applis.",
+    p3: "En 2024, j'ai suivi mon instinct : reconversion en développement web à l'école O'clock. Depuis, je me sens totalement à ma place — et je continue en auto-formation (DevOps, Spring Boot, React, React Native). Je code, et j'héberge moi-même mes projets, de la première ligne jusqu'à la mise en ligne.",
+    p4: "Apprendre, construire, réparer, partager : c'est ce qui me fait vibrer.",
     s1: "projets en ligne",
     s2: "auto-hébergés",
     s3: "technologies clés",
   },
   en: {
     title: "My story",
-    subtitle: "An unusual path, a simple drive: building useful things.",
-    p1: "I spent several years advising customers and managing teams in retail. I learned to listen, to be rigorous and pragmatic — then I decided to turn creation into my craft.",
-    p2: "Today I build complete web applications with React and Node.js. What sets me apart: I don't stop at the code. I deploy and self-host my projects on my own server, with professional tooling (Docker, continuous integration).",
-    p3: "A real maker's instinct: understanding the whole chain, from the first line of code to going live.",
+    subtitle: "Learning, building, fixing, sharing — always have.",
+    p1: "Ever since I was a kid, I've needed to understand how things work. A broken remote, an old MS-DOS PC? I'd take it all apart — even if I couldn't always put it back together. But every time, I learned.",
+    p2: "An electrical-engineering diploma, an IT/business degree, then a long detour through retail (sales, store manager, joinery). Without ever letting go: I repaired whatever came my way, tinkered with Arduino and Raspberry Pi, built sites and small apps.",
+    p3: "In 2024 I followed my instinct: a career switch to web development at O'clock. Since then I feel completely in my place — and I keep self-teaching (DevOps, Spring Boot, React, React Native). I write the code, and I self-host my projects, from the first line to going live.",
+    p4: "Learning, building, fixing, sharing: that's what drives me.",
     s1: "live projects",
     s2: "self-hosted",
     s3: "core technologies",
@@ -48,7 +50,8 @@ const About = () => {
         <Reveal stagger className="space-y-4 text-base leading-relaxed text-gray-300">
           <p>{t.p1}</p>
           <p>{t.p2}</p>
-          <p className="font-medium text-white">{t.p3}</p>
+          <p>{t.p3}</p>
+          <p className="font-medium text-white">{t.p4}</p>
         </Reveal>
 
         <Reveal className="mt-8 grid grid-cols-3 gap-4">

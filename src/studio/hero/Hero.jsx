@@ -4,6 +4,7 @@ import anime from "animejs";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Magnetic from "../components/Magnetic";
+import TextScrim from "../components/TextScrim";
 
 const COPY = {
   fr: {
@@ -63,6 +64,8 @@ const Hero = () => {
       ref={rootRef}
       className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
+      <TextScrim align="left" />
+
       {/* content (ombre portée sur le texte pour la lisibilité, sans voile noir) */}
       <div
         className="relative z-10 mx-auto w-full max-w-5xl px-6"

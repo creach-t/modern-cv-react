@@ -3,12 +3,17 @@ import { useColor } from "../../contexts/ColorContext";
 import Reveal from "./Reveal";
 import SplitText from "./SplitText";
 import Doodle from "./Doodles";
+import TextScrim from "./TextScrim";
 
 /** Conteneur de section + en-tête (numéro + titre animé lettre par lettre). */
 const Section = ({ id, index, title, subtitle, doodle, children, className = "" }) => {
   const { secondaryColor } = useColor();
   return (
-    <section id={id} className={`mx-auto max-w-5xl px-6 py-20 sm:py-28 ${className}`}>
+    <section
+      id={id}
+      className={`relative mx-auto max-w-5xl px-6 py-20 sm:py-28 ${className}`}
+    >
+      <TextScrim align="center" />
       <div className="mb-10">
         <div className="flex items-baseline gap-3">
           {index && (

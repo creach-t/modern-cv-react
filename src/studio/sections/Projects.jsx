@@ -32,7 +32,10 @@ const ProjectRow = ({ project, reversed }) => {
   const img = `/img/projects/${project.id}.jpg`;
 
   return (
-    <Reveal className="grid items-center gap-6 md:grid-cols-2 md:gap-10">
+    <Reveal
+      id={`project-${project.id}`}
+      className="scroll-mt-24 grid items-center gap-6 md:grid-cols-2 md:gap-10"
+    >
       {/* image */}
       <TiltCard className={reversed ? "md:order-2" : ""}>
         <a

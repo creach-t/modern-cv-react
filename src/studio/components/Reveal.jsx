@@ -14,6 +14,7 @@ const Reveal = ({
   children,
   className = "",
   as: Tag = "div",
+  id,
   delay = 0,
   y = 28,
   stagger = false,
@@ -59,7 +60,7 @@ const Reveal = ({
   }, [delay, y, stagger, once]);
 
   return (
-    <Tag ref={ref} className={className}>
+    <Tag ref={ref} id={id} className={className}>
       {children}
     </Tag>
   );

@@ -4,19 +4,19 @@ import React from "react";
 // atténuent les rouages juste derrière — sans bords nets ni rectangle.
 const PRESETS = {
   center:
-    "radial-gradient(75% 65% at 50% 44%, rgba(5,6,10,0.74), transparent 78%)," +
-    "radial-gradient(48% 52% at 28% 66%, rgba(5,6,10,0.55), transparent 76%)," +
-    "radial-gradient(40% 42% at 72% 30%, rgba(5,6,10,0.5), transparent 74%)",
+    "radial-gradient(82% 72% at 50% 45%, rgba(4,5,9,0.92), rgba(4,5,9,0.6) 55%, transparent 82%)," +
+    "radial-gradient(55% 55% at 26% 68%, rgba(4,5,9,0.78), transparent 80%)," +
+    "radial-gradient(48% 48% at 74% 28%, rgba(4,5,9,0.72), transparent 78%)",
   left:
-    "radial-gradient(62% 72% at 26% 44%, rgba(5,6,10,0.85), transparent 74%)," +
-    "radial-gradient(46% 46% at 46% 70%, rgba(5,6,10,0.6), transparent 76%)",
+    "radial-gradient(70% 80% at 27% 45%, rgba(4,5,9,0.95), rgba(4,5,9,0.55) 55%, transparent 80%)," +
+    "radial-gradient(52% 52% at 50% 70%, rgba(4,5,9,0.8), transparent 80%)",
 };
 
 const TextScrim = ({ align = "center" }) => (
   <div
     aria-hidden="true"
     className="pointer-events-none absolute inset-0 -z-10"
-    style={{ background: PRESETS[align] || PRESETS.center, filter: "blur(36px)" }}
+    style={{ background: PRESETS[align] || PRESETS.center, filter: "blur(40px)" }}
   />
 );
 

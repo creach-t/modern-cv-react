@@ -54,8 +54,8 @@ const TOUR_NOTES = {
 };
 
 const GENERIC_NOTES = {
-  fr: { goto: "Et voilà 👍", color: "Nouvelle ambiance 🎨", launch_os: "Bienvenue côté dev 🖥️", download_cv: "C'est parti pour le PDF 📄", lang: "Langue changée 🌐", email: "À toi de jouer ✉️" },
-  en: { goto: "There we go 👍", color: "New vibe 🎨", launch_os: "Welcome to dev side 🖥️", download_cv: "PDF on its way 📄", lang: "Language switched 🌐", email: "Over to you ✉️" },
+  fr: { goto: "Et voilà 👍", project: "Jette un œil 👀", color: "Nouvelle ambiance 🎨", launch_os: "Bienvenue côté dev 🖥️", download_cv: "C'est parti pour le PDF 📄", lang: "Langue changée 🌐", email: "À toi de jouer ✉️" },
+  en: { goto: "There we go 👍", project: "Have a look 👀", color: "New vibe 🎨", launch_os: "Welcome to dev side 🖥️", download_cv: "PDF on its way 📄", lang: "Language switched 🌐", email: "Over to you ✉️" },
 };
 
 const stripActions = (text = "") =>
@@ -66,10 +66,11 @@ const stripActions = (text = "") =>
     .replace(/[ \t]+\n/g, "\n")
     .trim();
 
-const parseSteps = (full) => {
+// Étapes d'un plan : chaque item = "action[:arg] | note perso" (note optionnelle).
+const parseSteps = (full, projectIds = []) => {
   let raw = [];
   const pm = full.match(PLAN_RE);
-  if (pm) raw = pm[1].split(/[;|]/);
+  if (pm) raw = pm[1].split(";");
   else {
     ACTION_RE.lastIndex = 0;
     let m;
@@ -77,16 +78,19 @@ const parseSteps = (full) => {
   }
   return raw
     .map((s) => {
-      const [name, arg] = s.trim().toLowerCase().split(":");
-      return { name, arg };
+      const [left, ...rest] = s.split("|");
+      const note = rest.join("|").trim() || undefined;
+      const [name, arg] = left.trim().toLowerCase().split(":");
+      return { name, arg, note };
     })
-    .filter(
-      (s) =>
-        KNOWN.includes(s.name) &&
-        (s.name !== "goto" || ACTION_SECTIONS.includes(s.arg)) &&
-        (s.name !== "lang" || ["fr", "en"].includes(s.arg))
+    .filter((s) =>
+      s.name === "project"
+        ? projectIds.includes(s.arg)
+        : KNOWN.includes(s.name) &&
+          (s.name !== "goto" || ACTION_SECTIONS.includes(s.arg)) &&
+          (s.name !== "lang" || ["fr", "en"].includes(s.arg))
     )
-    .slice(0, 5);
+    .slice(0, 6);
 };
 
 // section actuellement à l'écran (pour un tour qui part de la position réelle)
@@ -183,6 +187,12 @@ const AssistantWidget = () => {
   const { data } = useData();
   const t = COPY[language] || COPY.fr;
 
+  const projectIds = useMemo(() => (data?.projects || []).map((p) => p.id), [data]);
+  const projectLabel = (id) => {
+    const p = (data?.projects || []).find((x) => x.id === id);
+    return p ? (p[language] || p.fr).label : id;
+  };
+
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState(loadHistory);
   const [input, setInput] = useState("");
@@ -226,6 +236,7 @@ const AssistantWidget = () => {
     switch (name) {
       case "launch_os": return language === "fr" ? "🖥️ creachOS lancé" : "🖥️ creachOS launched";
       case "goto": return `🧭 ${t.sections[arg] || arg}`;
+      case "project": return `🔎 ${projectLabel(arg)}`;
       case "color": return language === "fr" ? "🎨 Couleur mise à jour" : "🎨 Color updated";
       case "download_cv": return language === "fr" ? "📄 CV téléchargé" : "📄 CV downloaded";
       case "lang": return `🌐 ${(arg || "").toUpperCase()}`;
@@ -238,6 +249,7 @@ const AssistantWidget = () => {
     switch (s.name) {
       case "launch_os": return language === "fr" ? "Lancer creachOS" : "Launch creachOS";
       case "goto": return (language === "fr" ? "Aller à " : "Go to ") + (t.sections[s.arg] || s.arg);
+      case "project": return (language === "fr" ? "Voir " : "See ") + projectLabel(s.arg);
       case "color": return language === "fr" ? "Changer la couleur" : "Change the color";
       case "download_cv": return language === "fr" ? "Télécharger le CV" : "Download the CV";
       case "lang": return (language === "fr" ? "Passer en " : "Switch to ") + (s.arg || "").toUpperCase();
@@ -252,6 +264,9 @@ const AssistantWidget = () => {
       case "goto":
         if (ACTION_SECTIONS.includes(arg))
           document.getElementById(arg)?.scrollIntoView({ behavior: "smooth" });
+        break;
+      case "project":
+        document.getElementById(`project-${arg}`)?.scrollIntoView({ behavior: "smooth" });
         break;
       case "color": {
         const hex = arg && COLOR_NAMES[arg];
@@ -359,14 +374,17 @@ const AssistantWidget = () => {
         const steps = buildTour();
         if (steps.length) setFlow({ steps, index: 0 });
       } else {
-        const steps = parseSteps(full);
-        if (steps.length === 1) {
+        const steps = parseSteps(full, projectIds);
+        const notes = GENERIC_NOTES[language] || GENERIC_NOTES.fr;
+        if (steps.length === 1 && !steps[0].note) {
           const s = steps[0];
           if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
           else runAction(s.name, s.arg);
-        } else if (steps.length > 1) {
-          const notes = GENERIC_NOTES[language] || GENERIC_NOTES.fr;
-          setFlow({ steps: steps.map((s) => ({ ...s, note: notes[s.name] })), index: 0 });
+        } else if (steps.length >= 1) {
+          setFlow({
+            steps: steps.map((s) => ({ ...s, note: s.note || notes[s.name] || notes.goto })),
+            index: 0,
+          });
         }
       }
     } catch (err) {

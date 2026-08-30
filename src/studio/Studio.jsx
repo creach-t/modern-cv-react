@@ -67,7 +67,7 @@ const Studio = () => {
   }, [secondaryColor]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#05060a] text-gray-100">
+    <div className="relative min-h-screen overflow-x-clip bg-[#05060a] text-gray-100">
       <GearField color={secondaryColor} />
       <Ambiance />
       <CursorGlow />

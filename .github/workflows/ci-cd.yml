@@ -64,6 +64,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             GIT_SHA=${{ github.sha }}
+            REACT_APP_LLM_API_KEY=${{ secrets.LLM_API_KEY }}
+            REACT_APP_LLM_API_URL=${{ vars.LLM_API_URL }}
+            REACT_APP_LLM_MODEL=${{ vars.LLM_MODEL }}
 
   # ──────────────────────────────────────────────
   # Job 3 : Deploy sur VPS (zero-downtime)

@@ -14,6 +14,17 @@ COPY . .
 # SHA du commit injecté au build (ex: --build-arg GIT_SHA=abc1234)
 ARG GIT_SHA=dev
 ENV REACT_APP_VERSION=$GIT_SHA
+
+# Assistant IA — injectés au build (vides par défaut → IA hors-ligne, repli contact).
+# ⚠️ REACT_APP_* est inclus dans le bundle public : la clé sera exposée côté client.
+# Protéger l'endpoint côté Cloudflare (rate limiting / Turnstile) ou passer par un proxy.
+ARG REACT_APP_LLM_API_KEY=""
+ARG REACT_APP_LLM_API_URL=""
+ARG REACT_APP_LLM_MODEL=""
+ENV REACT_APP_LLM_API_KEY=$REACT_APP_LLM_API_KEY
+ENV REACT_APP_LLM_API_URL=$REACT_APP_LLM_API_URL
+ENV REACT_APP_LLM_MODEL=$REACT_APP_LLM_MODEL
+
 RUN npm run build
 
 # ─────────────────────────────────────────────

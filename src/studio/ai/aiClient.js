@@ -13,6 +13,9 @@ const BASE_URL = (
 ).replace(/\/$/, "");
 const API_KEY = process.env.REACT_APP_LLM_API_KEY || "";
 
+// Modèle par défaut : un modèle "malin" (configurable via .env).
+export const DEFAULT_MODEL = process.env.REACT_APP_LLM_MODEL || "llama-70b";
+
 export const isAIConfigured = () => Boolean(API_KEY);
 
 const authHeaders = () => {
@@ -40,7 +43,12 @@ const errorMessage = (status) => {
  * @param {{messages: Array, model?: string, signal?: AbortSignal, onToken?: (t:string)=>void}} opts
  * @returns {Promise<string>} le texte complet
  */
-export const streamChat = async ({ messages, model = "fast", signal, onToken }) => {
+export const streamChat = async ({
+  messages,
+  model = DEFAULT_MODEL,
+  signal,
+  onToken,
+}) => {
   const res = await fetch(`${BASE_URL}/chat`, {
     method: "POST",
     headers: authHeaders(),

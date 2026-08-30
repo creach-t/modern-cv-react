@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
-import { Github, Linkedin, TerminalSquare, FileText } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Github, Linkedin, TerminalSquare, FileDown } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useOS } from "../os/osContext";
+import { downloadCV } from "./pdf";
 import Nav from "./components/Nav";
 import ScrollProgress from "./components/ScrollProgress";
 import Ambiance from "./components/Ambiance";
@@ -25,6 +26,17 @@ const Studio = () => {
   const { language } = useLanguage();
   const { setMode } = useOS();
   const version = process.env.REACT_APP_VERSION || "dev";
+  const [pdfBusy, setPdfBusy] = useState(false);
+
+  const onDownloadCV = async () => {
+    if (pdfBusy) return;
+    setPdfBusy(true);
+    try {
+      await downloadCV(language, secondaryColor);
+    } finally {
+      setPdfBusy(false);
+    }
+  };
 
   // Easter egg : Konami code → creachOS
   useEffect(() => {
@@ -106,11 +118,18 @@ const Studio = () => {
               <Linkedin className="h-4 w-4" />
             </a>
             <button
-              onClick={() => setMode("cv")}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-300 hover:bg-white/5"
+              onClick={onDownloadCV}
+              disabled={pdfBusy}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-300 hover:bg-white/5 disabled:opacity-50"
             >
-              <FileText className="h-3.5 w-3.5" />
-              {language === "fr" ? "CV imprimable" : "Printable résumé"}
+              <FileDown className="h-3.5 w-3.5" />
+              {pdfBusy
+                ? language === "fr"
+                  ? "Génération…"
+                  : "Generating…"
+                : language === "fr"
+                ? "Télécharger le CV"
+                : "Download CV"}
             </button>
             <button
               onClick={() => setMode("os")}

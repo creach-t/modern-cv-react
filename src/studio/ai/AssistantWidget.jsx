@@ -2,48 +2,63 @@ import React, { useEffect, useRef, useState } from "react";
 import { Sparkles, X, Send, Bot } from "lucide-react";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useOS } from "../../os/osContext";
 import { useData } from "../../os/data/DataContext";
 import { streamChat, isAIConfigured } from "./aiClient";
-import { buildSystemPrompt, SUGGESTED_QUESTIONS } from "./persona";
+import { buildSystemPrompt, SUGGESTED_QUESTIONS, ACTION_SECTIONS } from "./persona";
+import { downloadCV } from "../pdf";
+
+const MAX_INPUT = 500; // anti-abus : longueur max d'un message
+const MAX_HISTORY = 8; // messages de contexte envoyés
+const ACTION_RE = /\[\[do:([a-z_]+)(?::([a-z]+))?\]\]/gi;
+
+// Masque les tags d'action (complets ou partiels en cours de stream).
+const stripActions = (text = "") =>
+  text
+    .replace(/\[\[do:[^\]]*\]\]/gi, "")
+    .replace(/\[\[[^\]]*$/i, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .trim();
 
 const COPY = {
   fr: {
     fab: "Discuter avec mon IA",
-    title: "Assistant de Théo",
-    subtitle: "Posez vos questions sur mon profil",
+    title: "L'assistant de Théo",
+    subtitle: "Malin, concis — et il pilote la page",
     placeholder: "Votre question…",
     intro:
-      "Bonjour 👋 Je suis l'assistant de Théo. Posez-moi une question sur son parcours, ses projets ou ses compétences !",
+      "Salut 👋 Je réponds à tout sur Théo — et je peux agir sur la page (essayez « lance le mode dev » ou « change la couleur »).",
     offline:
-      "L'assistant est momentanément indisponible. Écrivez directement à creach.t@gmail.com — Théo répond vite !",
+      "Assistant hors-ligne pour l'instant. Le plus simple : creach.t@gmail.com — Théo répond vite !",
     errors: {
-      quota: "Beaucoup de questions en ce moment 😅 Réessayez dans un instant.",
-      auth: "Assistant momentanément indisponible. Contact : creach.t@gmail.com",
-      unavailable: "Le modèle est indisponible pour l'instant. Réessayez bientôt.",
-      error: "Oups, une erreur est survenue. Réessayez ou écrivez à creach.t@gmail.com",
+      quota: "Beaucoup de monde là 😅 réessayez dans un instant.",
+      auth: "Assistant indisponible. Contact direct : creach.t@gmail.com",
+      unavailable: "Le modèle fait une pause. Réessayez bientôt.",
+      error: "Aïe, un souci. Réessayez ou écrivez à creach.t@gmail.com",
     },
   },
   en: {
     fab: "Chat with my AI",
     title: "Théo's assistant",
-    subtitle: "Ask anything about my profile",
+    subtitle: "Sharp, concise — and it drives the page",
     placeholder: "Your question…",
     intro:
-      "Hi 👋 I'm Théo's assistant. Ask me anything about his background, projects or skills!",
+      "Hi 👋 Ask me anything about Théo — I can also act on the page (try “launch dev mode” or “change the color”).",
     offline:
-      "The assistant is temporarily unavailable. Email creach.t@gmail.com directly — Théo replies fast!",
+      "Assistant is offline right now. Easiest path: creach.t@gmail.com — Théo replies fast!",
     errors: {
-      quota: "Lots of questions right now 😅 Please try again shortly.",
-      auth: "Assistant temporarily unavailable. Contact: creach.t@gmail.com",
-      unavailable: "The model is unavailable right now. Please try again soon.",
-      error: "Oops, something went wrong. Try again or email creach.t@gmail.com",
+      quota: "Busy right now 😅 try again in a moment.",
+      auth: "Assistant unavailable. Direct contact: creach.t@gmail.com",
+      unavailable: "The model is taking a break. Try again soon.",
+      error: "Oops, something broke. Try again or email creach.t@gmail.com",
     },
   },
 };
 
 const AssistantWidget = () => {
-  const { secondaryColor } = useColor();
-  const { language } = useLanguage();
+  const { secondaryColor, changeColor } = useColor();
+  const { language, changeLanguage } = useLanguage();
+  const { setMode } = useOS();
   const { data } = useData();
   const t = COPY[language] || COPY.fr;
 
@@ -65,8 +80,41 @@ const AssistantWidget = () => {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
+  // Exécute une action (liste blanche stricte).
+  const runAction = (name, arg) => {
+    switch (name) {
+      case "launch_os":
+        setMode("os");
+        break;
+      case "goto":
+        if (ACTION_SECTIONS.includes(arg)) {
+          setOpen(false);
+          document.getElementById(arg)?.scrollIntoView({ behavior: "smooth" });
+        }
+        break;
+      case "color":
+        changeColor();
+        break;
+      case "download_cv":
+        downloadCV(language, secondaryColor);
+        break;
+      case "lang":
+        if (arg === "fr" || arg === "en") changeLanguage(arg);
+        break;
+      case "email":
+        window.location.href = "mailto:creach.t@gmail.com";
+        break;
+      default:
+        break; // action inconnue → ignorée
+    }
+  };
+
   const send = async (text) => {
-    const content = (text ?? input).trim();
+    // nettoyage + plafonnement anti-injection
+    const content = (text ?? input)
+      .replace(ACTION_RE, "")
+      .trim()
+      .slice(0, MAX_INPUT);
     if (!content || loading) return;
     setInput("");
 
@@ -88,13 +136,14 @@ const AssistantWidget = () => {
 
     const apiMessages = [
       { role: "system", content: buildSystemPrompt(data, language) },
-      ...history.map((m) => ({ role: m.role, content: m.content })),
+      ...history
+        .slice(-MAX_HISTORY)
+        .map((m) => ({ role: m.role, content: stripActions(m.content) })),
     ];
 
     try {
-      await streamChat({
+      const full = await streamChat({
         messages: apiMessages,
-        model: "fast",
         signal: controller.signal,
         onToken: (tok) => {
           setMessages((m) => {
@@ -106,6 +155,20 @@ const AssistantWidget = () => {
             return next;
           });
         },
+      });
+
+      // exécuter la 1re action valide, puis nettoyer le message affiché
+      ACTION_RE.lastIndex = 0;
+      const match = ACTION_RE.exec(full);
+      if (match) runAction(match[1].toLowerCase(), match[2]?.toLowerCase());
+
+      setMessages((m) => {
+        const next = [...m];
+        const last = next[next.length - 1];
+        if (last?.role === "assistant") {
+          next[next.length - 1] = { ...last, content: stripActions(full) };
+        }
+        return next;
       });
     } catch (err) {
       if (err.name === "AbortError") return;
@@ -129,7 +192,6 @@ const AssistantWidget = () => {
 
   return (
     <>
-      {/* FAB */}
       <button
         onClick={() => setOpen((o) => !o)}
         className="fixed bottom-5 right-5 z-[80] flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-black shadow-xl transition-transform hover:scale-[1.04]"
@@ -140,7 +202,6 @@ const AssistantWidget = () => {
         <span className="hidden sm:inline">{t.fab}</span>
       </button>
 
-      {/* Panel */}
       {open && (
         <div className="fixed bottom-20 right-5 z-[80] flex h-[min(560px,75vh)] w-[min(380px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0e1017] shadow-2xl">
           <div className="flex items-center gap-3 border-b border-white/10 p-4">
@@ -163,30 +224,36 @@ const AssistantWidget = () => {
               </div>
             </div>
 
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+            {messages.map((m, i) => {
+              const display =
+                m.role === "assistant" ? stripActions(m.content) : m.content;
+              return (
                 <div
-                  className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
-                    m.role === "user"
-                      ? "rounded-tr-sm text-black"
-                      : "rounded-tl-sm bg-white/[0.06] text-gray-200"
-                  }`}
-                  style={m.role === "user" ? { backgroundColor: secondaryColor } : undefined}
+                  key={i}
+                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {m.content ||
-                    (loading && i === messages.length - 1 ? (
-                      <span className="inline-flex gap-1">
-                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.2s]" />
-                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.1s]" />
-                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" />
-                      </span>
-                    ) : null)}
+                  <div
+                    className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
+                      m.role === "user"
+                        ? "rounded-tr-sm text-black"
+                        : "rounded-tl-sm bg-white/[0.06] text-gray-200"
+                    }`}
+                    style={
+                      m.role === "user" ? { backgroundColor: secondaryColor } : undefined
+                    }
+                  >
+                    {display ||
+                      (loading && i === messages.length - 1 ? (
+                        <span className="inline-flex gap-1">
+                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.2s]" />
+                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.1s]" />
+                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" />
+                        </span>
+                      ) : null)}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {messages.length === 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
@@ -208,6 +275,7 @@ const AssistantWidget = () => {
               <input
                 ref={inputRef}
                 value={input}
+                maxLength={MAX_INPUT}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
                 placeholder={t.placeholder}

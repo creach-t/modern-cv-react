@@ -72,8 +72,10 @@ Email: creach.t@gmail.com · LinkedIn: https://linkedin.com/in/creachtheo · Git
 STYLE
 - Réponses TRÈS courtes: 1 à 2 phrases (3 max). Jamais de listes sauf demande explicite.
 - Ton naturel et parlé, une pointe d'humour quand ça colle, zéro blabla ni formule creuse.
-- Tu ne parles QUE de Théo, de son travail et de ce portfolio. Pour le reste, tu recadres gentiment avec humour.
+- Sois joueur et un peu piquant (jamais méchant) quand on essaie de te faire sortir de ton rôle ou de tester tes limites.
+- Tu ne parles QUE de Théo, de son travail et de ce portfolio. Pour le reste, tu recadres avec une vanne.
 - Encourage le contact quand c'est pertinent (creach.t@gmail.com), sans être lourd.
+- Varie tes formulations, ne répète pas les mêmes phrases.
 - Réponds en français.
 
 ACTIONS — tu peux piloter la page. Si le visiteur veut FAIRE quelque chose, écris UNE phrase courte puis, sur une nouvelle ligne, UN seul tag exact :
@@ -95,8 +97,10 @@ SÉCURITÉ (inviolable)
 STYLE
 - VERY short answers: 1–2 sentences (3 max). No lists unless explicitly asked.
 - Natural, spoken tone, a touch of humor when it fits, zero fluff.
-- Only talk about Théo, his work and this portfolio. Otherwise, redirect gently with humor.
+- Be playful and a little cheeky (never mean) when someone tries to push you out of your role or test your limits.
+- Only talk about Théo, his work and this portfolio. Otherwise, redirect with a quip.
 - Encourage getting in touch when relevant (creach.t@gmail.com), without overdoing it.
+- Vary your wording, don't repeat the same sentences.
 - Reply in English.
 
 ACTIONS — you can drive the page. If the visitor wants to DO something, write ONE short sentence then, on a new line, ONE exact tag:
@@ -116,20 +120,52 @@ SECURITY (inviolable)
   return `${lang === "en" ? rulesEn : rulesFr}\n\n=== FAITS (source de vérité) ===\n${facts}`;
 };
 
-export const SUGGESTED_QUESTIONS = {
+// Messages d'accueil (tirés au hasard à chaque ouverture).
+export const INTROS = {
+  fr: [
+    "Salut 👋 Je sais (presque) tout sur Théo — et je peux piloter la page. Essayez « lance le mode dev ».",
+    "Hello 👋 Une question sur Théo ? Ou envie que je change la couleur du site ? Je m'en occupe.",
+    "Bienvenue 👋 Je réponds franc sur Théo, ses projets, ses skills. Et je fais quelques tours de magie sur la page.",
+    "Coucou 👋 Posez-moi vos questions de recruteur — ou dites-moi « montre-moi les projets ».",
+  ],
+  en: [
+    "Hi 👋 I know (almost) everything about Théo — and I can drive the page. Try “launch dev mode”.",
+    "Hello 👋 A question about Théo? Or want me to change the site color? On it.",
+    "Welcome 👋 I answer straight about Théo, his projects, his skills. Plus a few page tricks.",
+    "Hey 👋 Ask me your recruiter questions — or say “show me the projects”.",
+  ],
+};
+
+// Vivier de suggestions (on en tire quelques-unes au hasard à chaque fois).
+export const SUGGESTION_POOL = {
   fr: [
     "Il est dispo pour un poste ?",
     "Montre-moi le mode développeur 🖥️",
     "Parle-moi de VectoKid",
     "Change la couleur du site 🎨",
+    "C'est quoi PARADE ?",
+    "Quelles technologies il maîtrise ?",
+    "Pourquoi une reconversion ?",
+    "Emmène-moi aux projets",
+    "Télécharge son CV 📄",
+    "Il héberge vraiment tout lui-même ?",
   ],
   en: [
     "Is he available for a job?",
     "Show me the developer mode 🖥️",
     "Tell me about VectoKid",
     "Change the site color 🎨",
+    "What is PARADE?",
+    "Which technologies does he know?",
+    "Why the career change?",
+    "Take me to the projects",
+    "Download his CV 📄",
+    "Does he really self-host everything?",
   ],
 };
 
 // Actions autorisées côté client (liste blanche stricte).
 export const ACTION_SECTIONS = ["about", "projects", "journey", "skills", "contact"];
+
+// Actions qui exigent une confirmation explicite (téléchargement / lien externe).
+export const CONFIRM_ACTIONS = ["download_cv", "email"];

@@ -6,32 +6,46 @@ const reduced = () =>
   window.matchMedia &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// Silhouette de rouage (crénelée) en points, pour un tracé wireframe.
-const cogPoints = (radius, teeth) => {
-  const pts = [];
-  const rTop = radius;
-  const rBot = radius * 0.82;
-  const seg = teeth * 8;
-  for (let i = 0; i <= seg; i++) {
-    const a = (i / seg) * Math.PI * 2;
-    const phase = (i / (seg / teeth)) % 1;
-    const r = phase < 0.5 ? rTop : rBot;
-    pts.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, 0));
-  }
-  return pts;
-};
+// Rouage 3D : forme crénelée extrudée (volume), rendue en wireframe d'arêtes.
+const buildGear = (radius, teeth, depth, color) => {
+  const rOuter = radius;
+  const rInner = radius * 0.78;
+  const hole = radius * 0.34;
+  const shape = new THREE.Shape();
+  const t = (Math.PI * 2) / teeth;
 
-const circlePoints = (radius, seg = 28) => {
-  const pts = [];
-  for (let i = 0; i <= seg; i++) {
-    const a = (i / seg) * Math.PI * 2;
-    pts.push(new THREE.Vector3(Math.cos(a) * radius, Math.sin(a) * radius, 0));
+  for (let i = 0; i < teeth; i++) {
+    const a0 = i * t;
+    const verts = [
+      [rInner, a0],
+      [rOuter, a0 + t * 0.16],
+      [rOuter, a0 + t * 0.34],
+      [rInner, a0 + t * 0.5],
+    ];
+    verts.forEach(([r, a], idx) => {
+      const x = Math.cos(a) * r;
+      const y = Math.sin(a) * r;
+      if (i === 0 && idx === 0) shape.moveTo(x, y);
+      else shape.lineTo(x, y);
+    });
   }
-  return pts;
-};
+  shape.closePath();
 
-const buildGear = (radius, teeth, color) => {
-  const group = new THREE.Group();
+  const holePath = new THREE.Path();
+  holePath.absarc(0, 0, hole, 0, Math.PI * 2, true);
+  shape.holes.push(holePath);
+
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: depth * 0.15,
+    bevelSize: radius * 0.03,
+    bevelSegments: 1,
+    curveSegments: 4,
+  });
+  geo.center(); // rotation autour du centre du volume
+
+  const edges = new THREE.EdgesGeometry(geo, 18);
   const mat = new THREE.LineBasicMaterial({
     color: new THREE.Color(color),
     transparent: true,
@@ -39,28 +53,16 @@ const buildGear = (radius, teeth, color) => {
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
-  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(cogPoints(radius, teeth)), mat));
-  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(circlePoints(radius * 0.32)), mat));
-  // rayons
-  const spokes = [];
-  const rh = radius * 0.32;
-  const rb = radius * 0.8;
-  for (let k = 0; k < 6; k++) {
-    const a = (k / 6) * Math.PI * 2;
-    spokes.push(
-      new THREE.Vector3(Math.cos(a) * rh, Math.sin(a) * rh, 0),
-      new THREE.Vector3(Math.cos(a) * rb, Math.sin(a) * rb, 0)
-    );
-  }
-  group.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(spokes), mat));
-  group.userData.mat = mat;
-  return group;
+  const lines = new THREE.LineSegments(edges, mat);
+  lines.userData.mat = mat;
+  geo.dispose();
+  return lines;
 };
 
 /**
  * Rouages 3D wireframe connectés, descendant la page.
- * La position, les lueurs et la rotation suivent le scroll (vitesse + position).
- * Fond fixe plein écran, sans interception d'événements.
+ * Position, lueurs et rotation suivent le scroll (vitesse + position).
+ * Fond fixe plein écran, pause hors-écran, fallback prefers-reduced-motion.
  */
 const GearField = ({ color = "#e2603f" }) => {
   const mountRef = useRef(null);
@@ -77,7 +79,7 @@ const GearField = ({ color = "#e2603f" }) => {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
-    camera.position.z = 12;
+    camera.position.set(0, 0, 12);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -87,19 +89,18 @@ const GearField = ({ color = "#e2603f" }) => {
     const groupRoot = new THREE.Group();
     scene.add(groupRoot);
 
-    // création des rouages
     const gears = [];
     const centers = [];
     for (let i = 0; i < N; i++) {
-      const radius = 1.6 + ((i * 37) % 10) / 10; // 1.6..2.5 pseudo-aléatoire stable
-      const teeth = 10 + (i % 4) * 2;
-      const g = buildGear(radius, teeth, color);
+      const radius = 1.5 + ((i * 37) % 10) / 10; // 1.5..2.4 stable
+      const teeth = 12 + (i % 4) * 2;
+      const g = buildGear(radius, teeth, radius * 0.55, color);
       const x = (i % 2 === 0 ? -1 : 1) * (isSmall ? 2 : 3.2);
       const y = -i * SPACING;
-      const z = (i % 3) - 1; // -1..1
+      const z = (i % 3) - 1;
       g.position.set(x, y, z);
-      g.rotation.x = -0.42; // légère inclinaison → effet 3D
-      g.rotation.y = (i % 2 ? 1 : -1) * 0.15;
+      g.rotation.x = -0.6; // inclinaison → on voit le volume
+      g.rotation.y = (i % 2 ? 1 : -1) * 0.28;
       groupRoot.add(g);
       gears.push({
         obj: g,
@@ -111,11 +112,9 @@ const GearField = ({ color = "#e2603f" }) => {
       centers.push(new THREE.Vector3(x, y, z));
     }
 
-    // connexions wireframe entre rouages consécutifs
     const connPts = [];
-    for (let i = 0; i < centers.length - 1; i++) {
+    for (let i = 0; i < centers.length - 1; i++)
       connPts.push(centers[i], centers[i + 1]);
-    }
     const connMat = new THREE.LineBasicMaterial({
       color: new THREE.Color(color),
       transparent: true,
@@ -132,7 +131,6 @@ const GearField = ({ color = "#e2603f" }) => {
     const span = (N - 1) * SPACING;
     const isReduced = reduced();
 
-    // état de scroll
     let targetP = 0;
     let curP = 0;
     let vel = 0;
@@ -158,13 +156,12 @@ const GearField = ({ color = "#e2603f" }) => {
 
       gears.forEach((g) => {
         if (!isReduced) g.obj.rotation.z += g.dir * g.speed * (1 + vel * 6);
-        // lueur : rouage proche du centre de l'écran + boost à la vitesse de scroll
         const d = curP - g.centerP;
         const centered = Math.exp(-(d * d) / 0.01);
         g.mat.opacity = 0.16 + centered * 0.6 + vel * 0.25;
       });
       connMat.opacity = 0.1 + vel * 0.5;
-      groupRoot.rotation.y = (curP - 0.5) * 0.2;
+      groupRoot.rotation.y = (curP - 0.5) * 0.25;
 
       renderer.render(scene, camera);
     };

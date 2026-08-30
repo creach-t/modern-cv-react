@@ -19,14 +19,43 @@ const MAX_HISTORY = 8; // messages de contexte envoyés à l'API
 const STORE_MAX = 40; // messages conservés en localStorage
 const STORAGE_KEY = "studio_chat_v1";
 const ACTION_RE = /\[\[do:([a-z_]+)(?::([a-z]+))?\]\]/gi;
+const PLAN_RE = /\[\[plan:([^\]]+)\]\]/i;
+const KNOWN = ["launch_os", "goto", "color", "download_cv", "lang", "email"];
 const ROLES = ["user", "assistant", "action"];
 
 const stripActions = (text = "") =>
   text
+    .replace(/\[\[plan:[^\]]*\]\]/gi, "")
     .replace(/\[\[do:[^\]]*\]\]/gi, "")
     .replace(/\[\[[^\]]*$/i, "")
     .replace(/[ \t]+\n/g, "\n")
     .trim();
+
+// Extrait une liste ordonnée d'étapes (plan multi-actions ou action unique).
+const parseSteps = (full) => {
+  let raw = [];
+  const pm = full.match(PLAN_RE);
+  if (pm) {
+    raw = pm[1].split(/[;|]/);
+  } else {
+    ACTION_RE.lastIndex = 0;
+    let m;
+    while ((m = ACTION_RE.exec(full)))
+      raw.push(m[1] + (m[2] ? ":" + m[2] : ""));
+  }
+  return raw
+    .map((s) => {
+      const [name, arg] = s.trim().toLowerCase().split(":");
+      return { name, arg };
+    })
+    .filter(
+      (s) =>
+        KNOWN.includes(s.name) &&
+        (s.name !== "goto" || ACTION_SECTIONS.includes(s.arg)) &&
+        (s.name !== "lang" || ["fr", "en"].includes(s.arg))
+    )
+    .slice(0, 5);
+};
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const pickN = (arr, n) => [...arr].sort(() => Math.random() - 0.5).slice(0, n);
@@ -65,6 +94,7 @@ const COPY = {
     subtitle: "Malin, concis — et il pilote la page",
     placeholder: "Votre question…",
     clear: "Effacer la discussion",
+    tour: "Parcours guidé",
     confirm: "Confirmer",
     cancel: "Annuler",
     cancelled: "✖️ Annulé",
@@ -94,6 +124,7 @@ const COPY = {
     subtitle: "Sharp, concise — and it drives the page",
     placeholder: "Your question…",
     clear: "Clear conversation",
+    tour: "Guided tour",
     confirm: "Confirm",
     cancel: "Cancel",
     cancelled: "✖️ Cancelled",
@@ -130,7 +161,8 @@ const AssistantWidget = () => {
   const [messages, setMessages] = useState(loadHistory);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pending, setPending] = useState(null); // { name, arg }
+  const [pending, setPending] = useState(null); // { name, arg, plan? }
+  const [plan, setPlan] = useState(null); // { steps:[{name,arg}], index }
   const [intro, setIntro] = useState(() => pick(INTROS.fr));
   const [suggestions, setSuggestions] = useState(() => pickN(SUGGESTION_POOL.fr, 4));
   const abortRef = useRef(null);
@@ -219,13 +251,52 @@ const AssistantWidget = () => {
     pushAction(actionLabel(name, arg));
   };
 
+  // libellé impératif d'une étape (pour les boutons)
+  const stepLabel = (s) => {
+    switch (s.name) {
+      case "launch_os":
+        return language === "fr" ? "Lancer creachOS" : "Launch creachOS";
+      case "goto":
+        return (language === "fr" ? "Aller à " : "Go to ") + (t.sections[s.arg] || s.arg);
+      case "color":
+        return language === "fr" ? "Changer la couleur" : "Change the color";
+      case "download_cv":
+        return language === "fr" ? "Télécharger le CV" : "Download the CV";
+      case "lang":
+        return (language === "fr" ? "Passer en " : "Switch to ") + (s.arg || "").toUpperCase();
+      case "email":
+        return language === "fr" ? "Ouvrir l'email" : "Open email";
+      default:
+        return s.name;
+    }
+  };
+
+  const advancePlan = () =>
+    setPlan((p) => {
+      if (!p) return null;
+      const ni = p.index + 1;
+      return ni >= p.steps.length ? null : { ...p, index: ni };
+    });
+
+  const doCurrentStep = () => {
+    if (!plan) return;
+    const s = plan.steps[plan.index];
+    if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s, plan: true });
+    else {
+      runAction(s.name, s.arg);
+      advancePlan();
+    }
+  };
+
   const confirmPending = () => {
     if (!pending) return;
     runAction(pending.name, pending.arg);
+    if (pending.plan) advancePlan();
     setPending(null);
   };
   const cancelPending = () => {
     pushAction(t.cancelled);
+    if (pending?.plan) advancePlan();
     setPending(null);
   };
 
@@ -234,6 +305,7 @@ const AssistantWidget = () => {
     if (!content || loading) return;
     setInput("");
     setPending(null);
+    setPlan(null);
 
     if (!isAIConfigured()) {
       setMessages((m) => [
@@ -283,14 +355,14 @@ const AssistantWidget = () => {
         return next;
       });
 
-      // action éventuelle : confirmation requise ou exécution directe
-      ACTION_RE.lastIndex = 0;
-      const match = ACTION_RE.exec(full);
-      if (match) {
-        const name = match[1].toLowerCase();
-        const arg = match[2]?.toLowerCase();
-        if (CONFIRM_ACTIONS.includes(name)) setPending({ name, arg });
-        else runAction(name, arg);
+      // 1 action → directe/confirmation ; plusieurs → parcours guidé (pas à pas)
+      const steps = parseSteps(full);
+      if (steps.length === 1) {
+        const s = steps[0];
+        if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
+        else runAction(s.name, s.arg);
+      } else if (steps.length > 1) {
+        setPlan({ steps, index: 0 });
       }
     } catch (err) {
       if (err.name === "AbortError") return;
@@ -312,6 +384,7 @@ const AssistantWidget = () => {
     abortRef.current?.abort();
     setMessages([]);
     setPending(null);
+    setPlan(null);
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch {
@@ -406,6 +479,67 @@ const AssistantWidget = () => {
                 </div>
               );
             })}
+
+            {/* parcours guidé (timeline pas à pas) */}
+            {plan && (
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-300">
+                    {t.tour} · {plan.index + 1}/{plan.steps.length}
+                  </span>
+                  <button
+                    onClick={() => setPlan(null)}
+                    className="text-gray-500 hover:text-gray-300"
+                    aria-label={t.cancel}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <ol className="space-y-1.5">
+                  {plan.steps.map((s, i) => {
+                    const state =
+                      i < plan.index ? "done" : i === plan.index ? "current" : "todo";
+                    return (
+                      <li key={i} className="flex items-center gap-2 text-sm">
+                        <span
+                          className="grid h-4 w-4 shrink-0 place-items-center rounded-full text-[10px] font-bold"
+                          style={{
+                            color: state === "todo" ? "#64748b" : secondaryColor,
+                            backgroundColor:
+                              state === "todo" ? "transparent" : `${secondaryColor}22`,
+                            border: `1px solid ${
+                              state === "todo" ? "rgba(255,255,255,0.15)" : secondaryColor + "66"
+                            }`,
+                          }}
+                        >
+                          {state === "done" ? "✓" : i + 1}
+                        </span>
+                        <span
+                          className={
+                            state === "done"
+                              ? "text-gray-500 line-through"
+                              : state === "current"
+                              ? "text-white"
+                              : "text-gray-500"
+                          }
+                        >
+                          {stepLabel(s)}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
+                {!pending && plan.index < plan.steps.length && (
+                  <button
+                    onClick={doCurrentStep}
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-black transition-transform hover:scale-[1.03]"
+                    style={{ backgroundColor: secondaryColor }}
+                  >
+                    ▶ {stepLabel(plan.steps[plan.index])}
+                  </button>
+                )}
+              </div>
+            )}
 
             {/* carte de confirmation */}
             {pending && (

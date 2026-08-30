@@ -62,7 +62,7 @@ const Journey = () => {
   const t = COPY[language] || COPY.fr;
 
   return (
-    <Section id="journey" index="03" title={t.title} subtitle={t.subtitle}>
+    <Section id="journey" index="03" title={t.title} subtitle={t.subtitle} doodle="route">
       <div className="grid gap-10 md:grid-cols-2">
         <Reveal>
           <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-gray-400">

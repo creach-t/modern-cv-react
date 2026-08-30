@@ -43,7 +43,7 @@ const About = () => {
     ) || 12;
 
   return (
-    <Section id="about" index="01" title={t.title} subtitle={t.subtitle}>
+    <Section id="about" index="01" title={t.title} subtitle={t.subtitle} doodle="spark">
       <div className="grid gap-10 md:grid-cols-[280px_1fr] md:items-start">
         <Reveal>
           <div className="relative mx-auto w-56 md:w-full">

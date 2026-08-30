@@ -4,6 +4,7 @@ import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Section from "../components/Section";
 import Reveal from "../components/Reveal";
+import Magnetic from "../components/Magnetic";
 
 const COPY = {
   fr: {
@@ -33,7 +34,7 @@ const Contact = () => {
   const t = COPY[language] || COPY.fr;
 
   return (
-    <Section id="contact" index="05" title={t.title}>
+    <Section id="contact" index="05" title={t.title} doodle="leaf">
       <Reveal className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-8 sm:p-12">
         <span
           className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
@@ -52,14 +53,16 @@ const Contact = () => {
         <p className="mt-3 max-w-lg text-base text-gray-400">{t.text}</p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href="mailto:creach.t@gmail.com"
-            className="inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-black transition-transform hover:scale-[1.03]"
-            style={{ backgroundColor: secondaryColor }}
-          >
-            <Mail className="h-4 w-4" />
-            {t.email}
-          </a>
+          <Magnetic>
+            <a
+              href="mailto:creach.t@gmail.com"
+              className="inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-black transition-colors hover:brightness-110"
+              style={{ backgroundColor: secondaryColor }}
+            >
+              <Mail className="h-4 w-4" />
+              {t.email}
+            </a>
+          </Magnetic>
           {LINKS.map((l) => {
             const Icon = l.icon;
             return (

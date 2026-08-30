@@ -28,7 +28,7 @@ const Skills = () => {
   const t = COPY[language] || COPY.fr;
 
   return (
-    <Section id="skills" index="04" title={t.title} subtitle={t.subtitle}>
+    <Section id="skills" index="04" title={t.title} subtitle={t.subtitle} doodle="chip">
       <Reveal stagger className="grid gap-5 sm:grid-cols-2">
         {(data?.skills || []).map((cat) => {
           const Icon = CAT_ICONS[cat.category] || Cog;

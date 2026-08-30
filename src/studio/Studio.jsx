@@ -6,6 +6,7 @@ import { useOS } from "../os/osContext";
 import Nav from "./components/Nav";
 import ScrollProgress from "./components/ScrollProgress";
 import Ambiance from "./components/Ambiance";
+import CursorGlow from "./components/CursorGlow";
 import Hero from "./hero/Hero";
 import About from "./sections/About";
 import Projects from "./sections/Projects";
@@ -55,6 +56,7 @@ const Studio = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#05060a] text-gray-100">
       <Ambiance />
+      <CursorGlow />
       <ScrollProgress />
       <Nav />
       <main className="relative z-10">

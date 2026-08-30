@@ -106,7 +106,7 @@ const Projects = () => {
   const t = COPY[language] || COPY.fr;
 
   return (
-    <Section id="projects" index="02" title={t.title} subtitle={t.subtitle}>
+    <Section id="projects" index="02" title={t.title} subtitle={t.subtitle} doodle="screwdriver">
       <div className="space-y-16 sm:space-y-24">
         {(data?.projects || []).map((project, i) => (
           <ProjectRow key={project.id} project={project} reversed={i % 2 === 1} />

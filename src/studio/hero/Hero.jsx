@@ -3,6 +3,7 @@ import { ArrowDown, FolderGit2, Send } from "lucide-react";
 import anime from "animejs";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
+import Magnetic from "../components/Magnetic";
 
 const ParticleField = lazy(() => import("./ParticleField"));
 
@@ -106,21 +107,25 @@ const Hero = () => {
           {t.tagline}
         </p>
         <div data-hero className="mt-8 flex flex-wrap gap-3">
-          <button
-            onClick={() => scrollTo("projects")}
-            className="inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-black transition-transform hover:scale-[1.03]"
-            style={{ backgroundColor: secondaryColor }}
-          >
-            <FolderGit2 className="h-4 w-4" />
-            {t.projects}
-          </button>
-          <button
-            onClick={() => scrollTo("contact")}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/5"
-          >
-            <Send className="h-4 w-4" />
-            {t.contact}
-          </button>
+          <Magnetic>
+            <button
+              onClick={() => scrollTo("projects")}
+              className="inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-black transition-colors hover:brightness-110"
+              style={{ backgroundColor: secondaryColor }}
+            >
+              <FolderGit2 className="h-4 w-4" />
+              {t.projects}
+            </button>
+          </Magnetic>
+          <Magnetic>
+            <button
+              onClick={() => scrollTo("contact")}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/5"
+            >
+              <Send className="h-4 w-4" />
+              {t.contact}
+            </button>
+          </Magnetic>
         </div>
       </div>
 

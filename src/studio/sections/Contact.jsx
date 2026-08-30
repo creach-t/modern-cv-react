@@ -5,6 +5,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import Section from "../components/Section";
 import Reveal from "../components/Reveal";
 import Magnetic from "../components/Magnetic";
+import { useContactOverlay } from "../contact/ContactOverlay";
 
 const COPY = {
   fr: {
@@ -31,6 +32,7 @@ const LINKS = [
 const Contact = () => {
   const { secondaryColor } = useColor();
   const { language } = useLanguage();
+  const { openContact } = useContactOverlay();
   const t = COPY[language] || COPY.fr;
 
   return (
@@ -54,14 +56,14 @@ const Contact = () => {
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <Magnetic>
-            <a
-              href="mailto:creach.t@gmail.com"
+            <button
+              onClick={openContact}
               className="inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-black transition-colors hover:brightness-110"
               style={{ backgroundColor: secondaryColor }}
             >
               <Mail className="h-4 w-4" />
               {t.email}
-            </a>
+            </button>
           </Magnetic>
           {LINKS.map((l) => {
             const Icon = l.icon;

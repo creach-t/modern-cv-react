@@ -8,8 +8,10 @@ import Nav from "./components/Nav";
 import ScrollProgress from "./components/ScrollProgress";
 import Ambiance from "./components/Ambiance";
 import CursorGlow from "./components/CursorGlow";
+import ParallaxGlow from "./components/ParallaxGlow";
 import GearField from "./hero/GearField";
 import Hero from "./hero/Hero";
+import { ContactOverlayProvider } from "./contact/ContactOverlay";
 import About from "./sections/About";
 import Projects from "./sections/Projects";
 import Journey from "./sections/Journey";
@@ -67,8 +69,10 @@ const Studio = () => {
   }, [secondaryColor]);
 
   return (
+    <ContactOverlayProvider>
     <div className="relative min-h-screen overflow-x-clip bg-[#05060a] text-gray-100">
       <GearField color={secondaryColor} />
+      <ParallaxGlow />
       <Ambiance />
       <CursorGlow />
       <ScrollProgress />
@@ -146,6 +150,7 @@ const Studio = () => {
 
       <AssistantWidget />
     </div>
+    </ContactOverlayProvider>
   );
 };
 

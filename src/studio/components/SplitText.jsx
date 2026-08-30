@@ -22,26 +22,49 @@ const SplitText = ({ text, className = "", as: Tag = "span" }) => {
     }
     anime.set(chars, { opacity: 0, translateY: "0.6em" });
 
+    const reveal = () => {
+      if (done.current) return;
+      done.current = true;
+      anime({
+        targets: chars,
+        opacity: [0, 1],
+        translateY: ["0.6em", 0],
+        rotateZ: [6, 0],
+        duration: 700,
+        delay: anime.stagger(28),
+        easing: "easeOutExpo",
+      });
+    };
+
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && !done.current) {
-          done.current = true;
-          anime({
-            targets: chars,
-            opacity: [0, 1],
-            translateY: ["0.6em", 0],
-            rotateZ: [6, 0],
-            duration: 700,
-            delay: anime.stagger(28),
-            easing: "easeOutExpo",
-          });
+        if (entries[0]?.isIntersecting) {
+          reveal();
           io.disconnect();
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.15 }
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    // filet de sécurité : si le titre est à l'écran mais pas encore révélé
+    // (IO manqué), on le révèle — sans casser le reveal au scroll.
+    const inView = () => {
+      const r = el.getBoundingClientRect();
+      return r.top < window.innerHeight * 0.9 && r.bottom > 0;
+    };
+    const guard = setInterval(() => {
+      if (done.current) return clearInterval(guard);
+      if (inView()) {
+        reveal();
+        clearInterval(guard);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(guard);
+      io.disconnect();
+    };
   }, [text]);
 
   return (

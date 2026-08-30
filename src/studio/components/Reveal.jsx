@@ -36,19 +36,24 @@ const Reveal = ({
 
     anime.set(targets, { opacity: 0, translateY: y });
 
+    const reveal = () => {
+      if (once && done.current) return;
+      done.current = true;
+      anime({
+        targets,
+        opacity: [0, 1],
+        translateY: [y, 0],
+        delay: stagger ? anime.stagger(90, { start: delay }) : delay,
+        duration: 750,
+        easing: "easeOutCubic",
+      });
+    };
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !(once && done.current)) {
-            done.current = true;
-            anime({
-              targets,
-              opacity: [0, 1],
-              translateY: [y, 0],
-              delay: stagger ? anime.stagger(90, { start: delay }) : delay,
-              duration: 750,
-              easing: "easeOutCubic",
-            });
+          if (entry.isIntersecting) {
+            reveal();
             if (once) io.unobserve(entry.target);
           }
         });
@@ -56,7 +61,24 @@ const Reveal = ({
       { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    // filet de sécurité : révèle si l'élément est à l'écran mais pas encore animé
+    const inView = () => {
+      const r = el.getBoundingClientRect();
+      return r.top < window.innerHeight * 0.9 && r.bottom > 0;
+    };
+    const guard = setInterval(() => {
+      if (once && done.current) return clearInterval(guard);
+      if (inView()) {
+        reveal();
+        if (once) clearInterval(guard);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(guard);
+      io.disconnect();
+    };
   }, [delay, y, stagger, once]);
 
   return (

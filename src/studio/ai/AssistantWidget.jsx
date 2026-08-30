@@ -13,6 +13,7 @@ import {
   CONFIRM_ACTIONS,
 } from "./persona";
 import { downloadCV } from "../pdf";
+import { useContactOverlay } from "../contact/ContactOverlay";
 
 const MAX_INPUT = 500;
 const MAX_HISTORY = 8;
@@ -23,7 +24,7 @@ const PLAN_RE = /\[\[plan:([^\]]+)\]\]/i;
 const TOUR_RE = /\[\[do:tour\]\]/i;
 const KNOWN = ["launch_os", "goto", "color", "download_cv", "lang", "email"];
 // Non invasives : exécutées directement si demandées seules (pas de bouton).
-const NON_INVASIVE = ["goto", "project", "color", "lang"];
+const NON_INVASIVE = ["goto", "project", "color", "lang", "email"];
 const ROLES = ["user", "assistant", "action"];
 
 // noms de couleurs → hex (mot unique, fr + en)
@@ -81,7 +82,14 @@ const parseSteps = (full, projectIds = []) => {
   return raw
     .map((s) => {
       const [left, ...rest] = s.split("|");
-      const note = rest.join("|").trim() || undefined;
+      // note = phrase seule : on retire tout résidu d'action (do:xxx, |, tags)
+      const note =
+        rest
+          .join(" ")
+          .replace(/\[\[[^\]]*\]\]/g, "")
+          .replace(/\bdo:[a-z_]+(?::[a-z0-9-]+)?/gi, "")
+          .replace(/\s{2,}/g, " ")
+          .trim() || undefined;
       const [name, arg] = left.trim().toLowerCase().split(":");
       return { name, arg, note };
     })
@@ -187,12 +195,18 @@ const AssistantWidget = () => {
   const { language, changeLanguage } = useLanguage();
   const { setMode } = useOS();
   const { data } = useData();
+  const { openContact } = useContactOverlay();
   const t = COPY[language] || COPY.fr;
 
   const projectIds = useMemo(() => (data?.projects || []).map((p) => p.id), [data]);
   const projectLabel = (id) => {
     const p = (data?.projects || []).find((x) => x.id === id);
     return p ? (p[language] || p.fr).label : id;
+  };
+  const currentColorName = () => {
+    const hex = (secondaryColor || "").toLowerCase();
+    const found = Object.entries(COLOR_NAMES).find(([, v]) => v.toLowerCase() === hex);
+    return found ? found[0] : secondaryColor;
   };
 
   const [open, setOpen] = useState(false);
@@ -285,7 +299,7 @@ const AssistantWidget = () => {
       }
       case "download_cv": downloadCV(language, secondaryColor); break;
       case "lang": if (arg === "fr" || arg === "en") changeLanguage(arg); break;
-      case "email": window.location.href = "mailto:creach.t@gmail.com"; break;
+      case "email": openContact?.(); break;
       default: return;
     }
     if (!opts.silent) pushAction(actionLabel(name, arg));
@@ -351,7 +365,7 @@ const AssistantWidget = () => {
     abortRef.current = controller;
 
     const apiMessages = [
-      { role: "system", content: buildSystemPrompt(data, language) },
+      { role: "system", content: buildSystemPrompt(data, language, { color: currentColorName() }) },
       ...history
         .filter((m) => m.role === "user" || m.role === "assistant")
         .slice(-MAX_HISTORY)

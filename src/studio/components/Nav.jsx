@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Menu, X, Palette, TerminalSquare } from "lucide-react";
+import { Menu, X, Palette } from "lucide-react";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { useOS } from "../../os/osContext";
 
 const LINKS = [
   { id: "about", fr: "À propos", en: "About" },
@@ -20,7 +19,6 @@ const scrollTo = (id) => {
 const Nav = () => {
   const { secondaryColor, changeColor } = useColor();
   const { language, toggleLanguage } = useLanguage();
-  const { setMode } = useOS();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -85,14 +83,6 @@ const Nav = () => {
             <Palette className="h-4 w-4" style={{ color: secondaryColor }} />
           </button>
           <button
-            onClick={() => setMode("os")}
-            title={language === "fr" ? "Lancer creachOS" : "Launch creachOS"}
-            className="ml-1 hidden items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-white/5 sm:inline-flex"
-          >
-            <TerminalSquare className="h-3.5 w-3.5" style={{ color: secondaryColor }} />
-            {language === "fr" ? "Mode développeur" : "Developer mode"}
-          </button>
-          <button
             onClick={() => setOpen((o) => !o)}
             className="grid h-8 w-8 place-items-center rounded-lg text-gray-200 hover:bg-white/10 md:hidden"
             aria-label="Menu"
@@ -115,16 +105,6 @@ const Nav = () => {
                 {l[language] || l.fr}
               </button>
             ))}
-            <button
-              onClick={() => {
-                setOpen(false);
-                setMode("os");
-              }}
-              className="mt-1 flex items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm text-gray-200 hover:bg-white/5"
-            >
-              <TerminalSquare className="h-4 w-4" style={{ color: secondaryColor }} />
-              {language === "fr" ? "Mode développeur (creachOS)" : "Developer mode (creachOS)"}
-            </button>
           </nav>
         </div>
       )}

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { useOS } from "./osContext";
 import { useIsMobile } from "./useIsMobile";
 import BootSequence from "./boot/BootSequence";
@@ -15,15 +15,6 @@ const CVFallback = () => (
     loading résumé…
   </div>
 );
-
-const BOOT_KEY = "creachos_booted";
-const wasBooted = () => {
-  try {
-    return sessionStorage.getItem(BOOT_KEY) === "1";
-  } catch {
-    return false;
-  }
-};
 
 /** Contenu sémantique caché : crawlable + lisible par lecteur d'écran même en mode OS. */
 const SeoContent = () => (
@@ -66,7 +57,12 @@ const SeoContent = () => (
 const OSRoot = () => {
   const { mode } = useOS();
   const isMobile = useIsMobile();
-  const [booted, setBooted] = useState(wasBooted);
+  // Le boot (console) rejoue à chaque entrée dans creachOS.
+  const [booted, setBooted] = useState(false);
+
+  useEffect(() => {
+    if (mode !== "os") setBooted(false);
+  }, [mode]);
 
   if (mode === "studio") {
     return (
@@ -92,16 +88,7 @@ const OSRoot = () => {
     return (
       <>
         <SeoContent />
-        <BootSequence
-          onDone={() => {
-            try {
-              sessionStorage.setItem(BOOT_KEY, "1");
-            } catch {
-              /* ignore */
-            }
-            setBooted(true);
-          }}
-        />
+        <BootSequence onDone={() => setBooted(true)} />
       </>
     );
   }

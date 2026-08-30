@@ -99,7 +99,10 @@ export const buildUserData = async (language) => {
       softSkills,
       experiences: experiences.experiences,
       education: education.education,
-      projects: projects.projects,
+      // Exclus du CV : PARADE (encore en dev) et le premier portfolio
+      projects: projects.projects.filter(
+        (p) => !["parade", "oldportfolio"].includes(p.id)
+      ),
     };
   } catch (error) {
     console.error('Erreur lors du chargement des données:', error);

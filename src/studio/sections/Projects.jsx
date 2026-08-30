@@ -13,12 +13,14 @@ const COPY = {
     subtitle: "Des applications complètes, en ligne et utilisables dès maintenant.",
     live: "Voir le site",
     code: "Code",
+    wip: "En développement",
   },
   en: {
     title: "My work",
     subtitle: "Complete applications, live and usable right now.",
     live: "Live site",
     code: "Code",
+    wip: "In progress",
   },
 };
 
@@ -39,6 +41,15 @@ const ProjectRow = ({ project, reversed }) => {
           rel="noreferrer"
           className="group relative block overflow-hidden rounded-2xl border border-white/10"
         >
+          {project.wip && (
+            <span className="absolute left-3 top-3 z-20 inline-flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
+              <span
+                className="h-1.5 w-1.5 animate-pulse rounded-full"
+                style={{ backgroundColor: secondaryColor }}
+              />
+              {t.wip}
+            </span>
+          )}
           <div
             className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             style={{ boxShadow: `inset 0 0 0 2px ${secondaryColor}` }}
@@ -54,7 +65,21 @@ const ProjectRow = ({ project, reversed }) => {
 
       {/* text */}
       <div className={reversed ? "md:order-1" : ""}>
-        <h3 className="text-2xl font-bold text-white">{loc.label}</h3>
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-2xl font-bold text-white">{loc.label}</h3>
+          {project.wip && (
+            <span
+              className="rounded-full border px-2 py-0.5 text-[11px] font-semibold"
+              style={{
+                color: secondaryColor,
+                borderColor: `${secondaryColor}66`,
+                backgroundColor: `${secondaryColor}14`,
+              }}
+            >
+              {t.wip}
+            </span>
+          )}
+        </div>
         <p className="mt-1 text-sm font-medium" style={{ color: secondaryColor }}>
           {loc.value}
         </p>

@@ -1,11 +1,9 @@
-import React, { Suspense, lazy, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { ArrowDown, FolderGit2, Send } from "lucide-react";
 import anime from "animejs";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Magnetic from "../components/Magnetic";
-
-const ParticleField = lazy(() => import("./ParticleField"));
 
 const COPY = {
   fr: {
@@ -65,19 +63,14 @@ const Hero = () => {
       ref={rootRef}
       className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
-      {/* 3D background */}
-      <div className="absolute inset-0">
-        <Suspense fallback={null}>
-          <ParticleField color={secondaryColor} />
-        </Suspense>
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(120% 90% at 50% 40%, transparent 40%, #05060a 78%)",
-          }}
-        />
-      </div>
+      {/* voile pour la lisibilité du texte par-dessus les rouages */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(130% 100% at 30% 45%, #05060a 30%, transparent 75%)",
+        }}
+      />
 
       {/* content */}
       <div className="relative z-10 mx-auto w-full max-w-5xl px-6">

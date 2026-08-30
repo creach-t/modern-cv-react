@@ -8,6 +8,7 @@ import Nav from "./components/Nav";
 import ScrollProgress from "./components/ScrollProgress";
 import Ambiance from "./components/Ambiance";
 import CursorGlow from "./components/CursorGlow";
+import GearField from "./hero/GearField";
 import Hero from "./hero/Hero";
 import About from "./sections/About";
 import Projects from "./sections/Projects";
@@ -67,6 +68,7 @@ const Studio = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#05060a] text-gray-100">
+      <GearField color={secondaryColor} />
       <Ambiance />
       <CursorGlow />
       <ScrollProgress />

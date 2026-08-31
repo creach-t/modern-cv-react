@@ -7,8 +7,8 @@
       "en": "Precision"
     },
     "description": {
-      "fr": "Je suis précisément les tâches et procédures.",
-      "en": "I precisely follow tasks and procedures."
+      "fr": "Je fais les choses proprement et jusqu'au bout, tests compris.",
+      "en": "I do things cleanly and all the way through, tests included."
     }
   },
   {
@@ -19,8 +19,8 @@
       "en": "Planning"
     },
     "description": {
-      "fr": "J'aime programmer en avance les choses à faire.",
-      "en": "I plan things well in advance."
+      "fr": "J'anticipe et je découpe : je sais où je vais avant de commencer.",
+      "en": "I plan ahead and break things down: I know where I'm going before I start."
     }
   },
   {
@@ -31,20 +31,20 @@
       "en": "Problem Solving"
     },
     "description": {
-      "fr": "J'analyse pour mieux comprendre et résoudre les problèmes.",
-      "en": "I analyze to understand and solve complex problems."
+      "fr": "J'aime décortiquer un problème jusqu'à comprendre vraiment d'où il vient.",
+      "en": "I like taking a problem apart until I really understand where it comes from."
     }
   },
   {
     "id": "self-improvement",
     "icon": "bar-chart-2",
     "title": {
-      "fr": "Auto-évaluation",
+      "fr": "Remise en question",
       "en": "Self-improvement"
     },
     "description": {
-      "fr": "Je sais comment m'améliorer.",
-      "en": "I know how to improve myself."
+      "fr": "Je me remets en question et je cherche toujours à faire mieux.",
+      "en": "I question my own work and always look for ways to do better."
     }
   },
   {
@@ -55,8 +55,8 @@
       "en": "Leadership"
     },
     "description": {
-      "fr": "Je fédère autour d'une vision commune.",
-      "en": "I unite teams around a shared vision."
+      "fr": "Cinq ans à manager des équipes en magasin : je sais fédérer et transmettre.",
+      "en": "Five years managing store teams: I know how to rally people and pass on what I know."
     }
   },
   {

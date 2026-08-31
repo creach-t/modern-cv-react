@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { Github, Linkedin, TerminalSquare, FileDown } from "lucide-react";
 import { useColor } from "../contexts/ColorContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useOS } from "../os/osContext";
+import useDeviceTier from "./hooks/useDeviceTier";
 import { downloadCV } from "./pdf";
 import Nav from "./components/Nav";
 import ScrollProgress from "./components/ScrollProgress";
 import Ambiance from "./components/Ambiance";
 import CursorGlow from "./components/CursorGlow";
 import ParallaxGlow from "./components/ParallaxGlow";
-import GearField from "./hero/GearField";
 import Hero from "./hero/Hero";
 import { ContactOverlayProvider } from "./contact/ContactOverlay";
 import About from "./sections/About";
@@ -18,6 +18,10 @@ import Journey from "./sections/Journey";
 import Skills from "./sections/Skills";
 import Contact from "./sections/Contact";
 import AssistantWidget from "./ai/AssistantWidget";
+
+// Rouages WebGL en chunk séparé : three.js (~150 KB gzip) n'est téléchargé
+// QUE sur les appareils capables (fx.webgl), jamais sur mobile/bas de gamme.
+const GearField = lazy(() => import("./hero/GearField"));
 
 const KONAMI = [
   "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
@@ -28,6 +32,7 @@ const Studio = () => {
   const { secondaryColor } = useColor();
   const { language } = useLanguage();
   const { setMode } = useOS();
+  const { fx, reducedMotion } = useDeviceTier();
   const version = process.env.REACT_APP_VERSION || "dev";
   const [pdfBusy, setPdfBusy] = useState(false);
 
@@ -71,7 +76,18 @@ const Studio = () => {
   return (
     <ContactOverlayProvider>
     <div className="relative min-h-screen overflow-x-clip bg-[#05060a] text-gray-100">
-      <GearField color={secondaryColor} />
+      {fx.webgl && (
+        <Suspense fallback={null}>
+          <GearField
+            color={secondaryColor}
+            gearCount={fx.gearCount}
+            dprCap={fx.dprCap}
+            antialias={fx.antialias}
+            fpsCap={fx.fpsCap}
+            reduced={reducedMotion}
+          />
+        </Suspense>
+      )}
       <ParallaxGlow />
       <Ambiance />
       <CursorGlow />

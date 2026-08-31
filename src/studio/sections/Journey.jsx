@@ -1,4 +1,15 @@
 import React from "react";
+import {
+  Wrench,
+  Cpu,
+  GraduationCap,
+  Globe,
+  ShoppingBag,
+  Ruler,
+  Code,
+  Server,
+  MapPin,
+} from "lucide-react";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { useData } from "../../os/data/DataContext";
@@ -8,40 +19,87 @@ import Reveal from "../components/Reveal";
 const COPY = {
   fr: {
     title: "Mon parcours",
-    subtitle: "Du commerce au code : chaque étape a construit ma façon de travailler.",
-    exp: "Expérience",
-    edu: "Formation",
+    subtitle: "À bien y regarder, chaque étape menait déjà quelque part.",
+    kinds: {
+      origin: "Origine",
+      education: "Formation",
+      experience: "Expérience",
+      today: "Aujourd'hui",
+    },
   },
   en: {
     title: "My journey",
-    subtitle: "From retail to code: every step shaped the way I work.",
-    exp: "Experience",
-    edu: "Education",
+    subtitle: "Looking closely, every step was already heading somewhere.",
+    kinds: {
+      origin: "Origin",
+      education: "Education",
+      experience: "Experience",
+      today: "Today",
+    },
   },
 };
 
-const TimelineItem = ({ period, title, org, location, description, chips }) => {
+const ICONS = { Wrench, Cpu, GraduationCap, Globe, ShoppingBag, Ruler, Code, Server };
+
+const MilestoneItem = ({ item, language, isLast }) => {
   const { secondaryColor } = useColor();
+  const loc = item[language] || item.fr;
+  const t = COPY[language] || COPY.fr;
+  const Icon = ICONS[item.icon] || MapPin;
+  const kindLabel = t.kinds[item.kind] || item.kind;
+  const period = item.period?.[language] || item.period?.fr || "";
+
   return (
-    <li className="relative pl-6">
+    <li className="relative pl-12">
+      {/* ligne verticale */}
+      {!isLast && (
+        <span className="absolute left-[17px] top-9 h-[calc(100%-1rem)] w-px bg-white/10" />
+      )}
+      {/* pastille icône */}
       <span
-        className="absolute left-0 top-1.5 h-2.5 w-2.5 rounded-full"
-        style={{ backgroundColor: secondaryColor }}
-      />
-      <span className="absolute left-[4.5px] top-4 h-full w-px bg-white/10" />
-      <div className="pb-8">
-        <span className="font-mono text-xs text-gray-500">{period}</span>
-        <h4 className="mt-1 text-base font-semibold text-white">{title}</h4>
-        <p className="text-sm" style={{ color: secondaryColor }}>
-          {org}
-          {location ? ` · ${location}` : ""}
-        </p>
-        {description && (
-          <p className="mt-2 text-sm leading-relaxed text-gray-400">{description}</p>
+        className="absolute left-0 top-0 grid h-9 w-9 place-items-center rounded-full border"
+        style={{
+          color: secondaryColor,
+          borderColor: `${secondaryColor}55`,
+          backgroundColor: `${secondaryColor}12`,
+        }}
+      >
+        <Icon className="h-4 w-4" />
+      </span>
+
+      <div className="pb-9">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span
+            className="rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+            style={{
+              color: secondaryColor,
+              backgroundColor: `${secondaryColor}18`,
+            }}
+          >
+            {kindLabel}
+          </span>
+          <span className="font-mono text-xs text-gray-500">{period}</span>
+        </div>
+
+        <h4 className="mt-2 text-base font-semibold text-white sm:text-lg">
+          {loc.title}
+        </h4>
+        {loc.org && (
+          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-gray-400">
+            <MapPin className="h-3 w-3 shrink-0 text-gray-500" />
+            {loc.org}
+          </p>
         )}
-        {chips?.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {chips.map((c) => (
+
+        {loc.text && (
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400">
+            {loc.text}
+          </p>
+        )}
+
+        {item.chips?.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {item.chips.map((c) => (
               <span
                 key={c}
                 className="rounded border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-gray-300"
@@ -60,54 +118,22 @@ const Journey = () => {
   const { language } = useLanguage();
   const { data } = useData();
   const t = COPY[language] || COPY.fr;
+  const milestones = data?.journey || [];
 
   return (
     <Section id="journey" index="03" title={t.title} subtitle={t.subtitle} doodle="route">
-      <div className="grid gap-10 md:grid-cols-2">
-        <Reveal>
-          <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-gray-400">
-            {t.exp}
-          </h3>
-          <ol>
-            {(data?.experiences || []).map((e) => {
-              const loc = e[language] || e.fr;
-              return (
-                <TimelineItem
-                  key={e.id}
-                  period={e.period}
-                  title={loc.label}
-                  org={e.company.name}
-                  location={e.company.location}
-                  description={loc.description}
-                  chips={e.technologies}
-                />
-              );
-            })}
-          </ol>
-        </Reveal>
-
-        <Reveal delay={120}>
-          <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-gray-400">
-            {t.edu}
-          </h3>
-          <ol>
-            {(data?.education || []).map((e) => {
-              const loc = e[language] || e.fr;
-              return (
-                <TimelineItem
-                  key={e.id}
-                  period={e.period}
-                  title={loc.label}
-                  org={e.school.name}
-                  location={e.school.location}
-                  description={loc.description}
-                  chips={e.technologies}
-                />
-              );
-            })}
-          </ol>
-        </Reveal>
-      </div>
+      <Reveal>
+        <ol className="max-w-3xl">
+          {milestones.map((m, i) => (
+            <MilestoneItem
+              key={m.id}
+              item={m}
+              language={language}
+              isLast={i === milestones.length - 1}
+            />
+          ))}
+        </ol>
+      </Reveal>
     </Section>
   );
 };

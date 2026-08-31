@@ -1,11 +1,5 @@
 [
   {
-    "icon": "Phone",
-    "label": "Téléphone",
-    "value": "+33 6 01 02 03 04",
-    "link": "tel:+33601020304"
-  },
-  {
     "icon": "Mail",
     "label": "Email",
     "value": "creach.t@gmail.com",

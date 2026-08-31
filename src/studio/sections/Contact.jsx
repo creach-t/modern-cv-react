@@ -11,16 +11,18 @@ const COPY = {
   fr: {
     title: "Contact",
     available: "Disponible pour un poste",
-    heading: "Travaillons ensemble.",
-    text: "Un poste, une mission ou simplement une question ? Écrivez-moi, je réponds vite.",
+    heading: "On travaille ensemble ?",
+    text: "Je cherche un CDI : proche de Saint-Maur, en hybride en Île-de-France, ou en full remote. Une opportunité, une question ? Écrivez-moi, je réponds vite.",
     email: "M'écrire",
+    loc: "Saint-Maur-des-Fossés · présentiel, hybride IDF ou remote · disponible sous 1 mois",
   },
   en: {
     title: "Contact",
     available: "Available for a job",
-    heading: "Let's work together.",
-    text: "A role, a mission or just a question? Drop me a line, I reply fast.",
+    heading: "Want to work together?",
+    text: "I'm looking for a permanent role: near Saint-Maur, hybrid in the Paris area, or fully remote. An opportunity, a question? Drop me a line, I reply fast.",
     email: "Email me",
+    loc: "Saint-Maur-des-Fossés · on-site, hybrid (Paris area) or remote · available within 1 month",
   },
 };
 
@@ -84,7 +86,7 @@ const Contact = () => {
 
         <div className="mt-6 flex items-center gap-1.5 text-sm text-gray-500">
           <MapPin className="h-4 w-4" />
-          Saint-Maur-des-Fossés, Île-de-France · full remote
+          {t.loc}
         </div>
       </Reveal>
     </Section>

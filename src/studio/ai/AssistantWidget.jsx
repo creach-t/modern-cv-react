@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Sparkles, X, Send, Bot, Trash2, Check, Play } from "lucide-react";
+import { Sparkles, X, Send, Bot, Trash2, Check, Play, Square } from "lucide-react";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { useOS } from "../../os/osContext";
 import { useData } from "../../os/data/DataContext";
-import { streamChat, isAIConfigured } from "./aiClient";
+import { streamChat, isAIConfigured, MODEL_LABEL } from "./aiClient";
 import {
   buildSystemPrompt,
   INTROS,
@@ -19,13 +19,64 @@ const MAX_INPUT = 500;
 const MAX_HISTORY = 8;
 const STORE_MAX = 40;
 const STORAGE_KEY = "studio_chat_v1";
-const ACTION_RE = /\[\[do:([a-z_]+)(?::([a-z]+))?\]\]/gi;
-const PLAN_RE = /\[\[plan:([^\]]+)\]\]/i;
+// Détecte les questions de parcours pour n'injecter la chronologie complète
+// (journeyText + expériences) dans le prompt système que quand c'est utile.
+const JOURNEY_RE =
+  /parcours|histoire|formation|étud|diplôm|expérience|experience|career|journey|study|background/i;
+// Après normalisation, tous les tags sont canoniques : [[do:name:arg]] / [[plan:…]].
+const ACTION_RE = /\[\[do:([a-z_]+)(?::([a-z0-9_-]+))?\]\]/gi;
+const PLAN_RE = /\[\[plan:([\s\S]+?)\]\]/i;
 const TOUR_RE = /\[\[do:tour\]\]/i;
 const KNOWN = ["launch_os", "goto", "color", "download_cv", "lang", "email"];
 // Non invasives : exécutées directement si demandées seules (pas de bouton).
 const NON_INVASIVE = ["goto", "project", "color", "lang", "email"];
 const ROLES = ["user", "assistant", "action"];
+
+// Noms d'action pilotables (pour rattraper un tag sans préfixe "do:").
+const DO_NAMES = new Set([
+  "launch_os", "goto", "color", "download_cv", "lang", "email", "project", "visit", "tour",
+]);
+
+// Retire les accents (é→e) pour matcher des noms de couleur robustement.
+const stripDia = (s = "") => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+// --- Parser tolérant (petit modèle 8B FP8) ---
+// Un 8B produit souvent des quasi-tags : crochets simples [do:color], "do:"
+// manquant [[goto:projects]], espaces [[do: color]], casse variable, etc.
+// On normalise TOUT vers la forme canonique [[do:name:arg]] / [[plan:…]] AVANT
+// parsing. La sécurité reste assurée par les whitelists en aval (KNOWN,
+// ACTION_SECTIONS, projectIds, COLOR_NAMES) : un tag inconnu est ignoré.
+const normalizeTags = (text = "") =>
+  String(text)
+    // plan : 1-2 crochets, espaces, note pouvant contenir un ] simple (borne sur ]]).
+    .replace(/\[{1,2}\s*plan\s*:\s*([\s\S]+?)\]{2}/gi, (_, body) => `[[plan:${body.trim()}]]`)
+    // couleur : la valeur peut être multi-mots ("bleu nuit", "bleu foncé") → on
+    // la ramène à un token unique en tirets (bleu-nuit) résoluble par resolveColor.
+    .replace(
+      /\[{1,2}\s*(?:do\s*:\s*)?colou?r\s*:\s*([a-zà-ÿ][a-zà-ÿ '-]*?)\s*\]{1,2}/gi,
+      (_, val) => {
+        const norm = stripDia(val.toLowerCase()).replace(/[^a-z]+/g, "-").replace(/^-+|-+$/g, "");
+        return norm ? `[[do:color:${norm}]]` : "[[do:color]]";
+      }
+    )
+    // tags avec préfixe "do:" explicite (n'importe quel nom/arg).
+    .replace(
+      /\[{1,2}\s*do\s*:\s*([a-z_]+)(?:\s*:\s*([a-z0-9_-]+))?\s*\]{1,2}/gi,
+      (_, name, arg) => `[[do:${name.toLowerCase()}${arg ? ":" + arg.toLowerCase() : ""}]]`
+    )
+    // tags sans "do:" mais nom d'action connu + arg (ex. [[goto:contact]], [color:mauve]).
+    .replace(
+      /\[{1,2}\s*([a-z_]+)\s*:\s*([a-z0-9_-]+)\s*\]{1,2}/gi,
+      (m, name, arg) =>
+        DO_NAMES.has(name.toLowerCase())
+          ? `[[do:${name.toLowerCase()}:${arg.toLowerCase()}]]`
+          : m
+    )
+    // actions sans arg ni "do:" (ex. [launch_os], [[email]]) : noms explicites only.
+    .replace(
+      /\[{1,2}\s*(launch_os|download_cv|email|tour|color)\s*\]{1,2}/gi,
+      (_, name) => `[[do:${name.toLowerCase()}]]`
+    );
 
 // --- Mode veille (worker IA Cloudflare limité) ---
 const SLEEP_KEY = "studio_ai_sleep";
@@ -42,7 +93,7 @@ const readSleep = () => {
   }
 };
 
-// noms de couleurs → hex (mot unique, fr + en)
+// noms de couleurs → hex (token unique en minuscules, fr + en + variantes)
 const COLOR_NAMES = {
   mauve: "#B57EDC", violet: "#7C3AED", purple: "#7C3AED",
   bleu: "#2563EB", blue: "#2563EB", ciel: "#38BDF8", sky: "#38BDF8",
@@ -52,18 +103,36 @@ const COLOR_NAMES = {
   indigo: "#6366F1", corail: "#FF6F61", coral: "#FF6F61",
   magenta: "#D946EF", or: "#D4AF37", gold: "#D4AF37",
   emeraude: "#10B981", emerald: "#10B981",
+  // bleu nuit / marine : alternative sombre mais lisible proposée à la place du noir
+  "bleu-nuit": "#1E3A8A", bleunuit: "#1E3A8A", marine: "#1E3A8A", navy: "#1E3A8A",
+};
+
+// Résout un nom de couleur (possiblement multi-mots / accentué) en hex, de façon
+// FIABLE : jamais d'aléatoire quand un nom précis est demandé. Renvoie null si
+// vraiment introuvable (l'appelant décide alors du repli).
+const resolveColor = (raw) => {
+  if (!raw) return null;
+  const a = stripDia(String(raw).toLowerCase()).replace(/[^a-z]+/g, "-").replace(/^-+|-+$/g, "");
+  if (!a) return null;
+  if (COLOR_NAMES[a]) return COLOR_NAMES[a]; // ex. "bleu-nuit"
+  const flat = a.replace(/-/g, "");
+  if (COLOR_NAMES[flat]) return COLOR_NAMES[flat]; // ex. "bleunuit"
+  // "bleu marine", "bleu foncé"… → mappe sur un nom connu présent dans la valeur.
+  // On lit le qualificatif d'abord (en français il est en dernier : "bleu marine").
+  for (const w of a.split("-").reverse()) if (COLOR_NAMES[w]) return COLOR_NAMES[w];
+  return null;
 };
 
 const TOUR_NOTES = {
   fr: {
-    about: "Voici son histoire — une reconversion peu banale, du commerce au code.",
+    about: "Voici son histoire, une reconversion peu banale, du commerce au code.",
     projects: "Ses projets, tous en ligne et cliquables. Jette un œil à VectoKid.",
     journey: "Son parcours et sa formation, étape par étape.",
     skills: "Les technos qu'il manie au quotidien.",
     contact: "Et si le profil te parle, c'est ici qu'on se rencontre 👇",
   },
   en: {
-    about: "Here's his story — an unusual switch, from retail to code.",
+    about: "Here's his story, an unusual switch from retail to code.",
     projects: "His projects, all live and clickable. Check out VectoKid.",
     journey: "His path and training, step by step.",
     skills: "The tech he uses day to day.",
@@ -77,14 +146,15 @@ const GENERIC_NOTES = {
 };
 
 const stripActions = (text = "") =>
-  text
-    .replace(/\[\[plan:[^\]]*\]\]/gi, "")
+  normalizeTags(text)
+    .replace(/\[\[plan:[\s\S]*?\]\]/gi, "")
     .replace(/\[\[do:[^\]]*\]\]/gi, "")
-    .replace(/\[\[[^\]]*$/i, "")
+    .replace(/\[\[[^\]]*$/i, "") // tag tronqué en fin de flux (streaming)
     .replace(/[ \t]+\n/g, "\n")
     .trim();
 
 // Étapes d'un plan : chaque item = "action[:arg] | note perso" (note optionnelle).
+// `full` doit être normalisé (normalizeTags) au préalable.
 const parseSteps = (full, projectIds = []) => {
   let raw = [];
   const pm = full.match(PLAN_RE);
@@ -103,9 +173,15 @@ const parseSteps = (full, projectIds = []) => {
           .join(" ")
           .replace(/\[\[[^\]]*\]\]/g, "")
           .replace(/\bdo:[a-z_]+(?::[a-z0-9-]+)?/gi, "")
+          .replace(/[[\]]/g, "") // crochets isolés résiduels (note contenant un ])
           .replace(/\s{2,}/g, " ")
           .trim() || undefined;
-      const [name, arg] = left.trim().toLowerCase().split(":");
+      // left = "action[:arg]" ; tolère un "do:" résiduel et des espaces autour du ":".
+      const [name, arg] = left
+        .trim()
+        .toLowerCase()
+        .replace(/^do\s*:\s*/, "")
+        .split(/\s*:\s*/);
       return { name, arg, note };
     })
     .filter((s) =>
@@ -115,6 +191,8 @@ const parseSteps = (full, projectIds = []) => {
           (s.name !== "goto" || ACTION_SECTIONS.includes(s.arg)) &&
           (s.name !== "lang" || ["fr", "en"].includes(s.arg))
     )
+    // dédoublonne : un 8B répète parfois la même étape (ex. project:vectokid ×3)
+    .filter((s, i, arr) => arr.findIndex((x) => x.name === s.name && x.arg === s.arg) === i)
     .slice(0, 6);
 };
 
@@ -160,18 +238,20 @@ const COPY = {
   fr: {
     fab: "Discuter avec mon IA",
     title: "L'assistant de Théo",
-    subtitle: "Malin, concis — et il pilote la page",
+    subtitle: "Malin, concis, et il pilote la page",
+    poweredBy: "Propulsé par",
     placeholder: "Votre question…",
     clear: "Effacer la discussion",
     confirm: "Confirmer",
     cancel: "Annuler",
     cancelled: "✖️ Annulé",
     stop: "arrêter le parcours",
-    sleep: "😴 Je fais une petite sieste pour ménager le quota de l'IA. Je reviens vite — en attendant, écris-moi directement 👇",
+    stopGen: "Arrêter la génération",
+    sleep: "😴 Je fais une petite sieste pour ménager le quota de l'IA. Je reviens vite. En attendant, écris-moi directement 👇",
     sleepBanner: "En veille",
     sleepPlaceholder: "IA en pause…",
     contactCta: "Me contacter",
-    offline: "Assistant hors-ligne. Le plus simple : creach.t@gmail.com — Théo répond vite !",
+    offline: "Assistant hors-ligne. Le plus simple : creach.t@gmail.com, Théo répond vite !",
     confirmText: {
       download_cv: "Télécharger le CV de Théo en PDF ?",
       email: "Ouvrir votre messagerie pour écrire à Théo ?",
@@ -187,18 +267,20 @@ const COPY = {
   en: {
     fab: "Chat with my AI",
     title: "Théo's assistant",
-    subtitle: "Sharp, concise — and it drives the page",
+    subtitle: "Sharp, concise, and it drives the page",
+    poweredBy: "Powered by",
     placeholder: "Your question…",
     clear: "Clear conversation",
     confirm: "Confirm",
     cancel: "Cancel",
     cancelled: "✖️ Cancelled",
     stop: "stop the tour",
-    sleep: "😴 Taking a quick nap to spare the AI quota. Back soon — meanwhile, reach me directly 👇",
+    stopGen: "Stop generating",
+    sleep: "😴 Taking a quick nap to spare the AI quota. Back soon. Meanwhile, reach me directly 👇",
     sleepBanner: "Resting",
     sleepPlaceholder: "AI paused…",
     contactCta: "Contact me",
-    offline: "Assistant offline. Easiest: creach.t@gmail.com — Théo replies fast!",
+    offline: "Assistant offline. Easiest: creach.t@gmail.com, Théo replies fast!",
     confirmText: {
       download_cv: "Download Théo's CV as PDF?",
       email: "Open your email app to write to Théo?",
@@ -343,7 +425,9 @@ const AssistantWidget = () => {
         break;
       }
       case "color": {
-        const hex = arg && COLOR_NAMES[arg];
+        // L'IA choisit la couleur via son tag ; on ne fait que résoudre le nom en
+        // hex (tolérant : accents, multi-mots). Random seulement si tag sans nom.
+        const hex = resolveColor(arg);
         if (hex) { setSecondaryColor(hex); saveUserColor(hex); }
         else changeColor();
         break;
@@ -429,8 +513,12 @@ const AssistantWidget = () => {
     const controller = new AbortController();
     abortRef.current = controller;
 
+    const wantsJourney = JOURNEY_RE.test(content);
     const apiMessages = [
-      { role: "system", content: buildSystemPrompt(data, language, { color: currentColorName() }) },
+      {
+        role: "system",
+        content: buildSystemPrompt(data, language, { color: currentColorName() }, wantsJourney),
+      },
       ...history
         .filter((m) => m.role === "user" || m.role === "assistant")
         .slice(-MAX_HISTORY)
@@ -451,18 +539,20 @@ const AssistantWidget = () => {
         },
       });
 
+      const norm = normalizeTags(full);
+
       setMessages((m) => {
         const next = [...m];
         const last = next[next.length - 1];
-        if (last?.role === "assistant") next[next.length - 1] = { ...last, content: stripActions(full) };
+        if (last?.role === "assistant") next[next.length - 1] = { ...last, content: stripActions(norm) };
         return next;
       });
 
-      if (TOUR_RE.test(full)) {
+      if (TOUR_RE.test(norm)) {
         const steps = buildTour();
         if (steps.length) setFlow({ steps, index: 0 });
       } else {
-        const steps = parseSteps(full, projectIds);
+        const steps = parseSteps(norm, projectIds);
         const notes = GENERIC_NOTES[language] || GENERIC_NOTES.fr;
         if (steps.length === 1) {
           const s = steps[0];
@@ -477,7 +567,21 @@ const AssistantWidget = () => {
         }
       }
     } catch (err) {
-      if (err.name === "AbortError") return;
+      if (err.name === "AbortError") {
+        // Stop utilisateur : ne pas laisser de bulle assistant vide, et garder
+        // le partiel éventuel (nettoyé de tout tag) plutôt qu'un blanc.
+        setMessages((m) => {
+          const next = [...m];
+          const last = next[next.length - 1];
+          if (last?.role === "assistant") {
+            const clean = stripActions(last.content);
+            if (clean) next[next.length - 1] = { ...last, content: clean };
+            else next.pop();
+          }
+          return next;
+        });
+        return;
+      }
       if (err.kind === "quota") enterSleep(QUOTA_COOLDOWN);
       const msg = err.kind === "quota" ? t.sleep : t.errors[err.kind] || t.errors.error;
       setMessages((m) => {
@@ -491,6 +595,8 @@ const AssistantWidget = () => {
       setLoading(false);
     }
   };
+
+  const stopGeneration = () => abortRef.current?.abort();
 
   const clearChat = () => {
     abortRef.current?.abort();
@@ -525,7 +631,7 @@ const AssistantWidget = () => {
       </button>
 
       {open && (
-        <div className="fixed bottom-20 right-5 z-[80] flex h-[min(560px,75vh)] w-[min(380px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0e1017] shadow-2xl">
+        <div className="fixed bottom-20 right-3 z-[80] flex h-[58vh] max-h-[480px] w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0e1017] shadow-2xl sm:right-5 sm:h-[min(560px,75vh)] sm:max-h-none sm:w-[min(380px,calc(100vw-2.5rem))]">
           <div className="flex items-center gap-3 border-b border-white/10 p-4">
             <span className="grid h-9 w-9 place-items-center rounded-full" style={{ backgroundColor: `${secondaryColor}22` }}>
               <Bot className="h-5 w-5" style={{ color: secondaryColor }} />
@@ -651,15 +757,31 @@ const AssistantWidget = () => {
                 placeholder={sleeping ? t.sleepPlaceholder : t.placeholder}
                 className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-gray-100 outline-none placeholder:text-gray-600 disabled:opacity-50"
               />
-              <button
-                onClick={() => send()}
-                disabled={loading || sleeping || !input.trim()}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-black transition-opacity disabled:opacity-40"
-                style={{ backgroundColor: secondaryColor }}
-                aria-label="Envoyer"
-              >
-                <Send className="h-4 w-4" />
-              </button>
+              {loading ? (
+                <button
+                  onClick={stopGeneration}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-black transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: secondaryColor }}
+                  aria-label={t.stopGen}
+                  title={t.stopGen}
+                >
+                  <Square className="h-4 w-4" fill="currentColor" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => send()}
+                  disabled={sleeping || !input.trim()}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-black transition-opacity disabled:opacity-40"
+                  style={{ backgroundColor: secondaryColor }}
+                  aria-label="Envoyer"
+                >
+                  <Send className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <div className="mt-1.5 flex items-center justify-center gap-1 text-[10px] text-gray-600">
+              <Sparkles className="h-2.5 w-2.5" style={{ color: `${secondaryColor}99` }} />
+              <span>{t.poweredBy} {MODEL_LABEL}</span>
             </div>
           </div>
         </div>

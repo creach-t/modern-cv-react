@@ -11,7 +11,7 @@ const COPY = {
     eyebrow: "Bonjour, moi c'est",
     role: "Développeur web full-stack",
     tagline:
-      "Je conçois des applications web modernes, de l'idée à la mise en ligne. Ancien manager reconverti, je code — et j'héberge moi-même — des produits qui fonctionnent.",
+      "Je conçois des applications React / Node et je les héberge de bout en bout, du premier commit à la mise en production. Arrivé au dev après un détour par le commerce, je démonte des machines depuis mes 10 ans : comprendre et construire, c'est une vieille histoire.",
     projects: "Voir mes projets",
     contact: "Me contacter",
     scroll: "Défiler",
@@ -20,7 +20,7 @@ const COPY = {
     eyebrow: "Hi, I'm",
     role: "Full-stack web developer",
     tagline:
-      "I build modern web apps, from idea to production. A former manager turned developer, I write — and self-host — products that just work.",
+      "I build React / Node applications and host them end to end, from the first commit to production. I came to dev after a detour through retail, but I've been taking machines apart since I was 10 — the urge to understand and build has never left.",
     projects: "See my work",
     contact: "Get in touch",
     scroll: "Scroll",

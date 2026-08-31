@@ -6,14 +6,22 @@
         "fr": "Bricolage",
         "en": "DIY"
       },
+      "description": {
+        "fr": "Travail du bois et réparations en tout genre.",
+        "en": "Woodworking and all kinds of repairs."
+      },
       "color": "#F0756A"
     },
     {
       "id": "electronics",
       "icon": "cpu",
       "title": {
-        "fr": "Électronique", 
+        "fr": "Électronique",
         "en": "Electronics"
+      },
+      "description": {
+        "fr": "Montages Arduino et petits projets pour le plaisir.",
+        "en": "Arduino builds and small projects for fun."
       },
       "color": "#F0756A"
     },
@@ -23,6 +31,10 @@
       "title": {
         "fr": "Nature",
         "en": "Nature"
+      },
+      "description": {
+        "fr": "Marche, observation, identification de plantes sauvages et photo.",
+        "en": "Walking, observing, identifying wild plants, and photography."
       },
       "color": "#F0756A"
     }

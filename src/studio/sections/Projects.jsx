@@ -10,14 +10,14 @@ import TiltCard from "../components/TiltCard";
 const COPY = {
   fr: {
     title: "Mes projets",
-    subtitle: "Des applications complètes, en ligne et utilisables dès maintenant.",
+    subtitle: "Chacun est né d'un besoin ou d'une envie. Tous sont en ligne, vous pouvez les essayer.",
     live: "Voir le site",
     code: "Code",
     wip: "En développement",
   },
   en: {
     title: "My work",
-    subtitle: "Complete applications, live and usable right now.",
+    subtitle: "Each one started from a real need or a genuine urge. They're all live, go ahead and try them.",
     live: "Live site",
     code: "Code",
     wip: "In progress",
@@ -29,7 +29,9 @@ const ProjectRow = ({ project, reversed }) => {
   const { language } = useLanguage();
   const t = COPY[language] || COPY.fr;
   const loc = project[language] || project.fr;
-  const img = `/img/projects/${project.id}.jpg`;
+  const base = `/img/projects/opt/${project.id}`;
+  const webpSrcSet = `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}-1200.webp 1200w`;
+  const fallback = `${base}-1200.jpg`;
 
   return (
     <Reveal
@@ -57,12 +59,18 @@ const ProjectRow = ({ project, reversed }) => {
             className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             style={{ boxShadow: `inset 0 0 0 2px ${secondaryColor}` }}
           />
-          <img
-            src={img}
-            alt={loc.label}
-            loading="lazy"
-            className="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          <picture>
+            <source type="image/webp" srcSet={webpSrcSet} sizes="(min-width: 768px) 46vw, 92vw" />
+            <img
+              src={fallback}
+              alt={loc.label}
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="750"
+              className="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </picture>
         </a>
       </TiltCard>
 

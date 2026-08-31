@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Menu, X, Palette } from "lucide-react";
 import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
+import useDeviceTier from "../hooks/useDeviceTier";
 
 const LINKS = [
   { id: "about", fr: "À propos", en: "About" },
@@ -19,6 +20,7 @@ const scrollTo = (id) => {
 const Nav = () => {
   const { secondaryColor, changeColor } = useColor();
   const { language, toggleLanguage } = useLanguage();
+  const { fx } = useDeviceTier();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -37,7 +39,11 @@ const Nav = () => {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled ? "border-b border-white/10 bg-[#05060a]/85 backdrop-blur-md" : ""
+        scrolled
+          ? fx.navBlur
+            ? "border-b border-white/10 bg-[#05060a]/85 backdrop-blur-md"
+            : "border-b border-white/10 bg-[#05060a]/95" // opaque : évite le backdrop-filter live
+          : ""
       }`}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
@@ -94,7 +100,11 @@ const Nav = () => {
 
       {/* mobile panel */}
       {open && (
-        <div className="border-t border-white/10 bg-[#05060a]/95 px-6 py-3 backdrop-blur-md md:hidden">
+        <div
+          className={`border-t border-white/10 px-6 py-3 md:hidden ${
+            fx.navBlur ? "bg-[#05060a]/95 backdrop-blur-md" : "bg-[#05060a]"
+          }`}
+        >
           <nav className="flex flex-col">
             {LINKS.map((l) => (
               <button

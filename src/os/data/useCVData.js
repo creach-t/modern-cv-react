@@ -13,6 +13,7 @@ const ENDPOINTS = {
   contacts: "contacts",
   softSkills: "softSkills",
   hobbies: "hobbies",
+  journey: "journey",
 };
 
 const fetchJson = async (name) => {
@@ -45,6 +46,8 @@ export const useCVData = () => {
           contacts: raw.contacts || [],
           softSkills: raw.softSkills || [],
           hobbies: raw.hobbies || [],
+          journey: raw.journey?.journey || [],
+          story: raw.journey?.story || null,
         });
       } catch (err) {
         if (alive) setError(err);

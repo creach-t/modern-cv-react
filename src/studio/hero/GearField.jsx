@@ -1,11 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const reduced = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 // Rouage 3D : volume extrudé. Arêtes wireframe TRANSPARENTES + faces
 // invisibles mais occultantes (écrivent la profondeur → cachent les arêtes
 // situées derrière). Rendu "hidden-line".
@@ -83,7 +78,14 @@ const buildGear = (radius, teeth, depth, color) => {
  * Position, luminosité (lueur) et rotation suivent le scroll (vitesse + position).
  * Le 1er rouage est placé haut/à droite (desktop) pour côtoyer le texte du hero.
  */
-const GearField = ({ color = "#e2603f" }) => {
+const GearField = ({
+  color = "#e2603f",
+  gearCount = 8,
+  dprCap = 2,
+  antialias = true,
+  fpsCap = 60,
+  reduced = false,
+}) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -93,7 +95,7 @@ const GearField = ({ color = "#e2603f" }) => {
     let width = window.innerWidth;
     let height = window.innerHeight;
     const isSmall = width < 768;
-    const N = isSmall ? 5 : 8;
+    const N = Math.max(3, isSmall ? Math.min(5, gearCount) : gearCount);
     const SPACING = 5.2;
     const BASE_Y = isSmall ? 0.5 : 3.2; // remonte la chaîne (1er rouage plus haut)
     const X = isSmall ? 2.4 : 4.6; // écartés vers les bords pour libérer le texte
@@ -102,8 +104,8 @@ const GearField = ({ color = "#e2603f" }) => {
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
     camera.position.set(0, 0, 12);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
     renderer.setSize(width, height);
     mount.appendChild(renderer.domElement);
 
@@ -150,13 +152,56 @@ const GearField = ({ color = "#e2603f" }) => {
     );
     groupRoot.add(connections);
 
-    const isReduced = reduced();
     let targetP = 0;
     let curP = 0;
     let vel = 0;
     let lastY = window.scrollY;
     const maxScroll = () =>
       Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+
+    // Rendu d'une image (facteur d'anim `k` : 1 = animé, 0 = statique/figé).
+    const renderFrame = (k = 1) => {
+      curP += (targetP - curP) * 0.08;
+      vel *= 0.92;
+      groupRoot.position.y = BASE_Y + curP * span;
+      gears.forEach((g) => {
+        if (k) g.obj.rotation.z += g.dir * g.speed * (1 + vel * 6);
+        const d = curP - g.centerP;
+        const centered = Math.exp(-(d * d) / 0.012);
+        g.mat.opacity = Math.min(0.85, 0.2 + centered * 0.45 + vel * 0.35);
+      });
+      connMat.opacity = 0.1 + vel * 0.4;
+      groupRoot.rotation.y = (curP - 0.5) * 0.25;
+      renderer.render(scene, camera);
+    };
+
+    const onResize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+      if (reduced) renderFrame(0); // rafraîchit l'image figée
+    };
+    window.addEventListener("resize", onResize);
+
+    // --- reduced-motion : une seule image figée, aucune boucle, aucun scroll ---
+    if (reduced) {
+      targetP = Math.min(1, Math.max(0, window.scrollY / maxScroll()));
+      curP = targetP;
+      renderFrame(0);
+      return () => {
+        window.removeEventListener("resize", onResize);
+        scene.traverse((o) => {
+          if (o.geometry) o.geometry.dispose();
+          if (o.material) o.material.dispose();
+        });
+        renderer.dispose();
+        if (renderer.domElement.parentNode === mount)
+          mount.removeChild(renderer.domElement);
+      };
+    }
+
     const onScroll = () => {
       const y = window.scrollY;
       targetP = Math.min(1, Math.max(0, y / maxScroll()));
@@ -168,31 +213,18 @@ const GearField = ({ color = "#e2603f" }) => {
 
     let raf = null;
     let visible = true;
+    // Throttle du framerate : on saute les images pour tenir fpsCap.
+    const minDelta = fpsCap >= 60 ? 0 : 1000 / fpsCap - 1;
+    let lastRender = 0;
 
-    const frame = () => {
-      curP += (targetP - curP) * 0.08;
-      vel *= 0.92;
-      groupRoot.position.y = BASE_Y + curP * span;
-
-      gears.forEach((g) => {
-        if (!isReduced) g.obj.rotation.z += g.dir * g.speed * (1 + vel * 6);
-        const d = curP - g.centerP;
-        const centered = Math.exp(-(d * d) / 0.012);
-        // discret : lueur portée par l'opacité des arêtes (transparentes)
-        g.mat.opacity = Math.min(0.85, 0.2 + centered * 0.45 + vel * 0.35);
-      });
-      connMat.opacity = 0.1 + vel * 0.4;
-      groupRoot.rotation.y = (curP - 0.5) * 0.25;
-
-      renderer.render(scene, camera);
-    };
-
-    const loop = () => {
+    const loop = (now) => {
       raf = requestAnimationFrame(loop);
       if (document.hidden || !visible) return;
-      frame();
+      if (now - lastRender < minDelta) return;
+      lastRender = now;
+      renderFrame(1);
     };
-    loop();
+    raf = requestAnimationFrame(loop);
 
     const io = new IntersectionObserver(
       (e) => {
@@ -201,15 +233,6 @@ const GearField = ({ color = "#e2603f" }) => {
       { threshold: 0 }
     );
     io.observe(mount);
-
-    const onResize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    };
-    window.addEventListener("resize", onResize);
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
@@ -224,7 +247,7 @@ const GearField = ({ color = "#e2603f" }) => {
       if (renderer.domElement.parentNode === mount)
         mount.removeChild(renderer.domElement);
     };
-  }, [color]);
+  }, [color, gearCount, dprCap, antialias, fpsCap, reduced]);
 
   return (
     <div

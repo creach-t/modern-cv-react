@@ -11,7 +11,7 @@ const API = "https://mail.creachtheo.fr/api/contact";
 const COPY = {
   fr: {
     title: "Me contacter",
-    subtitle: "Disponible pour un poste — je réponds vite.",
+    subtitle: "Disponible pour un poste, je réponds vite.",
     copied: "Copié !",
     copy: "Copier",
     name: "Votre nom",
@@ -27,7 +27,7 @@ const COPY = {
   },
   en: {
     title: "Get in touch",
-    subtitle: "Available for a job — I reply fast.",
+    subtitle: "Available for a job, I reply fast.",
     copied: "Copied!",
     copy: "Copy",
     name: "Your name",

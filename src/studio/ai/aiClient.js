@@ -4,9 +4,13 @@
  * SÉCURITÉ : la clé n'est JAMAIS en dur. Elle est lue depuis
  * process.env.REACT_APP_LLM_API_KEY (fichier .env, non commité).
  * ⚠️ En CRA, cette variable est injectée dans le bundle public au build :
- * elle est donc extractible côté client. Pour un vrai secret, passer par un
- * proxy nginx qui ajoute le header Authorization côté serveur — il suffira
- * alors de pointer REACT_APP_LLM_API_URL vers "/api" et de retirer la clé.
+ * elle est donc extractible côté client. Le rate-limit client (AssistantWidget)
+ * est donc contournable : ce n'est qu'un garde-fou UX, pas une sécurité.
+ *
+ * TODO (infra, hors de ce fichier) : ajouter un proxy nginx qui injecte le
+ * header Authorization côté serveur, puis pointer REACT_APP_LLM_API_URL vers
+ * "/api" et laisser REACT_APP_LLM_API_KEY vide. La clé ne quitte alors plus le
+ * VPS et le quota devient réellement protégé (rate-limit à faire côté proxy).
  */
 const BASE_URL = (
   process.env.REACT_APP_LLM_API_URL || "https://api-llm.creachtheo.fr"
@@ -16,6 +20,29 @@ const API_KEY = process.env.REACT_APP_LLM_API_KEY || "";
 // Modèle par défaut : léger pour ménager le quota du worker Cloudflare
 // (configurable via .env : "mistral", "llama-70b", etc.).
 export const DEFAULT_MODEL = process.env.REACT_APP_LLM_MODEL || "fast";
+
+// Plafond de tokens en sortie. Workers AI applique un cap par défaut bas
+// (~256) qui TRONQUE la réponse : or le tag d'action ([[do:…]] / [[plan:…]])
+// est en FIN de message, donc coupé → action annoncée mais jamais exécutée.
+// On force donc une valeur plus haute (configurable via .env).
+export const MAX_TOKENS =
+  parseInt(process.env.REACT_APP_LLM_MAX_TOKENS, 10) > 0
+    ? parseInt(process.env.REACT_APP_LLM_MAX_TOKENS, 10)
+    : 384;
+
+// Libellé affiché du modèle (« Propulsé par … »). L'alias technique (ex. "fast")
+// n'étant pas parlant, on privilégie REACT_APP_LLM_MODEL_LABEL ; sinon on
+// retombe sur un libellé lisible connu, puis sur l'alias brut.
+const MODEL_LABELS = {
+  fast: "Llama 3.1 8B · Cloudflare", // @cf/meta/llama-3.1-8b-instruct-fp8
+  "llama-8b": "Llama 3.1 8B · Cloudflare",
+  "llama-70b": "Llama 3.3 70B · Cloudflare",
+  mistral: "Mistral 7B · Cloudflare",
+};
+export const MODEL_LABEL =
+  process.env.REACT_APP_LLM_MODEL_LABEL ||
+  MODEL_LABELS[DEFAULT_MODEL] ||
+  DEFAULT_MODEL;
 
 export const isAIConfigured = () => Boolean(API_KEY);
 
@@ -53,7 +80,7 @@ export const streamChat = async ({
   const res = await fetch(`${BASE_URL}/chat`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ messages, model, stream: true }),
+    body: JSON.stringify({ messages, model, stream: true, max_tokens: MAX_TOKENS }),
     signal,
   });
 

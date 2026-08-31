@@ -11,59 +11,61 @@
       "technologies": ["React", "React Native", "JavaScript", "TypeScript"],
       "fr": {
         "label": "Stage Développeur Web",
-        "value": "Imperiatec - Paris",
-        "description": "Création et refactorisation de composants React Native et ReactJS",
+        "value": "Imperiatec · Paris",
+        "description": "Création et refactorisation de composants React et React Native",
         "details": [
-          "Création et refactorisation de composants React Native et ReactJS",
-          "Développement de nouvelles fonctionnalités"
+          "Refactorisation de composants React et React Native sur une application en production",
+          "Développement de nouvelles fonctionnalités en équipe",
+          "Logiciel retravaillé aujourd'hui déployé sur des dizaines d'écrans (écoles, mairies, commerces, bureaux)"
         ],
         "tools": ["Git", "HTML/CSS"],
-        "explanation": "Durant ce stage, j'ai participé au développement d'applications mobiles et web en utilisant les technologies React et React Native. J'ai collaboré avec une équipe de développeurs pour améliorer les fonctionnalités existantes et en créer de nouvelles."
+        "explanation": "Un stage en équipe où j'ai créé et refactorisé des composants React et React Native sur une vraie application. Le logiciel que j'ai retravaillé équipe aujourd'hui des dizaines d'écrans, dans des écoles, des mairies, des commerces et des bureaux."
       },
       "en": {
         "label": "Web Developer Internship",
-        "value": "Imperiatec - Paris",
-        "description": "Creating and refactoring React Native and ReactJS components",
+        "value": "Imperiatec · Paris",
+        "description": "Building and refactoring React and React Native components",
         "details": [
-          "Creating and refactoring React Native and ReactJS components",
-          "Developing new features"
+          "Refactored React and React Native components on a production application",
+          "Built new features as part of a team",
+          "The software I reworked now runs on dozens of screens (schools, city halls, shops, offices)"
         ],
         "tools": ["Git", "HTML/CSS"],
-        "explanation": "During this internship, I participated in the development of mobile and web applications using React and React Native technologies. I collaborated with a team of developers to improve existing features and create new ones."
+        "explanation": "A team internship where I built and refactored React and React Native components on a real application. The software I reworked now runs on dozens of screens, across schools, city halls, shops and offices."
       }
     },
     {
       "id": "bricoman",
       "icon": "Wrench",
-      "period": "2020 - 2026",
+      "period": "depuis 2020",
       "company": {
-        "name": "Bricoman",
-        "location": "Saint-Maur-des-Fossés, France"
+        "name": "Tecnomat (ex-Bricoman)",
+        "location": "Bonneuil-sur-Marne, France"
       },
       "technologies": [],
       "fr": {
-        "label": "Conseiller de vente",
-        "value": "Bricoman - Saint-Maur-des-Fossés",
-        "description": "Conseiller technique et formateur logiciels",
+        "label": "Conseiller technique & formateur",
+        "value": "Tecnomat · Bonneuil-sur-Marne",
+        "description": "Conseil technique, formation logiciels et outils internes",
         "details": [
-          "Formation des équipes aux logiciels de l'entreprise",
-          "Création de fichiers de chiffrage et devisage",
-          "Gestion SAV et commandes sur-mesure"
+          "Outils de chiffrage et de devis sur Excel/VBA",
+          "Automatisation du suivi commercial et des relances",
+          "Formation des équipes de toute la France au logiciel maison (Hercule Pro)"
         ],
-        "tools": ["Logiciels de chiffrage", "Outils de gestion"],
-        "explanation": "Ce poste m'a permis de développer des compétences en formation technique, en résolution de problèmes complexes, et en gestion de projets sur-mesure. J'ai également acquis une rigueur méthodologique et une capacité d'analyse qui se transfèrent parfaitement au développement web."
+        "tools": ["Excel/VBA", "Outils de gestion"],
+        "explanation": "En parallèle de mon poste de conseiller, je me suis remis à coder mes propres outils : chiffrage sur Excel/VBA, suivi commercial automatisé. J'ai aussi formé les équipes de toute la France au logiciel maison. C'est là que l'envie de coder pour de vrai est revenue, pour ne plus repartir. J'y suis encore, en parallèle de ma recherche de poste."
       },
       "en": {
-        "label": "Sales Advisor",
-        "value": "Bricoman - Saint-Maur-des-Fossés",
-        "description": "Technical advisor and software trainer",
+        "label": "Technical advisor & trainer",
+        "value": "Tecnomat · Bonneuil-sur-Marne",
+        "description": "Technical advice, software training and internal tooling",
         "details": [
-          "Training teams on company software",
-          "Creating pricing files and quotes",
-          "Managing after-sales service and custom orders"
+          "Quoting and estimate tools built in Excel/VBA",
+          "Automated sales follow-up and reminders",
+          "Trained teams across France on the in-house software (Hercule Pro)"
         ],
-        "tools": ["Pricing software", "Management tools"],
-        "explanation": "This position allowed me to develop skills in technical training, complex problem-solving, and custom project management. I also acquired methodological rigor and analytical capabilities that transfer perfectly to web development."
+        "tools": ["Excel/VBA", "Management tools"],
+        "explanation": "Alongside my advisor role, I started coding my own tools again: Excel/VBA quoting, automated sales follow-up. I also trained teams across France on the in-house software. That's where the urge to really code came back for good. I'm still there, in parallel with my job search."
       }
     },
     {
@@ -77,27 +79,27 @@
       "technologies": [],
       "fr": {
         "label": "Responsable de magasin",
-        "value": "Naturalia - Paris",
-        "description": "Management d'équipe et gestion opérationnelle",
+        "value": "Naturalia · Paris",
+        "description": "Management d'équipe et gestion opérationnelle d'un magasin parisien",
         "details": [
-          "Coordination et management d'une équipe de 7+ personnes",
-          "Optimisation des processus et des ressources",
-          "Planification et suivi de projets"
+          "Co-responsable puis responsable, équipe de 7 personnes",
+          "Magasin entier tenu seul un temps, sans responsable en poste",
+          "Gestion opérationnelle : stocks, plannings, résultats"
         ],
         "tools": ["Outils de gestion", "Logiciels de planification"],
-        "explanation": "En tant que responsable de magasin, j'ai développé d'excellentes compétences en gestion de projet, communication d'équipe et résolution de problèmes. Ces soft skills sont essentielles dans le développement web, notamment pour le travail en équipe et la méthodologie agile."
+        "explanation": "Co-responsable puis responsable pendant cinq ans, j'ai managé une équipe de sept personnes. On m'a même confié un magasin entier resté sans responsable alors que je débutais à peine : je l'ai tenu seul, et il a tourné. J'y ai appris la responsabilité, le sang-froid et le sens du concret."
       },
       "en": {
         "label": "Store Manager",
-        "value": "Naturalia - Paris",
-        "description": "Team management and operational management",
+        "value": "Naturalia · Paris",
+        "description": "Team management and day-to-day running of a Paris store",
         "details": [
-          "Coordination and management of a 7+ person team",
-          "Process and resource optimization",
-          "Project planning and monitoring"
+          "Co-manager then manager, team of 7 people",
+          "Ran a whole store on my own for a while, with no manager in post",
+          "Day-to-day operations: stock, scheduling, results"
         ],
         "tools": ["Management tools", "Scheduling software"],
-        "explanation": "As a store manager, I developed excellent project management, team communication and problem-solving skills. These soft skills are essential in web development, particularly for teamwork and agile methodology."
+        "explanation": "Co-manager then manager for five years, I ran a team of seven. I was even handed a whole store left without a manager while I was barely starting out: I ran it on my own, and it held. I learned responsibility, composure and a real taste for the concrete."
       }
     },
     {
@@ -111,25 +113,25 @@
       "technologies": ["PHP", "JavaScript"],
       "fr": {
         "label": "Stage de Développeur Web",
-        "value": "Association CSF - Melun",
-        "description": "Création et déploiement d'un site web pour une école primaire",
+        "value": "Association CSF · Melun",
+        "description": "Création et déploiement du site d'une école primaire",
         "details": [
-          "Création et déploiement d'un site web pour une école primaire",
-          "Formation des équipes enseignantes à l'utilisation de l'outil"
+          "Conception et mise en ligne du site d'une école primaire",
+          "Formation des équipes enseignantes à l'outil"
         ],
         "tools": ["HTML/CSS"],
-        "explanation": "Au cours de ce stage, j'ai conçu et développé un site web complet pour une école primaire. J'ai travaillé en étroite collaboration avec les équipes pédagogiques pour comprendre leurs besoins et les former à l'utilisation de la plateforme."
+        "explanation": "J'ai conçu et déployé le site complet d'une école primaire, puis formé les enseignants à s'en servir. Ma première livraison à de vrais utilisateurs, et déjà l'envie de transmettre."
       },
       "en": {
         "label": "Web Developer Internship",
-        "value": "Association CSF - Melun",
-        "description": "Creating and deploying a website for a primary school",
+        "value": "Association CSF · Melun",
+        "description": "Building and deploying a primary school's website",
         "details": [
-          "Creating and deploying a website for a primary school",
-          "Training teaching staff to use the tool"
+          "Designed and deployed a primary school's website",
+          "Trained the teaching staff to use it"
         ],
         "tools": ["HTML/CSS"],
-        "explanation": "During this internship, I designed and developed a complete website for a primary school. I worked closely with the teaching staff to understand their needs and train them on how to use the platform."
+        "explanation": "I designed and deployed a complete website for a primary school, then trained the teachers to use it. My first delivery to real users, and already the urge to pass it on."
       }
     }
   ]

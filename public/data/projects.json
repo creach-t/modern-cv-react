@@ -11,8 +11,8 @@
       "fr": {
         "label": "VectoKid",
         "value": "Éditeur de dessin vectoriel pour enfants",
-        "description": "Application de dessin vectoriel pensée pour les enfants : calques, formes, couleurs, sauvegarde en ligne et comptes utilisateurs.",
-        "explanation": "VectoKid est une application de dessin vectoriel conçue pour être simple et amusante pour les enfants, tout en reposant sur une architecture solide. Elle propose un véritable moteur d'édition avec gestion des calques, des formes et des couleurs, une sauvegarde des dessins dans le cloud et des comptes utilisateurs synchronisés. Le projet est entièrement typé en TypeScript et couvert par des tests unitaires et end-to-end.",
+        "description": "Un éditeur de dessin vectoriel pensé pour les enfants : calques, formes, couleurs, sauvegarde en ligne et comptes utilisateurs.",
+        "explanation": "Je l'ai construit pour ma compagne, qui donne des cours d'art numérique à des enfants et ne trouvait aucun logiciel à la fois simple et adapté. VectoKid propose un vrai moteur d'édition (calques, formes, couleurs), une sauvegarde des dessins dans le cloud et des comptes synchronisés. Le tout est typé en TypeScript et couvert par des tests unitaires et end-to-end.",
         "improvements": [
           "Partage et galerie publique de dessins",
           "Outils de dessin avancés (courbes, dégradés)"
@@ -21,8 +21,8 @@
       "en": {
         "label": "VectoKid",
         "value": "Vector drawing editor for kids",
-        "description": "A vector drawing app designed for kids: layers, shapes, colors, cloud saving and user accounts.",
-        "explanation": "VectoKid is a vector drawing application designed to be simple and fun for children, while running on a solid architecture. It offers a real editing engine with layer, shape and color management, cloud drawing storage and synced user accounts. The project is fully typed in TypeScript and covered by unit and end-to-end tests.",
+        "description": "A vector drawing editor made for children: layers, shapes, colors, cloud saving and user accounts.",
+        "explanation": "I built it for my partner, who teaches digital art to children and couldn't find any software that was both simple and a good fit. VectoKid offers a real editing engine (layers, shapes, colors), cloud drawing storage and synced accounts. It's fully typed in TypeScript and covered by unit and end-to-end tests.",
         "improvements": [
           "Sharing and public drawing gallery",
           "Advanced drawing tools (curves, gradients)"
@@ -41,8 +41,8 @@
       "fr": {
         "label": "PARADE",
         "value": "Jeu de combat rythmique",
-        "description": "Jeu de combat au rythme de la musique : parez et frappez en cadence, dans un univers d'ombres, avec comptes joueurs.",
-        "explanation": "PARADE est un jeu de combat rythmique où l'action se joue au tempo de la musique : il faut parer et attaquer en cadence pour vaincre son adversaire, dans une direction artistique en ombres. Le jeu repose sur un moteur de rythme maison (Canvas + Web Audio API) et propose des comptes joueurs pour sauvegarder la progression.",
+        "description": "Un jeu de combat où l'action se joue au rythme de la musique : parez et frappez en cadence, dans un univers d'ombres.",
+        "explanation": "L'idée m'est venue en jouant à Clair Obscur : Expédition 33. Son système de parade au bon timing m'a fasciné, et j'ai eu envie d'en faire un jeu à part entière. PARADE tourne sur un moteur de rythme maison (Canvas + Web Audio API), avec des comptes joueurs pour sauvegarder la progression. Le jeu est encore en bêta fermée : écrivez-moi pour en savoir plus ou y accéder.",
         "improvements": [
           "Éditeur de niveaux et partage de morceaux",
           "Classements en ligne et mode multijoueur"
@@ -51,8 +51,8 @@
       "en": {
         "label": "PARADE",
         "value": "Rhythmic combat game",
-        "description": "A music-timed fighting game: parry and strike on the beat, in a world of shadows, with player accounts.",
-        "explanation": "PARADE is a rhythm-based fighting game where the action follows the beat of the music: parry and attack in time to defeat your opponent, in a shadow-themed art direction. It runs on a custom rhythm engine (Canvas + Web Audio API) and offers player accounts to save progress.",
+        "description": "A fighting game where the action follows the beat of the music: parry and strike in time, in a world of shadows.",
+        "explanation": "The idea came while I was playing Clair Obscur: Expedition 33. Its timing-based parry system fascinated me, and I wanted to turn it into a game of its own. PARADE runs on a custom rhythm engine (Canvas + Web Audio API), with player accounts to save progress. It's still in closed beta: drop me a line to find out more or get access.",
         "improvements": [
           "Level editor and track sharing",
           "Online leaderboards and multiplayer mode"
@@ -70,21 +70,21 @@
       "fr": {
         "label": "DevJobs",
         "value": "Application web de recherche d'emploi",
-        "description": "Plateforme permettant aux développeurs de trouver des offres d'emploi pertinentes dans le secteur tech",
-        "explanation": "Cette application a été conçue pour simplifier la recherche d'emploi des développeurs, en centralisant les offres selon les technologies maîtrisées et la localisation. L'interface utilisateur intuitive permet de filtrer les résultats selon plusieurs critères, d'enregistrer des offres favorites et de postuler directement depuis la plateforme. Elle utilise l'API France Travail pour récupérer les offres d'emploi et une connexion AuthO2.0 pour sécuriser l'accès des utilisateurs.",
+        "description": "Une recherche d'offres tech plus claire, branchée directement sur l'API France Travail.",
+        "explanation": "Je cherchais (et je cherche toujours) un poste de dev, et l'interface de recherche de France Travail me rendait fou. J'ai décidé de taper directement dans leur API pour reconstruire une recherche lisible, filtrée par technologie et par lieu, avec des offres à enregistrer. Ce projet m'a fait comprendre l'authentification OAuth 2.0, les scopes, et la façon dont s'organise une grosse API publique.",
         "improvements": [
-          "Meilleure gestions des recherches sauvegardées",
+          "Meilleure gestion des recherches sauvegardées",
           "Espace candidat pour suivre ses candidatures"
         ]
       },
       "en": {
         "label": "DevJobs",
         "value": "Job search web application",
-        "description": "Platform enabling developers to find relevant job opportunities in the tech sector",
-        "explanation": "This application was designed to simplify job searching for developers by centralizing offers based on mastered technologies and location. The intuitive user interface allows filtering results according to several criteria, saving favorite offers, and applying directly from the platform. It uses the France Travail API to fetch job offers and an AuthO2.0 connection to secure user access.",
+        "description": "A clearer way to search tech job offers, plugged straight into the France Travail API.",
+        "explanation": "I was (and still am) looking for a dev job, and France Travail's search interface was driving me crazy. I decided to hit their API directly to rebuild a readable search, filtered by technology and location, with offers you can save. This project taught me OAuth 2.0 authentication, scopes, and how a large public API is organized.",
         "improvements": [
-          "Improved management of saved searches",
-          "Candidate space to track applications"
+          "Better management of saved searches",
+          "Candidate area to track applications"
         ]
       }
     },
@@ -99,8 +99,8 @@
       "fr": {
         "label": "Queens Game Web",
         "value": "Version web responsive du puzzle Queens de LinkedIn",
-        "description": "Puzzle logique addictif où vous devez placer des reines sur un plateau en respectant des règles strictes",
-        "explanation": "Cette application reproduit fidèlement l'expérience du célèbre Queens Game de LinkedIn tout en étant parfaitement responsive pour tous les appareils. Le jeu consiste à placer exactement une reine dans chaque rangée, colonne ET région colorée, sans qu'elles puissent se toucher. L'interface moderne propose plusieurs tailles de grille (4x4 à 8x8), une validation en temps réel des règles avec feedback visuel, et un système de génération automatique de niveaux garantis solvables.",
+        "description": "Le puzzle Queens en version web, avec génération automatique de niveaux toujours résolubles.",
+        "explanation": "Frustré de ne pouvoir jouer qu'une partie par jour au Queens de LinkedIn, je me suis fait ma propre version. C'était surtout l'occasion de me frotter à la génération de niveaux sous contraintes fortes : une reine par ligne, par colonne et par région colorée, sans qu'elles se touchent, avec une grille garantie résoluble. Les joueurs y ont déjà gagné plus de 400 parties.",
         "improvements": [
           "Solveur automatique avec système d'indices",
           "Système de sauvegarde et meilleurs scores"
@@ -109,10 +109,10 @@
       "en": {
         "label": "Queens Game Web",
         "value": "Responsive web version of LinkedIn's Queens puzzle",
-        "description": "Addictive logic puzzle where you must place queens on a board following strict rules",
-        "explanation": "This application faithfully reproduces the experience of LinkedIn's famous Queens Game while being perfectly responsive for all devices. The game consists of placing exactly one queen in each row, column AND colored region, without them being able to touch each other. The modern interface offers multiple grid sizes (4x4 to 8x8), real-time rule validation with visual feedback, and an automatic level generation system guaranteed to be solvable.",
+        "description": "The Queens puzzle as a web app, with automatic generation of always-solvable levels.",
+        "explanation": "Frustrated that I could only play one game a day of LinkedIn's Queens, I built my own version. It was mostly a chance to tackle level generation under tight constraints: one queen per row, column and colored region, without any touching, on a grid guaranteed to be solvable. Players have already won more than 400 games on it.",
         "improvements": [
-          "Automatic solver with hint system",
+          "Automatic solver with a hint system",
           "Save system and high scores"
         ]
       }
@@ -127,11 +127,11 @@
       "tools": ["Git", "VS Code", "Docker", "Figma", "Jest"],
       "fr": {
         "label": "O'Coffee",
-        "value": "Site E-commerce de vente de café",
-        "description": "Boutique en ligne proposant une sélection de cafés de spécialité du monde entier",
-        "explanation": "O'Coffee est une plateforme e-commerce conçue pour les amateurs de café. Elle propose une expérience d'achat immersive avec des descriptions détaillées et origines.",
+        "value": "Site e-commerce de vente de café",
+        "description": "Une boutique en ligne de cafés de spécialité, montée sans framework, en JavaScript vanilla.",
+        "explanation": "Un projet de formation pour monter une application complète sans framework : du JavaScript vanilla côté front, du Node/Express côté back. O'Coffee propose une sélection de cafés de spécialité avec leurs descriptions et leurs origines, dans une expérience d'achat soignée.",
         "improvements": [
-          "Integration API Stripe pour paiements sécurisés",
+          "Intégration de l'API Stripe pour des paiements sécurisés",
           "Système de notation et d'avis clients",
           "RGPD et gestion des cookies"
         ]
@@ -139,10 +139,10 @@
       "en": {
         "label": "O'Coffee",
         "value": "E-commerce site for selling coffee",
-        "description": "Online store offering a selection of specialty coffees from around the world",
-        "explanation": "O'Coffee is an e-commerce platform designed for coffee lovers. It offers an immersive shopping experience with detailed descriptions and origins.",
+        "description": "An online specialty-coffee shop, built without a framework, in vanilla JavaScript.",
+        "explanation": "A training project to build a complete application without a framework: vanilla JavaScript on the front, Node/Express on the back. O'Coffee offers a selection of specialty coffees with their descriptions and origins, in a polished shopping experience.",
         "improvements": [
-          "Integration of Stripe API for secure payments",
+          "Stripe API integration for secure payments",
           "Customer rating and review system",
           "GDPR and cookie management"
         ]
@@ -161,24 +161,24 @@
       "tools": ["Git", "VS Code", "Docker", "Jest", "Figma", "Eslint", "Notion"],
       "fr": {
         "label": "ZombieLand",
-        "value": "Site E-commerce de présentation et vente de billets pour un parc d'attraction",
-        "description": "Plateforme immersive pour un parc d'attractions sur le thème des zombies, avec système de billetterie intégré",
-        "explanation": "ZombieLand est un projet complet développé pour promouvoir un parc d'attractions thématique. La plateforme offre un aperçu immersif des différentes attractions. Le système de billetterie intégré permet aux visiteurs de réserver leurs billets. Un back office complet permet de gerer les attractions, les billets, les utilisateurs et les commandes.",
+        "value": "Site e-commerce et billetterie pour un parc d'attractions",
+        "description": "Un site immersif de parc d'attractions sur le thème des zombies, avec billetterie et back-office complet.",
+        "explanation": "C'est mon projet de fin de formation à O'Clock, celui que j'ai présenté au jury pour montrer tout ce que je savais faire : un front en React, un back en Node, et un back-office en JavaScript vanilla pour gérer les attractions, les billets, les utilisateurs et les commandes. La billetterie intégrée permet aux visiteurs de réserver leurs places en ligne.",
         "improvements": [
-          "Refonte en next.js pour SEO et performances",
+          "Refonte en Next.js pour le SEO et les performances",
           "Application mobile avec plan interactif du parc",
-          "Réservation avancée (Séjours, Hotels, etc.)"
+          "Réservation avancée (séjours, hôtels, etc.)"
         ]
       },
       "en": {
         "label": "ZombieLand",
-        "value": "E-commerce site for showcasing and selling tickets for an amusement park",
-        "description": "Immersive platform for a zombie-themed amusement park, with integrated ticketing system",
-        "explanation": "ZombieLand is a complete project developed to promote a themed amusement park. The platform offers an immersive overview of the different attractions. The integrated ticketing system allows visitors to book their tickets. A complete back office allows managing attractions, tickets, users, and orders.",
+        "value": "E-commerce and ticketing site for an amusement park",
+        "description": "An immersive zombie-themed amusement park site, with ticketing and a full back office.",
+        "explanation": "This is my final project at O'Clock, the one I presented to the jury to show everything I could do: a React front, a Node back, and a vanilla JavaScript back office to manage attractions, tickets, users and orders. The built-in ticketing lets visitors book their seats online.",
         "improvements": [
-          "Refactor in next.js for SEO and performance",
-          "Mobile application with interactive park map",
-          "Advanced booking (Stays, Hotels, etc.)"
+          "Rebuild in Next.js for SEO and performance",
+          "Mobile app with an interactive park map",
+          "Advanced booking (stays, hotels, etc.)"
         ]
       }
     },
@@ -193,23 +193,23 @@
       "fr": {
         "label": "Premier Portfolio",
         "value": "Site web personnel statique",
-        "description": "Premier portfolio développé en HTML, CSS et JavaScript natif avec support multilingue et mode sombre/clair",
-        "explanation": "Ce portfolio représente ma première vitrine professionnelle en ligne, entièrement codée en HTML, CSS et JavaScript natif. Le site est totalement responsive et offre plusieurs fonctionnalités avancées, notamment un système de changement de langue (français/anglais), un mode sombre/clair, et une présentation détaillée de mes premiers projets web. L'interface est intuitive et met en valeur mes compétences techniques à travers un design épuré.",
+        "description": "Mon tout premier portfolio, en HTML/CSS/JS natif : responsive, bilingue et avec un mode sombre.",
+        "explanation": "Ma première vitrine en ligne, entièrement en HTML, CSS et JavaScript natif. C'était surtout un terrain d'entraînement pour le responsive mobile, le balisage SEO et l'accessibilité, avec en prime un sélecteur de langue (français/anglais) et un mode sombre/clair.",
         "improvements": [
           "Amélioration de l'accessibilité (ARIA)",
           "Optimisation des performances (lazy loading)",
-          "Utilisation de frameworks modernes (React, Next.js)"
+          "Passage à un framework moderne (React, Next.js)"
         ]
       },
       "en": {
         "label": "First Portfolio",
         "value": "Static personal website",
-        "description": "First portfolio developed in native HTML, CSS and JavaScript with multilingual support and dark/light mode",
-        "explanation": "This portfolio represents my first professional online showcase, entirely coded in native HTML, CSS and JavaScript. The site is fully responsive and offers several advanced features, including a language switching system (French/English), a dark/light mode, and a detailed presentation of my first web projects. The interface is intuitive and highlights my technical skills through a clean design.",
+        "description": "My very first portfolio, in native HTML/CSS/JS: responsive, bilingual and with a dark mode.",
+        "explanation": "My first showcase online, entirely in native HTML, CSS and JavaScript. It was mostly a training ground for mobile responsive design, SEO markup and accessibility, plus a language switcher (French/English) and a dark/light mode.",
         "improvements": [
           "Accessibility improvements (ARIA)",
           "Performance optimization (lazy loading)",
-          "Use of modern frameworks (React, Next.js)"
+          "Move to a modern framework (React, Next.js)"
         ]
       }
     }

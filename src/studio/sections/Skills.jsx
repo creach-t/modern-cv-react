@@ -8,14 +8,14 @@ import Reveal from "../components/Reveal";
 
 const COPY = {
   fr: {
-    title: "Ce que je maîtrise",
-    subtitle: "Les outils que j'utilise au quotidien pour concevoir, développer et déployer.",
-    legend: "En couleur : les technologies que je manie avec aisance.",
+    title: "Ce que je manipule",
+    subtitle: "Mes outils du quotidien, du front jusqu'au serveur.",
+    legend: "En couleur, les technologies avec lesquelles je suis vraiment à l'aise. Le reste, je l'ai déjà pratiqué.",
   },
   en: {
     title: "What I work with",
-    subtitle: "The tools I use daily to design, build and ship.",
-    legend: "Highlighted: the technologies I'm most comfortable with.",
+    subtitle: "My day-to-day tools, from the front end all the way to the server.",
+    legend: "In color, the technologies I'm genuinely comfortable with. The rest, I've already had my hands on.",
   },
 };
 

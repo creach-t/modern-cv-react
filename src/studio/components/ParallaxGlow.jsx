@@ -1,19 +1,20 @@
 import React, { useEffect, useRef } from "react";
 import { useColor } from "../../contexts/ColorContext";
-
-const reduced = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+import useDeviceTier from "../hooks/useDeviceTier";
 
 // Lueurs douces fixes qui dérivent légèrement au scroll (parallax discret).
+// - high    : blobs `blur(120px)` + mix-blend + parallax live (rAF au scroll)
+// - autres  : dégradés radiaux statiques équivalents (aucun filter/mix-blend,
+//             aucun rAF) → visuellement quasi identiques, coût GPU négligeable.
 const ParallaxGlow = () => {
   const { secondaryColor } = useColor();
+  const { fx } = useDeviceTier();
   const ref = useRef(null);
 
   useEffect(() => {
+    if (!fx.liveGlow) return; // pas de parallax live hors high
     const el = ref.current;
-    if (!el || reduced()) return;
+    if (!el) return;
     const blobs = Array.from(el.children);
     const factors = [0.06, 0.14, 0.1];
     let raf = null;
@@ -33,7 +34,28 @@ const ParallaxGlow = () => {
       window.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [fx.liveGlow]);
+
+  // --- Version statique (mid / low / reduced-motion) : un seul calque fixe,
+  // dégradés radiaux teintés accent, sans filter ni mix-blend. ---
+  if (!fx.liveGlow) {
+    const glow = (x, y, size, a) =>
+      `radial-gradient(${size} ${size} at ${x} ${y}, ${secondaryColor}${a}, transparent 70%)`;
+    return (
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0"
+        style={{
+          zIndex: 0,
+          backgroundImage: [
+            glow("8%", "18%", "40%", "14"),
+            glow("94%", "38%", "42%", "10"),
+            glow("40%", "92%", "38%", "0d"),
+          ].join(","),
+        }}
+      />
+    );
+  }
 
   const blob = (extra, opacity) => ({
     backgroundColor: secondaryColor,

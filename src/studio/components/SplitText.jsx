@@ -1,38 +1,49 @@
 import React, { useEffect, useRef } from "react";
 import anime from "animejs";
+import useDeviceTier from "../hooks/useDeviceTier";
 
-const reduced = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/** Titre révélé lettre par lettre quand il entre dans le viewport (anime.js). */
+/**
+ * Titre révélé à l'entrée dans le viewport (anime.js).
+ * - high            : lettre par lettre (chaque char promu en couche).
+ * - mid / low       : révélation du titre entier (1 seule couche) → évite
+ *                     la multiplication de `will-change` coûteuse sur mobile.
+ * - reduced-motion  : affiché tel quel, sans animation.
+ */
 const SplitText = ({ text, className = "", as: Tag = "span" }) => {
+  const { fx } = useDeviceTier();
+  const perChar = fx.splitChars;
+  const animate = fx.animate;
   const ref = useRef(null);
   const done = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const chars = el.querySelectorAll("[data-char]");
+    const targets = perChar
+      ? el.querySelectorAll("[data-char]")
+      : el.querySelectorAll("[data-word]");
 
-    if (reduced()) {
-      anime.set(chars, { opacity: 1, translateY: 0 });
+    if (!animate) {
+      anime.set(targets, { opacity: 1, translateY: 0 });
       return;
     }
-    anime.set(chars, { opacity: 0, translateY: "0.6em" });
+    anime.set(targets, { opacity: 0, translateY: perChar ? "0.6em" : 18 });
 
     const reveal = () => {
       if (done.current) return;
       done.current = true;
       anime({
-        targets: chars,
+        targets,
         opacity: [0, 1],
-        translateY: ["0.6em", 0],
-        rotateZ: [6, 0],
+        translateY: [perChar ? "0.6em" : 18, 0],
+        rotateZ: perChar ? [6, 0] : 0,
         duration: 700,
-        delay: anime.stagger(28),
+        delay: perChar ? anime.stagger(28) : 0,
         easing: "easeOutExpo",
+        complete: () => {
+          // libère les couches composited une fois l'anim terminée
+          targets.forEach((t) => (t.style.willChange = "auto"));
+        },
       });
     };
 
@@ -65,7 +76,17 @@ const SplitText = ({ text, className = "", as: Tag = "span" }) => {
       clearInterval(guard);
       io.disconnect();
     };
-  }, [text]);
+  }, [text, perChar, animate]);
+
+  if (!perChar) {
+    return (
+      <Tag ref={ref} className={className}>
+        <span data-word className="inline-block will-change-transform">
+          {text}
+        </span>
+      </Tag>
+    );
+  }
 
   return (
     <Tag ref={ref} className={className} aria-label={text}>
@@ -76,7 +97,7 @@ const SplitText = ({ text, className = "", as: Tag = "span" }) => {
           aria-hidden="true"
           className="inline-block will-change-transform"
         >
-          {ch === " " ? " " : ch}
+          {ch === " " ? " " : ch}
         </span>
       ))}
     </Tag>

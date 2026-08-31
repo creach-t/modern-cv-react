@@ -1,17 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { useColor } from "../../contexts/ColorContext";
+import useDeviceTier from "../hooks/useDeviceTier";
 
-const finePointer = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(pointer: fine)").matches &&
-  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/** Halo accent-color qui suit le curseur (desktop uniquement). */
+/** Halo accent-color qui suit le curseur (desktop capable uniquement). */
 const CursorGlow = () => {
   const { secondaryColor } = useColor();
+  const { fx } = useDeviceTier();
   const ref = useRef(null);
-  const enabled = useRef(finePointer());
+  const enabled = useRef(fx.cursorGlow);
 
   useEffect(() => {
     if (!enabled.current) return;

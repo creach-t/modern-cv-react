@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useColor } from "../../contexts/ColorContext";
+import { useData } from "../data/DataContext";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -10,7 +11,9 @@ const OK = "[  ok  ]";
 
 const BootSequence = ({ onDone }) => {
   const { secondaryColor } = useColor();
+  const { data } = useData();
   const version = process.env.REACT_APP_VERSION || "dev";
+  const repoCount = data?.projects?.length || 7;
 
   const lines = useMemo(
     () => [
@@ -20,12 +23,12 @@ const BootSequence = ({ onDone }) => {
       { t: `${OK} starting traefik reverse proxy ....... creachtheo.fr` },
       { t: `${OK} TLS handshake (let's encrypt) ........ secured` },
       { t: `${OK} healthcheck GET /health .............. 200` },
-      { t: `${OK} mounting /projects ................... 5 repos` },
+      { t: `${OK} mounting /projects ................... ${repoCount} repos` },
       { t: `${OK} user: theo.creach .................... full-stack js` },
       { t: "" },
       { t: "welcome — type `help` or explore the desktop.", c: "muted" },
     ],
-    [version]
+    [version, repoCount]
   );
 
   const [count, setCount] = useState(0);

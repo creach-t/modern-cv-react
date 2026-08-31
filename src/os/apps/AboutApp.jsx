@@ -5,9 +5,11 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { useData } from "../data/DataContext";
 import { Loading, Tag } from "./ui";
 
-const BIO = {
-  fr: "Développeur web full-stack JavaScript, reconverti après plusieurs années dans le conseil et le management. Je conçois des applications React / Node de bout en bout — et je les héberge moi-même sur mon VPS (Docker, CI/CD, Traefik). Curieux, rigoureux, j'aime autant coder une feature que comprendre l'infra qui la fait tourner.",
-  en: "Full-stack JavaScript web developer, career-changer after several years in advising and management. I build React / Node applications end to end — and self-host them on my own VPS (Docker, CI/CD, Traefik). Curious and rigorous, I enjoy shipping a feature as much as understanding the infra that runs it.",
+// Bio de secours si les données ne sont pas encore chargées. Le texte de
+// référence vit dans public/data/journey.json (bloc "story").
+const BIO_FALLBACK = {
+  fr: "Développeur full-stack JavaScript, arrivé au code après un détour par le commerce. En réalité, je bidouille des ordinateurs depuis mes 10 ans.",
+  en: "Full-stack JavaScript developer, came to code after a detour through retail. Truth is, I've been tinkering with computers since I was 10.",
 };
 
 const HOBBY_ICONS = { tool: Wrench, cpu: Cpu, leaf: Leaf };
@@ -20,6 +22,8 @@ const AboutApp = () => {
   if (!data) return <Loading label="whoami…" />;
 
   const softSkills = data.softSkills.filter((s) => s.id !== "hobbies");
+  const story = data.story?.[language] || data.story?.fr;
+  const paragraphs = story?.paragraphs || [];
 
   return (
     <div className="p-5">
@@ -41,9 +45,17 @@ const AboutApp = () => {
         </div>
       </div>
 
-      <p className="mt-4 text-sm leading-relaxed text-gray-300">
-        {BIO[language] || BIO.fr}
-      </p>
+      {paragraphs.length > 0 ? (
+        <div className="mt-4 space-y-2.5 text-sm leading-relaxed text-gray-300">
+          {paragraphs.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 text-sm leading-relaxed text-gray-300">
+          {story?.bio || BIO_FALLBACK[language] || BIO_FALLBACK.fr}
+        </p>
+      )}
 
       <div className="mt-5">
         <div className="mb-2 text-[11px] uppercase tracking-wider text-gray-500">
@@ -63,17 +75,23 @@ const AboutApp = () => {
           <Heart className="h-3 w-3" />
           {language === "fr" ? "hobbies" : "hobbies"}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           {data.hobbies.map((h) => {
             const Icon = HOBBY_ICONS[h.icon] || Heart;
+            const desc = h.description?.[language] || h.description?.fr;
             return (
-              <span
+              <div
                 key={h.id}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-xs text-gray-300"
+                className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-2"
               >
-                <Icon className="h-3.5 w-3.5" style={{ color: secondaryColor }} />
-                {h.title[language] || h.title.fr}
-              </span>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-gray-200">
+                  <Icon className="h-3.5 w-3.5" style={{ color: secondaryColor }} />
+                  {h.title[language] || h.title.fr}
+                </div>
+                {desc && (
+                  <p className="mt-1 text-[11px] leading-snug text-gray-500">{desc}</p>
+                )}
+              </div>
             );
           })}
         </div>

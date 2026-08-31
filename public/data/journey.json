@@ -1,0 +1,181 @@
+{
+  "story": {
+    "fr": {
+      "subtitle": "Ce n'était pas un virage. C'était un retour.",
+      "bio": "Développeur full-stack JavaScript, arrivé au code après un détour par le commerce. En réalité, je bidouille des ordinateurs depuis mes 10 ans. Aujourd'hui, je conçois des applis React / Node et je les héberge moi-même sur mon serveur : Docker, CI/CD, Traefik.",
+      "paragraphs": [
+        "À 10 ans, je passe déjà mes soirées à réparer l'ordinateur familial : bidouiller les drivers, fouiller les forums, poser des questions à des inconnus jusqu'à ce que ça remarche. Tout ce qui a des circuits finit démonté. À l'époque, je n'y vois rien d'extraordinaire. C'est juste normal.",
+        "Au lycée, je touche à l'électronique et à la robotique. Puis en 2010, mon BTS me met les mains dans le code pour de vrai : VBA, Java, PHP, HTML/CSS. J'aime les énigmes, les casse-têtes, les petits jeux que je bricole pour le plaisir. Le déclic est là. Je ne l'écoute simplement pas tout de suite.",
+        "Pendant des années, je bosse dans le commerce, et je m'y investis à fond. Co-responsable puis responsable d'un Naturalia à Paris, je manage une équipe de sept. On me confie même un magasin entier resté sans chef alors que je débute à peine : je le tiens seul, et il tourne. Côté technique, je ne lâche jamais : chez Bricoman, devenu Tecnomat, je code mes propres outils de chiffrage et je forme les équipes de toute la France au logiciel maison.",
+        "En 2024, j'arrête de tourner autour. Reconversion à l'école O'Clock, spécialisation JavaScript. Ce n'était pas un virage à 180°. Je revenais juste à ce que je faisais déjà, gamin, sur cet ordinateur familial. Sauf que cette fois, c'est mon métier.",
+        "Aujourd'hui, je développe des applis React / Node de bout en bout et je les héberge moi-même sur mon serveur. Le code et l'infra. Et je continue d'apprendre tous les jours. Au fond, c'est resté le même réflexe qu'à 10 ans."
+      ]
+    },
+    "en": {
+      "subtitle": "It wasn't a career switch. It was a homecoming.",
+      "bio": "Full-stack JavaScript developer, came to code after a detour through retail. Truth is, I've been tinkering with computers since I was 10. Today I build React / Node apps and self-host them on my own server: Docker, CI/CD, Traefik.",
+      "paragraphs": [
+        "At 10, I already spend my evenings fixing the family computer: tweaking drivers, digging through forums, asking strangers questions until it works again. Anything with a circuit ends up taken apart. At the time, I see nothing remarkable about it. It's just normal.",
+        "In high school I get into electronics and robotics. Then in 2010, my degree puts my hands in real code: VBA, Java, PHP, HTML/CSS. I love the puzzles, the brain-teasers, the little games I build for fun. The spark is there. I just don't act on it right away.",
+        "For years, I work in retail, and I give it everything. Co-manager then manager of a Naturalia in Paris, I run a team of seven. I'm even handed a whole store left without a lead while I'm barely starting out: I run it on my own, and it holds. On the technical side, I never let go: at Bricoman, now Tecnomat, I code my own quoting tools and train teams across France on the in-house software.",
+        "In 2024, I stop circling around it. Career switch at O'Clock, JavaScript specialization. It wasn't a 180° turn. I was just going back to what I already did as a kid on that family computer. Only this time, it's my job.",
+        "Today, I build React / Node apps end to end and self-host them on my own server. The code and the infra. And I keep learning every day. Deep down, it's still the same reflex I had at 10."
+      ]
+    }
+  },
+  "journey": [
+    {
+      "id": "origins",
+      "kind": "origin",
+      "icon": "Wrench",
+      "period": { "fr": "Depuis l'enfance", "en": "Since childhood" },
+      "chips": ["MS-DOS", "Forums"],
+      "fr": {
+        "title": "Le gamin qui démontait tout",
+        "org": "",
+        "text": "Depuis mes 10 ans, je fais tourner l'ordi familial à coups de drivers bidouillés et de forums écumés jusqu'à tard le soir, parfois pour poser les questions, parfois pour y répondre. Tout ce qui avait des circuits finissait démonté. Je ne voyais pas ça comme une passion, juste comme un truc normal à faire."
+      },
+      "en": {
+        "title": "The kid who took everything apart",
+        "org": "",
+        "text": "Since I was 10, I kept the family computer alive with hacked drivers and forums read late into the night, sometimes asking the questions, sometimes answering them. Anything with a circuit ended up taken apart. I didn't see it as a passion, just a normal thing to do."
+      }
+    },
+    {
+      "id": "electrotech",
+      "kind": "education",
+      "icon": "Cpu",
+      "period": { "fr": "2008", "en": "2008" },
+      "chips": ["Électronique", "Robotique", "SolidWorks"],
+      "fr": {
+        "title": "Bac électrotechnique",
+        "org": "Champigny-sur-Marne",
+        "text": "Électronique, automatisation, un peu de robotique. J'apprends à raisonner en systèmes : une entrée, une sortie, une logique au milieu. Sans le savoir, je pose déjà les réflexes avec lesquels je pense une appli aujourd'hui."
+      },
+      "en": {
+        "title": "Electrical-engineering diploma",
+        "org": "Champigny-sur-Marne",
+        "text": "Electronics, automation, a bit of robotics. I learn to think in systems: an input, an output, some logic in between. Without realizing it, I'm already building the reflexes I use to design an app today."
+      }
+    },
+    {
+      "id": "bts",
+      "kind": "education",
+      "icon": "GraduationCap",
+      "period": { "fr": "2008 – 2010", "en": "2008 – 2010" },
+      "chips": ["VBA", "Java", "PHP", "HTML/CSS"],
+      "fr": {
+        "title": "BTS Informatique de Gestion",
+        "org": "Lycée Léonard de Vinci · Melun",
+        "text": "Spécialisation développement, et là c'est net : VBA, Java, PHP, HTML/CSS. Mes premières vraies lignes de code. J'adore ça. Les énigmes, les casse-têtes, faire tourner un bout de code que j'ai écrit moi-même. Le déclic est là. Je mettrai juste quelques années à l'écouter pour de bon."
+      },
+      "en": {
+        "title": "Higher Diploma in IT Management",
+        "org": "Lycée Léonard de Vinci · Melun",
+        "text": "Development track, and this time it's clear: VBA, Java, PHP, HTML/CSS. My first real lines of code. I love it. The puzzles, the brain-teasers, making a piece of code I wrote run. The spark is there. It'll just take me a few years to truly act on it."
+      }
+    },
+    {
+      "id": "csf",
+      "kind": "experience",
+      "icon": "Globe",
+      "period": { "fr": "2010", "en": "2010" },
+      "chips": ["PHP", "JavaScript", "HTML/CSS"],
+      "fr": {
+        "title": "Premier site livré à de vrais gens",
+        "org": "Association CSF · Melun",
+        "text": "En stage, je conçois et je mets en ligne le site d'une école primaire, puis je forme les enseignants à s'en servir. C'est la première fois que je livre un outil à de vrais utilisateurs, et que je le transmets. Ça, ça ne me quittera plus."
+      },
+      "en": {
+        "title": "First site shipped to real people",
+        "org": "Association CSF · Melun",
+        "text": "During an internship, I design and deploy a primary school's website, then train the teachers to use it. It's the first time I ship a tool to real users, and hand it over. That part never left me."
+      }
+    },
+    {
+      "id": "naturalia",
+      "kind": "experience",
+      "icon": "ShoppingBag",
+      "period": { "fr": "2013 – 2017", "en": "2013 – 2017" },
+      "chips": ["Management", "Retail"],
+      "fr": {
+        "title": "Responsable de magasin",
+        "org": "Naturalia Réaumur · Paris",
+        "text": "Un détour par le commerce, mais pas une parenthèse. Co-responsable puis responsable, je manage une équipe de sept. On me confie même un magasin resté sans chef alors que je débute à peine : je le tiens seul, et il tourne. J'y apprends la responsabilité et le concret : servir de vrais gens, pas juste livrer des specs."
+      },
+      "en": {
+        "title": "Store Manager",
+        "org": "Naturalia Réaumur · Paris",
+        "text": "A detour through retail, but not a side note. Co-manager then manager, I run a team of seven. I'm even handed a store left without a lead while I'm barely starting out: I run it on my own, and it holds. I learn responsibility and the concrete side of things: serving real people, not just shipping specs."
+      }
+    },
+    {
+      "id": "bricoman",
+      "kind": "experience",
+      "icon": "Ruler",
+      "period": { "fr": "depuis 2020", "en": "since 2020" },
+      "chips": ["Excel/VBA", "Automatisation", "Formation"],
+      "fr": {
+        "title": "Là où le code revient",
+        "org": "Bricoman → Tecnomat · Saint-Maur-des-Fossés",
+        "text": "Conseiller technique et formateur. Et sans que ce soit dans la fiche de poste, je me remets à coder : des outils de chiffrage en Excel/VBA, du suivi commercial automatisé, et je forme les équipes de toute la France au logiciel maison. Coder pour régler un vrai problème du quotidien. Je ne lâcherai plus."
+      },
+      "en": {
+        "title": "Where the code came back",
+        "org": "Bricoman → Tecnomat · Saint-Maur-des-Fossés",
+        "text": "Technical advisor and trainer. And nowhere in the job description, I start coding again: quoting tools in Excel/VBA, automated sales follow-up, and I train teams across France on the in-house software. Coding to fix a real everyday problem. I never let go after that."
+      }
+    },
+    {
+      "id": "oclock",
+      "kind": "education",
+      "icon": "GraduationCap",
+      "period": { "fr": "2024 – 2025", "en": "2024 – 2025" },
+      "chips": ["JavaScript", "React", "Node.js", "Express.js"],
+      "fr": {
+        "title": "Reconversion · Titre Pro Développeur Web",
+        "org": "École O'Clock",
+        "text": "J'arrête de tourner autour : formation intensive full-stack, spécialisation JavaScript. Ce n'est pas un virage à 180°, c'est un retour. Pour la première fois, je me sens exactement là où je dois être."
+      },
+      "en": {
+        "title": "Career switch · Professional Web Developer",
+        "org": "O'Clock School",
+        "text": "I stop circling around it: intensive full-stack training, JavaScript specialization. It's not a U-turn, it's a homecoming. For the first time, I feel exactly where I'm meant to be."
+      }
+    },
+    {
+      "id": "imperiatec",
+      "kind": "experience",
+      "icon": "Code",
+      "period": { "fr": "sept – nov 2024", "en": "Sept – Nov 2024" },
+      "chips": ["React", "React Native", "TypeScript"],
+      "fr": {
+        "title": "Premier React en production",
+        "org": "Imperiatec · Paris",
+        "text": "Stage en équipe : je crée et refactorise des composants React et React Native sur une vraie application. Le logiciel que j'ai retravaillé tourne aujourd'hui sur des dizaines d'écrans : écoles, mairies, commerces, bureaux. L'exercice devient produit."
+      },
+      "en": {
+        "title": "First React in production",
+        "org": "Imperiatec · Paris",
+        "text": "Team internship: I build and refactor React and React Native components on a real application. The software I reworked now runs on dozens of screens: schools, city halls, shops, offices. The exercise becomes a product."
+      }
+    },
+    {
+      "id": "today",
+      "kind": "today",
+      "icon": "Server",
+      "period": { "fr": "Aujourd'hui", "en": "Today" },
+      "chips": ["React", "Node.js", "Docker", "Traefik", "CI/CD"],
+      "fr": {
+        "title": "Développeur full-stack & self-hoster",
+        "org": "",
+        "text": "Je conçois des applis React / Node du début à la fin, et je les héberge moi-même sur mon serveur : Docker, CI/CD, Traefik. Le code et l'infra. En parallèle, je continue d'apprendre (DevOps, mes premiers pas en Spring Boot). Au fond, le même réflexe qu'à 10 ans."
+      },
+      "en": {
+        "title": "Full-stack developer & self-hoster",
+        "org": "",
+        "text": "I build React / Node apps end to end, and I self-host them on my own server: Docker, CI/CD, Traefik. The code and the infra. Alongside, I keep learning (DevOps, my first steps in Spring Boot). Really, the same reflex I had at 10."
+      }
+    }
+  ]
+}

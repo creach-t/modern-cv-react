@@ -81,7 +81,7 @@ jobs:
     env:
       # Hôte public de l'app SSH exposée par le tunnel Cloudflare (ex: ssh.creachtheo.fr)
       SSH_HOSTNAME: ${{ secrets.SSH_HOSTNAME }}
-      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_USER: ${{ secrets.SSH_USER }}
       VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
     steps:
       - uses: actions/checkout@v4
@@ -103,7 +103,7 @@ jobs:
 
       - name: 🔐 Configure SSH over Cloudflare Access
         env:
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |

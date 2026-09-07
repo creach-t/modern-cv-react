@@ -62,8 +62,8 @@ Le healthcheck DOIT passer pour que le trafic soit routé.
 | `SSH_HOSTNAME` | Hostname public de l'app SSH exposée par le tunnel Cloudflare (ex : `ssh.creachtheo.fr`) |
 | `CF_ACCESS_CLIENT_ID` | Service token ID (Cloudflare Access) → `--service-token-id` |
 | `CF_ACCESS_CLIENT_SECRET` | Service token secret (Cloudflare Access) → `--service-token-secret` |
-| `VPS_USER` | Utilisateur SSH sur le VPS (`root`) |
-| `VPS_SSH_KEY` | Clé privée SSH de déploiement (contenu complet) |
+| `SSH_USER` | Utilisateur SSH sur le VPS (`root`) — réutilisé de l'ancien setup |
+| `SSH_PRIVATE_KEY` | Clé privée SSH de déploiement (contenu complet) — réutilisé de l'ancien setup |
 | `VPS_DEPLOY_PATH` | Dossier projet sur le VPS (ex : `/root/projects/modern-cv-react`) |
 | `GHCR_PAT` | GitHub PAT `read:packages` (pour `docker pull` depuis le VPS) |
 

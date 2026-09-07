@@ -51,24 +51,30 @@ Le healthcheck DOIT passer pour que le trafic soit routé.
 |---|---|
 | `test` | `npm ci` + `npm test` + `npm run build` |
 | `build-image` | Build Docker avec `--build-arg GIT_SHA=$GITHUB_SHA`, push vers GHCR (`latest` + `sha-<7chars>`) |
-| `deploy` | SCP `docker-compose.prod.yml` → VPS, puis SSH : `docker compose pull` + `up --force-recreate` |
+| `deploy` | Installe `cloudflared` (épinglé **2026.5.1**), configure `~/.ssh/config` avec `ProxyCommand cloudflared access ssh` (service token), puis SCP `docker-compose.prod.yml` → VPS et SSH : `docker compose pull` + `up --force-recreate` |
+
+> ⚠️ Le déploiement ne passe **plus en SSH direct** mais par le **tunnel Cloudflare** (app SSH exposée via Cloudflare Access). Le job installe `cloudflared` **épinglé à `2026.5.1`** : la `2026.6.0` casse l'auth par service token (cf. [`cloudflare/cloudflared#1673`](https://github.com/cloudflare/cloudflared/issues/1673)). **Ne jamais passer en `latest`.**
 
 ### Secrets GitHub Actions requis
 
 | Secret | Valeur |
 |---|---|
-| `SSH_HOST` | IP du VPS |
-| `SSH_USER` | `root` |
-| `SSH_PRIVATE_KEY` | Contenu de `~/.ssh/github_actions_deploy` |
-| `SSH_PORT` | `22` (ou port custom) |
+| `SSH_HOSTNAME` | Hostname public de l'app SSH exposée par le tunnel Cloudflare (ex : `ssh.creachtheo.fr`) |
+| `CF_ACCESS_CLIENT_ID` | Service token ID (Cloudflare Access) → `--service-token-id` |
+| `CF_ACCESS_CLIENT_SECRET` | Service token secret (Cloudflare Access) → `--service-token-secret` |
+| `VPS_USER` | Utilisateur SSH sur le VPS (`root`) |
+| `VPS_SSH_KEY` | Clé privée SSH de déploiement (contenu complet) |
+| `VPS_DEPLOY_PATH` | Dossier projet sur le VPS (ex : `/root/projects/modern-cv-react`) |
 | `GHCR_PAT` | GitHub PAT `read:packages` (pour `docker pull` depuis le VPS) |
+
+### Côté Cloudflare Access
+
+- L'app SSH doit avoir une **policy `Service Auth`** (et **non `Allow`**) autorisant le service token — sinon `cloudflared access ssh` est rejeté.
+- Le service token (ID + secret) est celui référencé par `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET`.
 
 ### Clé SSH autorisée sur le VPS
 
-```
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINxH5AAJrkOnfKJ2T/bfrV7sGT8tMKNoZg31UwWnmZFm github-actions-deploy
-```
-Doit être dans `/root/.ssh/authorized_keys` sur le VPS.
+La clé publique correspondant à `VPS_SSH_KEY` doit être dans `~/.ssh/authorized_keys` de `VPS_USER` sur le VPS (l'auth par clé SSH se fait **après** le transport tunnel Cloudflare).
 
 ---
 
@@ -141,6 +147,24 @@ IMAGE_TAG=latest docker compose -f docker-compose.prod.yml up -d --force-recreat
 **Symptôme** : footer affiche `vdev` au lieu du SHA
 **Cause** : `REACT_APP_VERSION` doit être injecté au **build** via `--build-arg GIT_SHA`
 **Fix** : `build-args: GIT_SHA=${{ github.sha }}` dans le workflow, `ARG GIT_SHA` + `ENV REACT_APP_VERSION` dans le Dockerfile avant `RUN npm run build`
+
+### 5. cloudflared 2026.6.0 casse les service tokens
+**Symptôme** : `cloudflared access ssh` échoue à l'auth (service token rejeté) → deploy KO
+**Cause** : régression dans `cloudflared 2026.6.0` (cf. `cloudflare/cloudflared#1673`)
+**Fix** : épingler la version à `2026.5.1` dans le job `deploy`, ne pas utiliser `latest`
+
+### 6. Egress des conteneurs bloqué par le firewall (DOCKER-USER)
+**Symptôme** : le conteneur ne peut pas joindre une API externe (timeout sur 80/443 sortant)
+**Cause** : une règle `DOCKER-USER` qui `DROP` le trafic 80/443 court-circuite l'egress des conteneurs
+**Fix** (côté VPS, one-time, **uniquement si un backend appelle des API externes**) :
+```bash
+# autoriser l'egress des réseaux Docker (172.16.0.0/12) en tête de chaîne
+iptables -I DOCKER-USER 1 -s 172.16.0.0/12 -j RETURN
+# persister
+iptables-save > /etc/iptables/rules.v4
+```
+> Le CV est un site nginx statique (l'appel LLM est **côté navigateur**), donc cette règle
+> n'est pas requise ici — à appliquer seulement pour un projet dont le conteneur fait de l'egress.
 
 ---
 

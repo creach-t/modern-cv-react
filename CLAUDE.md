@@ -182,5 +182,28 @@ src/
 │       ├── sections/      # Sections PDF (BaseSection, HeaderSection…)
 │       └── layout/        # layoutManager.js
 ├── contexts/              # ThemeContext, LanguageContext, ModalContext
-└── hooks/
+├── hooks/
+└── studio/
+    └── ai/                # Assistant chatbot (voir section dédiée ci-dessous)
 ```
+
+### Assistant IA (`src/studio/ai/`)
+
+Routeur d'intentions (pas un unique appel LLM) : `intentRouter.js` classe chaque
+message dans une intention fermée (`intents.config.js`) via embeddings distants
+(repli lexical si indisponible) + classifieur LLM en zone grise. Un handler
+dédié (`intentHandlers/*.js`) répond ensuite :
+- **Actions simples** (navigation, couleur, langue, CV, contact, mode dev) :
+  résolues **sans appel LLM** par regex/whitelist (`slots.js`), instantané.
+- **Questions ouvertes** : prompt LLM réduit au strict contexte de
+  l'intention (`promptFragments.js`), jamais le persona complet.
+
+Modèle : Llama 3.1 8B (Cloudflare Workers AI, `api-llm.creachtheo.fr`, **hors
+de ce repo**). Ce Worker doit exposer `/chat` (existant) **et `/embed`**
+(embeddings pour la classification — cf. `aiClient.js`) ; sans `/embed`, le
+client retombe automatiquement sur une similarité lexicale, aucune casse.
+
+> ⚠️ Le modèle 8B invente encore occasionnellement un détail précis mais
+> faux (préférence, statut temps réel, fait géographique) malgré les
+> garde-fous anti-fabrication du prompt. Ce n'est pas un problème
+> définitivement réglé — à retester après tout changement de prompt.

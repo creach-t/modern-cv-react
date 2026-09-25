@@ -163,7 +163,7 @@
         "label": "ZombieLand",
         "value": "Site e-commerce et billetterie pour un parc d'attractions",
         "description": "Un site immersif de parc d'attractions sur le thème des zombies, avec billetterie et back-office complet.",
-        "explanation": "C'est mon projet de fin de formation à O'Clock, celui que j'ai présenté au jury pour montrer tout ce que je savais faire : un front en React, un back en Node, et un back-office en JavaScript vanilla pour gérer les attractions, les billets, les utilisateurs et les commandes. La billetterie intégrée permet aux visiteurs de réserver leurs places en ligne.",
+        "explanation": "C'est mon projet de fin de formation à O'Clock, celui que j'ai présenté au jury pour montrer tout ce que je savais faire : un front en React, un back en Node, et un back-office en JavaScript vanilla pour gérer les attractions, les billets, les utilisateurs et les commandes. La billetterie intégrée permet aux visiteurs de réserver leurs places en ligne. Petit bonus : il est plutôt bien référencé, il ressort naturellement sur Google sur son thème.",
         "improvements": [
           "Refonte en Next.js pour le SEO et les performances",
           "Application mobile avec plan interactif du parc",
@@ -174,7 +174,7 @@
         "label": "ZombieLand",
         "value": "E-commerce and ticketing site for an amusement park",
         "description": "An immersive zombie-themed amusement park site, with ticketing and a full back office.",
-        "explanation": "This is my final project at O'Clock, the one I presented to the jury to show everything I could do: a React front, a Node back, and a vanilla JavaScript back office to manage attractions, tickets, users and orders. The built-in ticketing lets visitors book their seats online.",
+        "explanation": "This is my final project at O'Clock, the one I presented to the jury to show everything I could do: a React front, a Node back, and a vanilla JavaScript back office to manage attractions, tickets, users and orders. The built-in ticketing lets visitors book their seats online. Nice bonus: it's well optimized for search, it ranks naturally on Google for its topic.",
         "improvements": [
           "Rebuild in Next.js for SEO and performance",
           "Mobile app with an interactive park map",

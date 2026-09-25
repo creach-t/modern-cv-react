@@ -128,3 +128,56 @@ export const streamChat = async ({
   }
   return full;
 };
+
+/**
+ * Envoie une conversation SANS streaming et renvoie le texte complet.
+ * Utilisé par le classifieur d'intentions (zone grise) : réponse courte,
+ * pas besoin de token-par-token.
+ */
+export const chatOnce = async ({ messages, model = DEFAULT_MODEL, signal, maxTokens }) => {
+  const res = await fetch(`${BASE_URL}/chat`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      messages,
+      model,
+      stream: false,
+      max_tokens: maxTokens || MAX_TOKENS,
+    }),
+    signal,
+  });
+  if (!res.ok) {
+    const err = new Error(`chat failed: ${res.status}`);
+    err.kind = errorMessage(res.status);
+    throw err;
+  }
+  const data = await res.json();
+  return data.response || "";
+};
+
+/**
+ * Embeddings distants pour le routeur d'intentions (voir embeddings.js).
+ * Endpoint /embed du Worker (@cf/baai/bge-m3, multilingue, 1024 dim — le
+ * modèle peut changer côté serveur sans casser le client : on ne suppose
+ * JAMAIS de dimension fixe, cosine() dans embeddings.js s'adapte à la
+ * longueur des vecteurs reçus).
+ * Rate limit Worker : 20 req/min/IP (compteur séparé de /chat). Sur 429/erreur,
+ * on laisse l'appelant (embeddings.js) retomber sur la similarité lexicale —
+ * aucune logique de retry ici, le repli est le filet de sécurité voulu.
+ * @param {string[]} texts
+ * @returns {Promise<{embeddings: number[][]}>} même ordre que `texts`.
+ */
+export const embedBatch = async (texts, { signal } = {}) => {
+  const res = await fetch(`${BASE_URL}/embed`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ text: texts }),
+    signal,
+  });
+  if (!res.ok) {
+    const err = new Error(`embed failed: ${res.status}`);
+    err.kind = errorMessage(res.status);
+    throw err;
+  }
+  return res.json();
+};

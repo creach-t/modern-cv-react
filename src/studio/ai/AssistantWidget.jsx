@@ -5,13 +5,24 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { useOS } from "../../os/osContext";
 import { useData } from "../../os/data/DataContext";
 import { streamChat, isAIConfigured, MODEL_LABEL } from "./aiClient";
+import { INTROS, SUGGESTION_POOL } from "./persona";
+import { classifyIntent } from "./intentRouter";
+import { resolveHandler } from "./intentHandlers";
 import {
-  buildSystemPrompt,
-  INTROS,
-  SUGGESTION_POOL,
+  ACTION_RE,
+  TOUR_RE,
+  NON_INVASIVE,
   ACTION_SECTIONS,
   CONFIRM_ACTIONS,
-} from "./persona";
+  COLOR_NAMES,
+  resolveColor,
+  normalizeTags,
+  stripActions,
+  parseSteps,
+} from "./actionProtocol";
+import { typeOut } from "./typeOut";
+import { generateFollowUps } from "./followUpsLLM";
+import { isHexColor, normalizeHex, describeHex } from "./colorGenerator";
 import { downloadCV } from "../pdf";
 import { useContactOverlay } from "../contact/ContactOverlay";
 
@@ -19,64 +30,7 @@ const MAX_INPUT = 500;
 const MAX_HISTORY = 8;
 const STORE_MAX = 40;
 const STORAGE_KEY = "studio_chat_v1";
-// Détecte les questions de parcours pour n'injecter la chronologie complète
-// (journeyText + expériences) dans le prompt système que quand c'est utile.
-const JOURNEY_RE =
-  /parcours|histoire|formation|étud|diplôm|expérience|experience|career|journey|study|background/i;
-// Après normalisation, tous les tags sont canoniques : [[do:name:arg]] / [[plan:…]].
-const ACTION_RE = /\[\[do:([a-z_]+)(?::([a-z0-9_-]+))?\]\]/gi;
-const PLAN_RE = /\[\[plan:([\s\S]+?)\]\]/i;
-const TOUR_RE = /\[\[do:tour\]\]/i;
-const KNOWN = ["launch_os", "goto", "color", "download_cv", "lang", "email"];
-// Non invasives : exécutées directement si demandées seules (pas de bouton).
-const NON_INVASIVE = ["goto", "project", "color", "lang", "email"];
 const ROLES = ["user", "assistant", "action"];
-
-// Noms d'action pilotables (pour rattraper un tag sans préfixe "do:").
-const DO_NAMES = new Set([
-  "launch_os", "goto", "color", "download_cv", "lang", "email", "project", "visit", "tour",
-]);
-
-// Retire les accents (é→e) pour matcher des noms de couleur robustement.
-const stripDia = (s = "") => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
-
-// --- Parser tolérant (petit modèle 8B FP8) ---
-// Un 8B produit souvent des quasi-tags : crochets simples [do:color], "do:"
-// manquant [[goto:projects]], espaces [[do: color]], casse variable, etc.
-// On normalise TOUT vers la forme canonique [[do:name:arg]] / [[plan:…]] AVANT
-// parsing. La sécurité reste assurée par les whitelists en aval (KNOWN,
-// ACTION_SECTIONS, projectIds, COLOR_NAMES) : un tag inconnu est ignoré.
-const normalizeTags = (text = "") =>
-  String(text)
-    // plan : 1-2 crochets, espaces, note pouvant contenir un ] simple (borne sur ]]).
-    .replace(/\[{1,2}\s*plan\s*:\s*([\s\S]+?)\]{2}/gi, (_, body) => `[[plan:${body.trim()}]]`)
-    // couleur : la valeur peut être multi-mots ("bleu nuit", "bleu foncé") → on
-    // la ramène à un token unique en tirets (bleu-nuit) résoluble par resolveColor.
-    .replace(
-      /\[{1,2}\s*(?:do\s*:\s*)?colou?r\s*:\s*([a-zà-ÿ][a-zà-ÿ '-]*?)\s*\]{1,2}/gi,
-      (_, val) => {
-        const norm = stripDia(val.toLowerCase()).replace(/[^a-z]+/g, "-").replace(/^-+|-+$/g, "");
-        return norm ? `[[do:color:${norm}]]` : "[[do:color]]";
-      }
-    )
-    // tags avec préfixe "do:" explicite (n'importe quel nom/arg).
-    .replace(
-      /\[{1,2}\s*do\s*:\s*([a-z_]+)(?:\s*:\s*([a-z0-9_-]+))?\s*\]{1,2}/gi,
-      (_, name, arg) => `[[do:${name.toLowerCase()}${arg ? ":" + arg.toLowerCase() : ""}]]`
-    )
-    // tags sans "do:" mais nom d'action connu + arg (ex. [[goto:contact]], [color:mauve]).
-    .replace(
-      /\[{1,2}\s*([a-z_]+)\s*:\s*([a-z0-9_-]+)\s*\]{1,2}/gi,
-      (m, name, arg) =>
-        DO_NAMES.has(name.toLowerCase())
-          ? `[[do:${name.toLowerCase()}:${arg.toLowerCase()}]]`
-          : m
-    )
-    // actions sans arg ni "do:" (ex. [launch_os], [[email]]) : noms explicites only.
-    .replace(
-      /\[{1,2}\s*(launch_os|download_cv|email|tour|color)\s*\]{1,2}/gi,
-      (_, name) => `[[do:${name.toLowerCase()}]]`
-    );
 
 // --- Mode veille (worker IA Cloudflare limité) ---
 const SLEEP_KEY = "studio_ai_sleep";
@@ -91,36 +45,6 @@ const readSleep = () => {
   } catch {
     return 0;
   }
-};
-
-// noms de couleurs → hex (token unique en minuscules, fr + en + variantes)
-const COLOR_NAMES = {
-  mauve: "#B57EDC", violet: "#7C3AED", purple: "#7C3AED",
-  bleu: "#2563EB", blue: "#2563EB", ciel: "#38BDF8", sky: "#38BDF8",
-  rouge: "#DC2626", red: "#DC2626", vert: "#16A34A", green: "#16A34A",
-  orange: "#F97316", rose: "#EC4899", pink: "#EC4899",
-  jaune: "#EAB308", yellow: "#EAB308", cyan: "#06B6D4", turquoise: "#06B6D4",
-  indigo: "#6366F1", corail: "#FF6F61", coral: "#FF6F61",
-  magenta: "#D946EF", or: "#D4AF37", gold: "#D4AF37",
-  emeraude: "#10B981", emerald: "#10B981",
-  // bleu nuit / marine : alternative sombre mais lisible proposée à la place du noir
-  "bleu-nuit": "#1E3A8A", bleunuit: "#1E3A8A", marine: "#1E3A8A", navy: "#1E3A8A",
-};
-
-// Résout un nom de couleur (possiblement multi-mots / accentué) en hex, de façon
-// FIABLE : jamais d'aléatoire quand un nom précis est demandé. Renvoie null si
-// vraiment introuvable (l'appelant décide alors du repli).
-const resolveColor = (raw) => {
-  if (!raw) return null;
-  const a = stripDia(String(raw).toLowerCase()).replace(/[^a-z]+/g, "-").replace(/^-+|-+$/g, "");
-  if (!a) return null;
-  if (COLOR_NAMES[a]) return COLOR_NAMES[a]; // ex. "bleu-nuit"
-  const flat = a.replace(/-/g, "");
-  if (COLOR_NAMES[flat]) return COLOR_NAMES[flat]; // ex. "bleunuit"
-  // "bleu marine", "bleu foncé"… → mappe sur un nom connu présent dans la valeur.
-  // On lit le qualificatif d'abord (en français il est en dernier : "bleu marine").
-  for (const w of a.split("-").reverse()) if (COLOR_NAMES[w]) return COLOR_NAMES[w];
-  return null;
 };
 
 const TOUR_NOTES = {
@@ -143,57 +67,6 @@ const TOUR_NOTES = {
 const GENERIC_NOTES = {
   fr: { goto: "Et voilà 👍", project: "Jette un œil 👀", visit: "Ça s'ouvre dans un onglet 🔗", color: "Nouvelle ambiance 🎨", launch_os: "Bienvenue côté dev 🖥️", download_cv: "C'est parti pour le PDF 📄", lang: "Langue changée 🌐", email: "À toi de jouer ✉️" },
   en: { goto: "There we go 👍", project: "Have a look 👀", visit: "Opening in a tab 🔗", color: "New vibe 🎨", launch_os: "Welcome to dev side 🖥️", download_cv: "PDF on its way 📄", lang: "Language switched 🌐", email: "Over to you ✉️" },
-};
-
-const stripActions = (text = "") =>
-  normalizeTags(text)
-    .replace(/\[\[plan:[\s\S]*?\]\]/gi, "")
-    .replace(/\[\[do:[^\]]*\]\]/gi, "")
-    .replace(/\[\[[^\]]*$/i, "") // tag tronqué en fin de flux (streaming)
-    .replace(/[ \t]+\n/g, "\n")
-    .trim();
-
-// Étapes d'un plan : chaque item = "action[:arg] | note perso" (note optionnelle).
-// `full` doit être normalisé (normalizeTags) au préalable.
-const parseSteps = (full, projectIds = []) => {
-  let raw = [];
-  const pm = full.match(PLAN_RE);
-  if (pm) raw = pm[1].split(";");
-  else {
-    ACTION_RE.lastIndex = 0;
-    let m;
-    while ((m = ACTION_RE.exec(full))) raw.push(m[1] + (m[2] ? ":" + m[2] : ""));
-  }
-  return raw
-    .map((s) => {
-      const [left, ...rest] = s.split("|");
-      // note = phrase seule : on retire tout résidu d'action (do:xxx, |, tags)
-      const note =
-        rest
-          .join(" ")
-          .replace(/\[\[[^\]]*\]\]/g, "")
-          .replace(/\bdo:[a-z_]+(?::[a-z0-9-]+)?/gi, "")
-          .replace(/[[\]]/g, "") // crochets isolés résiduels (note contenant un ])
-          .replace(/\s{2,}/g, " ")
-          .trim() || undefined;
-      // left = "action[:arg]" ; tolère un "do:" résiduel et des espaces autour du ":".
-      const [name, arg] = left
-        .trim()
-        .toLowerCase()
-        .replace(/^do\s*:\s*/, "")
-        .split(/\s*:\s*/);
-      return { name, arg, note };
-    })
-    .filter((s) =>
-      s.name === "project" || s.name === "visit"
-        ? projectIds.includes(s.arg)
-        : KNOWN.includes(s.name) &&
-          (s.name !== "goto" || ACTION_SECTIONS.includes(s.arg)) &&
-          (s.name !== "lang" || ["fr", "en"].includes(s.arg))
-    )
-    // dédoublonne : un 8B répète parfois la même étape (ex. project:vectokid ×3)
-    .filter((s, i, arr) => arr.findIndex((x) => x.name === s.name && x.arg === s.arg) === i)
-    .slice(0, 6);
 };
 
 // section actuellement à l'écran (pour un tour qui part de la position réelle)
@@ -298,7 +171,7 @@ const COPY = {
 const AssistantWidget = () => {
   const { secondaryColor, changeColor, setSecondaryColor, saveUserColor } = useColor();
   const { language, changeLanguage } = useLanguage();
-  const { setMode } = useOS();
+  const { setMode, mode } = useOS();
   const { data } = useData();
   const { openContact } = useContactOverlay();
   const t = COPY[language] || COPY.fr;
@@ -311,7 +184,9 @@ const AssistantWidget = () => {
   const currentColorName = () => {
     const hex = (secondaryColor || "").toLowerCase();
     const found = Object.entries(COLOR_NAMES).find(([, v]) => v.toLowerCase() === hex);
-    return found ? found[0] : secondaryColor;
+    // Sans nom exact dans la palette (ex. hex généré par colorGenerator.js) :
+    // décrit par famille de teinte ("un vert vif") plutôt que le code brut.
+    return found ? found[0] : describeHex(secondaryColor, language);
   };
 
   const [open, setOpen] = useState(false);
@@ -322,9 +197,14 @@ const AssistantWidget = () => {
   const [flow, setFlow] = useState(null); // { steps:[{name,arg,note}], index }
   const [intro, setIntro] = useState(() => pick(INTROS.fr));
   const [suggestions, setSuggestions] = useState(() => pickN(SUGGESTION_POOL.fr, 4));
+  const [followUps, setFollowUps] = useState([]); // relances contextuelles après chaque réponse
   const [sleepUntil, setSleepUntil] = useState(readSleep);
   const reqTimes = useRef([]);
   const abortRef = useRef(null);
+  // Mémoire contextuelle (légère) : dernier projet montré, pour résoudre
+  // "ce projet" au tour suivant sans dépendre d'un état côté serveur (voir
+  // intentHandlers/projectShow.js et projectInfo.js).
+  const lastProjectRef = useRef(null);
 
   const sleeping = sleepUntil > Date.now();
   const sleepMins = Math.max(1, Math.ceil((sleepUntil - Date.now()) / 60000));
@@ -378,8 +258,20 @@ const AssistantWidget = () => {
 
   const pushAction = (label) =>
     label && setMessages((m) => [...m, { role: "action", content: label }]);
-  const pushNote = (text) =>
-    text && setMessages((m) => [...m, { role: "assistant", content: text }]);
+  const pushNote = (text) => {
+    if (!text) return;
+    setMessages((m) => [...m, { role: "assistant", content: "" }]);
+    typeOut(text, {
+      onToken: (tok) => {
+        setMessages((m) => {
+          const next = [...m];
+          const last = next[next.length - 1];
+          if (last?.role === "assistant") next[next.length - 1] = { ...last, content: last.content + tok };
+          return next;
+        });
+      },
+    });
+  };
 
   const actionLabel = (name, arg) => {
     switch (name) {
@@ -425,9 +317,11 @@ const AssistantWidget = () => {
         break;
       }
       case "color": {
-        // L'IA choisit la couleur via son tag ; on ne fait que résoudre le nom en
-        // hex (tolérant : accents, multi-mots). Random seulement si tag sans nom.
-        const hex = resolveColor(arg);
+        // Deux formes possibles depuis intentHandlers/actionUI.js : un nom
+        // connu (résolu via resolveColor, tolérant accents/multi-mots) OU un
+        // hex déjà généré à la volée (colorGenerator.js — couleur sans nom,
+        // ou nom que resolveColor ne connaît pas).
+        const hex = isHexColor(arg) ? normalizeHex(arg) : resolveColor(arg);
         if (hex) { setSecondaryColor(hex); saveUserColor(hex); }
         else changeColor();
         break;
@@ -480,12 +374,74 @@ const AssistantWidget = () => {
     setPending(null);
   };
 
+  // Applique une liste de steps résolue par un handler déterministe OU
+  // extraite d'une réponse LLM (parseSteps) : même logique dans les deux cas
+  // (1 step non-invasive = directe, 1 step sensible = confirmation, 2+ = flow).
+  const applySteps = (steps) => {
+    const notes = GENERIC_NOTES[language] || GENERIC_NOTES.fr;
+    if (steps.length === 1) {
+      const s = steps[0];
+      if (NON_INVASIVE.includes(s.name)) runAction(s.name, s.arg); // directe, sans bouton
+      else if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
+      else setFlow({ steps: [{ ...s, note: s.note || notes[s.name] || notes.goto }], index: 0 });
+    } else if (steps.length > 1) {
+      setFlow({
+        steps: steps.map((s) => ({ ...s, note: s.note || notes[s.name] || notes.goto })),
+        index: 0,
+      });
+    }
+  };
+
+  // Suggestions de relance générées par un passage LLM léger (non bloquant :
+  // la réponse principale s'affiche sans attendre). `thisController` protège
+  // contre une réponse tardive qui écraserait les chips d'un tour plus
+  // récent (voir abortRef.current === thisController ci-dessous).
+  const triggerFollowUps = ({ historyForFollowUps, actionHint, meta, state, thisController }) => {
+    // {label, blurb} et pas juste le nom : un nom seul ("ZombieLand") laisse
+    // le modèle free-associer sur autre chose (le film de zombies) plutôt
+    // que sur le vrai projet — voir buildFollowUpsPrompt.
+    const projects = (data?.projects || [])
+      .map((p) => {
+        const loc = p[language] || p.fr;
+        return loc?.label && loc?.value ? { label: loc.label, blurb: loc.value } : null;
+      })
+      .filter(Boolean);
+    const avoid = [];
+    if (state.osMode === "os") {
+      avoid.push(language === "en" ? "launching dev mode (already running)" : "lancer le mode dev (déjà actif)");
+    }
+    if (state.currentSection) {
+      avoid.push(
+        language === "en"
+          ? `going to the ${state.currentSection} section (already there)`
+          : `aller à la section ${state.currentSection} (déjà là)`
+      );
+    }
+    if (meta?.projectId) {
+      const shown = (data?.projects || []).find((p) => p.id === meta.projectId);
+      const label = shown && (shown[language] || shown.fr)?.label;
+      if (label) {
+        avoid.push(
+          language === "en" ? `showing ${label} again (just shown)` : `remontrer ${label} (déjà montré)`
+        );
+      }
+    }
+
+    generateFollowUps(
+      { language, projects, avoid, history: historyForFollowUps, actionHint },
+      { signal: thisController.signal, n: 3 }
+    ).then((sugg) => {
+      if (abortRef.current === thisController) setFollowUps(sugg);
+    });
+  };
+
   const send = async (text) => {
     const content = (text ?? input).replace(ACTION_RE, "").trim().slice(0, MAX_INPUT);
     if (!content || loading || sleeping) return;
     setInput("");
     setPending(null);
     setFlow(null);
+    setFollowUps([]);
 
     if (!isAIConfigured()) {
       setMessages((m) => [...m, { role: "user", content }, { role: "assistant", content: t.offline }]);
@@ -507,25 +463,82 @@ const AssistantWidget = () => {
     reqTimes.current.push(now);
 
     const history = [...messages, { role: "user", content }];
-    setMessages([...history, { role: "assistant", content: "" }]);
+    // Écho immédiat du message utilisateur : ne pas attendre la fin de
+    // classifyIntent() (réseau) pour l'afficher, sinon la bulle met plusieurs
+    // centaines de ms à apparaître — perçu comme un chat qui "traîne".
+    setMessages(history);
     setLoading(true);
 
     const controller = new AbortController();
     abortRef.current = controller;
-
-    const wantsJourney = JOURNEY_RE.test(content);
-    const apiMessages = [
-      {
-        role: "system",
-        content: buildSystemPrompt(data, language, { color: currentColorName() }, wantsJourney),
-      },
-      ...history
-        .filter((m) => m.role === "user" || m.role === "assistant")
-        .slice(-MAX_HISTORY)
-        .map((m) => ({ role: m.role, content: stripActions(m.content) })),
-    ];
+    let placeholderAdded = false;
 
     try {
+      // Contexte pour la zone grise du routeur (voir intentClassifierLLM.js) :
+      // résout les relances courtes/elliptiques ("et rose ?", "n'importe
+      // quoi") qui n'ont de sens qu'à la lumière du tour précédent.
+      const classifyHistory = messages
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .slice(-4)
+        .map((m) => ({ role: m.role, content: stripActions(m.content) }));
+      const routing = await classifyIntent(content, language, {
+        signal: controller.signal,
+        history: classifyHistory,
+        data,
+      });
+      const ctx = {
+        message: content,
+        language,
+        data,
+        // colorHex/osMode : comparaisons fiables pour la détection "déjà dans
+        // cet état" (voir intentHandlers/actionUI.js) ; `color` (le nom) reste
+        // pour l'injection dans le prompt LLM (promptFragments.buildStateBlock).
+        state: {
+          color: currentColorName(),
+          colorHex: secondaryColor,
+          osMode: mode,
+          currentSection: currentSectionId(),
+          lastProjectId: lastProjectRef.current,
+        },
+        signal: controller.signal,
+        routing,
+      };
+      const result = resolveHandler(routing.intent, ctx);
+      if (result.meta?.projectId) lastProjectRef.current = result.meta.projectId;
+
+      if (result.type === "deterministic") {
+        // Aucun texte streamé : le message utilisateur est déjà affiché (écho
+        // immédiat plus haut), l'action pose elle-même sa pastille/note
+        // (runAction / applySteps).
+        applySteps(result.steps);
+        const stepNames = result.steps.map((s) => (s.arg ? `${s.name}:${s.arg}` : s.name)).join(", ");
+        triggerFollowUps({
+          historyForFollowUps: history
+            .filter((m) => m.role === "user" || m.role === "assistant")
+            .slice(-4)
+            .map((m) => ({ role: m.role, content: stripActions(m.content) })),
+          actionHint: `[Action venant d'être exécutée : ${stepNames || routing.intent}]`,
+          meta: result.meta,
+          state: ctx.state,
+          thisController: controller,
+        });
+        return;
+      }
+
+      // result.type === "llm" : même pipeline de streaming/parsing qu'avant,
+      // mais avec un prompt système réduit au contexte de l'intention (voir
+      // intentHandlers/*.js).
+      placeholderAdded = true;
+      setMessages((m) => [...m, { role: "assistant", content: "" }]);
+
+      const apiMessages = [
+        { role: "system", content: result.systemPrompt },
+        ...history
+          .filter((m) => m.role === "user" || m.role === "assistant")
+          .slice(-MAX_HISTORY)
+          .map((m) => ({ role: m.role, content: stripActions(m.content) })),
+      ];
+
       const full = await streamChat({
         messages: apiMessages,
         signal: controller.signal,
@@ -552,34 +565,34 @@ const AssistantWidget = () => {
         const steps = buildTour();
         if (steps.length) setFlow({ steps, index: 0 });
       } else {
-        const steps = parseSteps(norm, projectIds);
-        const notes = GENERIC_NOTES[language] || GENERIC_NOTES.fr;
-        if (steps.length === 1) {
-          const s = steps[0];
-          if (NON_INVASIVE.includes(s.name)) runAction(s.name, s.arg); // directe, sans bouton
-          else if (CONFIRM_ACTIONS.includes(s.name)) setPending({ ...s });
-          else setFlow({ steps: [{ ...s, note: s.note || notes[s.name] || notes.goto }], index: 0 });
-        } else if (steps.length > 1) {
-          setFlow({
-            steps: steps.map((s) => ({ ...s, note: s.note || notes[s.name] || notes.goto })),
-            index: 0,
-          });
-        }
+        applySteps(parseSteps(norm, projectIds));
       }
+      triggerFollowUps({
+        historyForFollowUps: [...history, { role: "assistant", content: stripActions(norm) }]
+          .filter((m) => m.role === "user" || m.role === "assistant")
+          .slice(-4)
+          .map((m) => ({ role: m.role, content: stripActions(m.content) })),
+        meta: result.meta,
+        state: ctx.state,
+        thisController: controller,
+      });
     } catch (err) {
       if (err.name === "AbortError") {
         // Stop utilisateur : ne pas laisser de bulle assistant vide, et garder
-        // le partiel éventuel (nettoyé de tout tag) plutôt qu'un blanc.
-        setMessages((m) => {
-          const next = [...m];
-          const last = next[next.length - 1];
-          if (last?.role === "assistant") {
-            const clean = stripActions(last.content);
-            if (clean) next[next.length - 1] = { ...last, content: clean };
-            else next.pop();
-          }
-          return next;
-        });
+        // le partiel éventuel (nettoyé de tout tag) plutôt qu'un blanc. Rien à
+        // nettoyer si l'arrêt est survenu avant le streaming (classification).
+        if (placeholderAdded) {
+          setMessages((m) => {
+            const next = [...m];
+            const last = next[next.length - 1];
+            if (last?.role === "assistant") {
+              const clean = stripActions(last.content);
+              if (clean) next[next.length - 1] = { ...last, content: clean };
+              else next.pop();
+            }
+            return next;
+          });
+        }
         return;
       }
       if (err.kind === "quota") enterSleep(QUOTA_COOLDOWN);
@@ -587,7 +600,7 @@ const AssistantWidget = () => {
       setMessages((m) => {
         const next = [...m];
         const last = next[next.length - 1];
-        if (last?.role === "assistant" && !last.content) next[next.length - 1] = { ...last, content: msg };
+        if (placeholderAdded && last?.role === "assistant" && !last.content) next[next.length - 1] = { ...last, content: msg };
         else next.push({ role: "assistant", content: msg });
         return next;
       });
@@ -603,6 +616,8 @@ const AssistantWidget = () => {
     setMessages([]);
     setPending(null);
     setFlow(null);
+    setFollowUps([]);
+    lastProjectRef.current = null;
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
     refresh();
   };
@@ -617,6 +632,7 @@ const AssistantWidget = () => {
   };
 
   const showSuggestions = !hasChat && !flow && !pending && !sleeping;
+  const showFollowUps = hasChat && !loading && !flow && !pending && !sleeping && followUps.length > 0;
 
   return (
     <>
@@ -723,6 +739,17 @@ const AssistantWidget = () => {
             {showSuggestions && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {suggestions.map((q) => (
+                  <button key={q} onClick={() => send(q)} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-gray-300 hover:bg-white/[0.08]">
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* relances générées après chaque réponse (voir followUpsLLM.js) */}
+            {showFollowUps && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {followUps.map((q) => (
                   <button key={q} onClick={() => send(q)} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-gray-300 hover:bg-white/[0.08]">
                     {q}
                   </button>

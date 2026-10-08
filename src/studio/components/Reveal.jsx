@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import anime from "animejs";
 
-const reduced = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+import { noMotion as reduced } from "../utils/motion";
 
 /**
  * Révèle son contenu quand il entre dans le viewport (anime.js).

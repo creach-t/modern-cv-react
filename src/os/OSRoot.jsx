@@ -16,10 +16,13 @@ const CVFallback = () => (
   </div>
 );
 
-/** Contenu sémantique caché : crawlable + lisible par lecteur d'écran même en mode OS. */
-const SeoContent = () => (
+/**
+ * Contenu sémantique caché : crawlable + lisible par lecteur d'écran même en mode OS.
+ * Le <h1> n'existe qu'ici hors mode studio (le Hero porte déjà le h1 du site).
+ */
+const SeoContent = ({ withH1 = true }) => (
   <div className="sr-only">
-    <h1>Théo Créach — Développeur web full-stack JavaScript</h1>
+    {withH1 && <h1>Théo Créac'h, développeur web full-stack JavaScript</h1>}
     <p>
       Développeur full-stack React / Node.js basé à Saint-Maur-des-Fossés,
       France. Applications web auto-hébergées (Docker, CI/CD, Traefik).
@@ -27,16 +30,22 @@ const SeoContent = () => (
     <h2>Projets</h2>
     <ul>
       <li>
-        <a href="http://devjobs.creachtheo.fr">DevJobs — recherche d'emploi tech</a>
+        <a href="/projets/devjobs/">DevJobs, recherche d'offres d'emploi tech</a>
       </li>
       <li>
-        <a href="https://queens-game.creachtheo.fr">Queens Game Web</a>
+        <a href="/projets/queens-game/">Queens Game Web, puzzle Queens en ligne</a>
       </li>
       <li>
-        <a href="https://ocoffee.creachtheo.fr">O'Coffee — e-commerce</a>
+        <a href="/projets/ocoffee/">O'Coffee, boutique de cafés de spécialité</a>
       </li>
       <li>
-        <a href="https://zombieland.creachtheo.fr">ZombieLand — billetterie</a>
+        <a href="/projets/zombieland/">ZombieLand, parc d'attractions et billetterie</a>
+      </li>
+      <li>
+        <a href="/projets/makemelearn/">makemelearn, jeu de ferme gratuit en ligne</a>
+      </li>
+      <li>
+        <a href="/projets/vectokid/">VectoKid, éditeur de dessin pour enfants</a>
       </li>
     </ul>
     <h2>Contact</h2>
@@ -45,10 +54,10 @@ const SeoContent = () => (
         <a href="mailto:creach.t@gmail.com">creach.t@gmail.com</a>
       </li>
       <li>
-        <a href="https://linkedin.com/in/creachtheo">LinkedIn</a>
+        <a href="https://linkedin.com/in/creachtheo">Théo Créac'h sur LinkedIn</a>
       </li>
       <li>
-        <a href="https://github.com/creach-t">GitHub</a>
+        <a href="https://github.com/creach-t">Théo Créac'h sur GitHub</a>
       </li>
     </ul>
   </div>
@@ -67,8 +76,8 @@ const OSRoot = () => {
   if (mode === "studio") {
     return (
       <>
-        <SeoContent />
         <Studio />
+        <SeoContent withH1={false} />
       </>
     );
   }

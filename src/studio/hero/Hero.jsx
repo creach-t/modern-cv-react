@@ -5,6 +5,7 @@ import { useColor } from "../../contexts/ColorContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Magnetic from "../components/Magnetic";
 import TextScrim from "../components/TextScrim";
+import { noMotion } from "../utils/motion";
 
 const COPY = {
   fr: {
@@ -39,9 +40,7 @@ const Hero = () => {
   const rootRef = useRef(null);
 
   useEffect(() => {
-    const reduce =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = noMotion();
     const items = rootRef.current?.querySelectorAll("[data-hero]");
     if (!items) return;
     if (reduce) {

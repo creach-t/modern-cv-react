@@ -1,9 +1,7 @@
 # https://www.robotstxt.org/robotstxt.html
+# Site public sans espace privé : tout est explorable.
+# /data/*.json est volontairement autorisé : le rendu du site en dépend.
 User-agent: *
 Allow: /
 
-# Plan du site pour les moteurs de recherche
 Sitemap: https://creachtheo.fr/sitemap.xml
-
-# Respecter un délai de 1 seconde entre les requêtes (pour éviter la surcharge du serveur)
-Crawl-delay: 1

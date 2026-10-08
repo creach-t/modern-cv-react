@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import anime from "animejs";
 
-const reduced = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+import { noMotion as reduced } from "../utils/motion";
 
 /** Compteur qui s'incrémente quand il devient visible (anime.js). */
 const Counter = ({ value, suffix = "", duration = 1400 }) => {

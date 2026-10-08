@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { isCrawler } from "../utils/motion";
 
 /**
  * Détection centralisée du « tier » de l'appareil pour piloter le niveau
@@ -17,7 +18,8 @@ const isBrowser = typeof window !== "undefined";
 const mq = (q) =>
   isBrowser && window.matchMedia ? window.matchMedia(q) : { matches: false };
 
-const prefersReducedMotion = () => mq("(prefers-reduced-motion: reduce)").matches;
+const prefersReducedMotion = () =>
+  mq("(prefers-reduced-motion: reduce)").matches || isCrawler();
 
 // Sonde WebGL bon marché : contexte réel + heuristique « GPU logiciel » (SwiftShader,
 // llvmpipe…) qu'on refuse pour ne pas ramer sur du rendu CPU.

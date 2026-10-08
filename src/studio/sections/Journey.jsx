@@ -81,9 +81,9 @@ const MilestoneItem = ({ item, language, isLast }) => {
           <span className="font-mono text-xs text-gray-500">{period}</span>
         </div>
 
-        <h4 className="mt-2 text-base font-semibold text-white sm:text-lg">
+        <h3 className="mt-2 text-base font-semibold text-white sm:text-lg">
           {loc.title}
-        </h4>
+        </h3>
         {loc.org && (
           <p className="mt-0.5 flex items-center gap-1.5 text-sm text-gray-400">
             <MapPin className="h-3 w-3 shrink-0 text-gray-500" />

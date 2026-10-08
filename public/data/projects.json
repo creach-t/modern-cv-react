@@ -63,7 +63,7 @@
       "id": "devjobs",
       "icon": "Code",
       "image": "/img/projects/devjobs.jpg",
-      "link": "http://devjobs.creachtheo.fr",
+      "link": "https://devjobs.creachtheo.fr",
       "github": ["https://github.com/creach-t/job-search-france-travail-api"],
       "technologies": ["React", "Node.js", "Express.Js", "Tailwind CSS"],
       "tools": ["Git", "VS Code", "Docker", "NGINX"],

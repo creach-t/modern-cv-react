@@ -14,6 +14,9 @@ COPY . .
 # SHA du commit injecté au build (ex: --build-arg GIT_SHA=abc1234)
 ARG GIT_SHA=dev
 ENV REACT_APP_VERSION=$GIT_SHA
+# Date du commit (AAAA-MM-JJ…) : <lastmod> du sitemap (pas de .git dans l'image de build)
+ARG COMMIT_DATE=""
+ENV SEO_LASTMOD=$COMMIT_DATE
 
 # Assistant IA — injectés au build (vides par défaut → IA hors-ligne, repli contact).
 # ⚠️ REACT_APP_* est inclus dans le bundle public : la clé sera exposée côté client.

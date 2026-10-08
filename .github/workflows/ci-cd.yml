@@ -64,6 +64,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             GIT_SHA=${{ github.sha }}
+            COMMIT_DATE=${{ github.event.head_commit.timestamp }}
             REACT_APP_LLM_API_KEY=${{ secrets.LLM_API_KEY }}
             REACT_APP_LLM_API_URL=${{ vars.LLM_API_URL }}
             REACT_APP_LLM_MODEL=${{ vars.LLM_MODEL }}

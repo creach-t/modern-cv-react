@@ -45,6 +45,11 @@ export const LanguageProvider = ({ children }) => {
     setLanguage(selectedLanguage);
   }, []);
 
+  // Garde <html lang> synchronisé avec la langue affichée (accessibilité + SEO)
+  useEffect(() => {
+    if (language) document.documentElement.lang = language;
+  }, [language]);
+
   // Surveiller les changements d'URL pour mettre à jour la langue si nécessaire
   useEffect(() => {
     const handleUrlChange = () => {
